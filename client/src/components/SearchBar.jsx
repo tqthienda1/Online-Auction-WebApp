@@ -1,14 +1,16 @@
 import { FaMagnifyingGlass } from "react-icons/fa6";
 
-const SearchBar = () => {
+const SearchBar = ({ className }) => {
   return (
-    <div className="relative flex items-center">
+    <div
+      className={`${className} flex items-center bg-gray-200 rounded-3xl px-4 py-2`}
+    >
+      <FaMagnifyingGlass className="text-gray-500 mr-2" />
       <input
-        className="absolute flex bg-gray-200 rounded-3xl w-100 items-center px-12 py-3 gap-3 focus:outline-0"
+        className="bg-transparent flex-1 outline-none"
         type="text"
         placeholder="Find your favorite item..."
       />
-      <FaMagnifyingGlass className="absolute m-4" />
     </div>
   );
 };
