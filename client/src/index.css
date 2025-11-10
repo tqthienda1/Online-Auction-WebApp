@@ -25,6 +25,7 @@
 .rc-slider-handle-dragging,
 .rc-slider-handle:focus-visible {
   box-shadow: 0 0 0 5px rgba(245, 176, 19, 0.6) !important;
+}
 
 @theme {
   --font-playfair: "Playfair Display", sans-serif;
