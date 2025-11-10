@@ -1,7 +1,11 @@
 import Home from "../pages/Home";
 import MainLayout from "../layouts/MainLayout";
+import CategoryPage from "../pages/CategoryPage";
 
-const guestRoutes = [{ path: "/", component: Home, layout: MainLayout }];
+const guestRoutes = [
+  { path: "/", component: Home, layout: MainLayout },
+  { path: "/category/camera", component: CategoryPage, layout: MainLayout },
+];
 
 const bidderRoutes = [];
 
