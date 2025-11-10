@@ -1,1 +1,27 @@
 @import "tailwindcss";
+.rc-slider-rail {
+  background-color: #e5e7eb;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.rc-slider-track {
+  background-color: #f5b013;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.rc-slider-handle {
+  height: 18px;
+  width: 18px;
+  margin-top: -6px;
+  background-color: #f5b013;
+  border-color: #f5b013;
+  opacity: 1;
+  box-shadow: 0 0 0 4px rgba(245, 176, 19, 0.3);
+}
+
+.rc-slider-handle-dragging,
+.rc-slider-handle:focus-visible {
+  box-shadow: 0 0 0 5px rgba(245, 176, 19, 0.6) !important;
+}
