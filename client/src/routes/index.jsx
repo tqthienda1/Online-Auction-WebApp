@@ -6,7 +6,7 @@ import ProductDetails from "../pages/ProductDetails";
 const guestRoutes = [
   { path: "/", component: Home, layout: MainLayout },
   { path: "/:category", component: CategoryPage, layout: MainLayout },
-  { path: "/products/:id", component: ProductDetails, layout: MainLayout },
+  { path: "/products", component: ProductDetails, layout: MainLayout },
 ];
 
 const bidderRoutes = [];
