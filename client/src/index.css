@@ -1,5 +1,30 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
 @import "tailwindcss";
+.rc-slider-rail {
+  background-color: #e5e7eb;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.rc-slider-track {
+  background-color: #f5b013;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.rc-slider-handle {
+  height: 18px;
+  width: 18px;
+  margin-top: -6px;
+  background-color: #f5b013;
+  border-color: #f5b013;
+  opacity: 1;
+  box-shadow: 0 0 0 4px rgba(245, 176, 19, 0.3);
+}
+
+.rc-slider-handle-dragging,
+.rc-slider-handle:focus-visible {
+  box-shadow: 0 0 0 5px rgba(245, 176, 19, 0.6) !important;
 
 @theme {
   --font-playfair: "Playfair Display", sans-serif;
