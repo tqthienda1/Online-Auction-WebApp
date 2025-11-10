@@ -1,12 +1,22 @@
-const CategoryBanner = ({ imagePath, title }) => {
+import React from "react";
+
+// Dùng style inline để đặt ảnh nền
+const bannerStyle = (imageUrl) => ({
+  height: "300px", // Bạn có thể điều chỉnh
+  backgroundImage: `url(${imageUrl})`,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  color: "white",
+  textShadow: "2px 2px 4px rgba(0,0,0,0.7)",
+});
+
+const CategoryBanner = ({ title, imageUrl }) => {
   return (
-    <div
-      className="text-white bg-cover bg-center py-16"
-      style={{ backgroundImage: `url(${imagePath})` }}
-    >
-      <div className="container mx-auto px-6">
-        <h1 className="text-5xl font-bold">{title}</h1>
-      </div>
+    <div style={bannerStyle(imageUrl)}>
+      <h1 style={{ fontSize: "4rem" }}>{title}</h1>
     </div>
   );
 };
