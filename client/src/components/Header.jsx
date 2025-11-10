@@ -5,7 +5,7 @@ const Header = () => {
     <header className="flex">
       <div className="w-10 h-10 border"></div>
       <SearchBar />
-      <Link></Link>
+      {/* <Link></Link> */}
     </header>
   );
 };
