@@ -4,7 +4,7 @@ import CategoryPage from "../pages/CategoryPage";
 
 const guestRoutes = [
   { path: "/", component: Home, layout: MainLayout },
-  { path: "/category/camera", component: CategoryPage, layout: MainLayout },
+  { path: "/:category", component: CategoryPage, layout: MainLayout },
 ];
 
 const bidderRoutes = [];
