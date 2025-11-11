@@ -19,7 +19,7 @@ const ProductCarousel = ({ images = [] }) => {
             <img
               src={img}
               alt={`thumb-${index}`}
-              className="w-32 h-32 object-cover"
+              className="w-28 h-28 object-cover"
             />
           </div>
         ))}
