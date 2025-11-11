@@ -1,26 +1,46 @@
-const DetailNavBar = ({ page, onChangePage }) => {
+const DetailNavBar = ({ frame, onFrameChange }) => {
   return (
-    <div className="flex flex-col mt-10">
-      <div className="w-2/3 h-12 flex justify-evenly items-center bg-neutral-300">
-        <div className="flex flex-col">
-          <p className="text-xl text-black font-medium font-playfair">
+    <div className="w-full h-12 flex justify-evenly items-center bg-neutral-300 mt-10">
+      <div className="flex flex-col">
+        {frame === "description" ? (
+          <>
+            <p
+              className="text-xl text-black font-bold font-playfair cursor-pointer"
+              onClick={() => onFrameChange("description")}
+            >
+              Description
+            </p>
+            <div className="bg-amber-400 w-full h-0.5"></div>
+          </>
+        ) : (
+          <p
+            className="text-xl text-black font-medium font-playfair cursor-pointer"
+            onClick={() => onFrameChange("description")}
+          >
             Description
           </p>
+        )}
+      </div>
 
-          {page === "description" && (
+      <div className="flex flex-col">
+        {frame === "bidhistory" ? (
+          <>
+            <p
+              className="text-xl text-black font-bold font-playfair cursor-pointer"
+              onClick={() => onFrameChange("bidhistory")}
+            >
+              Bid History
+            </p>
             <div className="bg-amber-400 w-full h-0.5"></div>
-          )}
-        </div>
-
-        <div className="flex flex-col">
-          <p className="text-xl text-black font-medium font-playfair">
+          </>
+        ) : (
+          <p
+            className="text-xl text-black font-medium font-playfair cursor-pointer"
+            onClick={() => onFrameChange("bidhistory")}
+          >
             Bid History
           </p>
-
-          {page === "bidhistory" && (
-            <div className="bg-amber-400 w-full h-0.5"></div>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
