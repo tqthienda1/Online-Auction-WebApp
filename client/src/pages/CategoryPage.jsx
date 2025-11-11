@@ -10,11 +10,16 @@ const MOCK_PRODUCTS = [
     id: 1,
     name: "Fujifilm X-T5 (Body Only)",
     category: "camera",
-    price: 1699,
+    price: 1699, // Giá hiện tại (current bid)
     imageUrl: "/image/camera.png",
     brand: "Fujifilm",
     color: "Black",
     condition: "New",
+    highestBidder: "****abc",
+    buyNowPrice: 2000,
+    endDate: "25/10/2025",
+    timeLeft: "1h left",
+    bidCount: 20,
   },
   {
     id: 2,
@@ -25,6 +30,11 @@ const MOCK_PRODUCTS = [
     brand: "Sony",
     color: "Black",
     condition: "Used",
+    highestBidder: "****fgh",
+    buyNowPrice: 2800,
+    endDate: "26/10/2025",
+    timeLeft: "2d left",
+    bidCount: 20,
   },
   {
     id: 3,
@@ -35,6 +45,11 @@ const MOCK_PRODUCTS = [
     brand: "Canon",
     color: "Grey",
     condition: "New",
+    highestBidder: "****jkl",
+    buyNowPrice: 2700,
+    endDate: "25/10/2025",
+    timeLeft: "3h left",
+    bidCount: 20,
   },
   {
     id: 4,
@@ -45,6 +60,11 @@ const MOCK_PRODUCTS = [
     brand: "Apple",
     color: "Grey",
     condition: "New",
+    highestBidder: "****xyz",
+    buyNowPrice: 2300,
+    endDate: "27/10/2025",
+    timeLeft: "4d left",
+    bidCount: 20,
   },
   {
     id: 5,
@@ -55,6 +75,11 @@ const MOCK_PRODUCTS = [
     brand: "Dell",
     color: "Black",
     condition: "Used",
+    highestBidder: "****123",
+    buyNowPrice: 2000,
+    endDate: "25/10/2025",
+    timeLeft: "10h left",
+    bidCount: 20,
   },
   {
     id: 6,
@@ -65,6 +90,11 @@ const MOCK_PRODUCTS = [
     brand: "Fujifilm",
     color: "Silver",
     condition: "Used",
+    highestBidder: "****456",
+    buyNowPrice: 1000,
+    endDate: "26/10/2025",
+    timeLeft: "1d left",
+    bidCount: 20,
   },
   {
     id: 7,
@@ -75,6 +105,11 @@ const MOCK_PRODUCTS = [
     brand: "Sony",
     color: "Black",
     condition: "New",
+    highestBidder: "****789",
+    buyNowPrice: 1500,
+    endDate: "28/10/2025",
+    timeLeft: "5d left",
+    bidCount: 20,
   },
 ];
 
@@ -94,7 +129,7 @@ const CategoryPage = () => {
     priceRange: [0, 5000],
     colors: [],
     conditions: [],
-    brands: "",
+    brand: "",
     sortBy: "recently_added",
   });
   const [availableFilters, setAvailableFilters] = useState({
@@ -117,10 +152,15 @@ const CategoryPage = () => {
         // if (isMounted) {
         //   setProducts(data);
         // }
+        const categoryProducts = MOCK_PRODUCTS.filter(
+          (p) => p.category === category
+        );
 
-        const availableBrands = [...new Set(MOCK_PRODUCTS.map((p) => p.brand))];
+        const availableBrands = [
+          ...new Set(categoryProducts.map((p) => p.brand)),
+        ];
 
-        const colorsMap = MOCK_PRODUCTS.reduce((acc, p) => {
+        const colorsMap = categoryProducts.reduce((acc, p) => {
           acc[p.color] = (acc[p.color] || 0) + 1;
           return acc;
         }, {});
@@ -129,7 +169,7 @@ const CategoryPage = () => {
           count: colorsMap[name],
         }));
 
-        const conditionsMap = MOCK_PRODUCTS.reduce((acc, p) => {
+        const conditionsMap = categoryProducts.reduce((acc, p) => {
           acc[p.condition] = (acc[p.condition] || 0) + 1;
           return acc;
         }, {});
@@ -139,9 +179,10 @@ const CategoryPage = () => {
         }));
 
         //Giả lập fetch API
-        const filteredProducts = MOCK_PRODUCTS.filter(
+        const filteredProducts = categoryProducts.filter(
           (p) => p.category === category
         );
+        console.log(filteredProducts);
 
         const currentBanner = MOCK_BANNERS[category];
 

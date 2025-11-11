@@ -1,11 +1,9 @@
-// src/components/ProductList.jsx
 import React from "react";
 import ProductCard from "./ProductCard";
-// import SortDropdown from './SortDropdown'; // (Component 'Sort by' của bạn)
 
 const ProductList = ({ products, sortBy, onSortChange }) => {
   return (
-    <section className="w-8/10">
+    <section className="w-8/10 pl-15">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.length > 0 ? (
           products.map((product) => (
@@ -13,7 +11,7 @@ const ProductList = ({ products, sortBy, onSortChange }) => {
           ))
         ) : (
           <p className="col-span-3 text-center text-gray-500">
-            Không tìm thấy sản phẩm nào.
+            Cannot find any product.
           </p>
         )}
       </div>

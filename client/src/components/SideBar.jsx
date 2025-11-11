@@ -46,7 +46,7 @@ const SideBar = ({ filters, availableFilters, onFilterChange }) => {
       <aside className="w-2/10 pr-8">
         <CategoryFilter
           brands={availableFilters.brands}
-          selectedBrands={filters.brands}
+          selectedBrands={filters.brand}
           onBrandChange={handleBrandChange}
         />
         <PriceFilter value={filters.priceRange} onChange={handlePriceChange} />
