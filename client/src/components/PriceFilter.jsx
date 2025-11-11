@@ -4,7 +4,7 @@ import Slider from "rc-slider";
 const PriceFilter = ({ value, onChange }) => {
   return (
     <div className="mb-8 border border-gray-300 rounded-lg py-7 px-5 shadow-xl/20">
-      <h3 className="text-3xl font-serif font-bold text-gray-800 mb-2">
+      <h3 className="text-3xl font-playfair font-bold text-gray-800 mb-2">
         Fill by price
       </h3>
 
@@ -24,7 +24,7 @@ const PriceFilter = ({ value, onChange }) => {
         />
       </div>
 
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex font-playfair justify-between items-center mt-4">
         <span className="text-gray-600">
           From: <span className="text-yellow-500 font-bold">${value[0]}</span>
         </span>
