@@ -3,15 +3,9 @@ import React from "react";
 import CategoryFilter from "./CategoryFilter";
 import PriceFilter from "./PriceFilter";
 import ColorFilter from "./ColorFilter";
+import ConditionsFilter from "./ConditionsFilter";
 
-const BRANDS = ["Fujifilm", "Canon", "Sony", "Nikon", "Olympus"];
-const COLORS = [
-  { name: "Black", count: 56 },
-  { name: "White", count: 56 },
-  { name: "Grey", count: 56 },
-];
-
-const SideBar = ({ filters, onFilterChange }) => {
+const SideBar = ({ filters, availableFilters, onFilterChange }) => {
   const handleBrandChange = (brandName) => {
     onFilterChange("brand", brandName);
   };
@@ -31,20 +25,40 @@ const SideBar = ({ filters, onFilterChange }) => {
 
     onFilterChange("colors", newColors);
   };
+  const handleConditionChange = (conditionName) => {
+    const currentConditions = filters.conditions || [];
+    const isSelected = currentConditions.includes(conditionName);
+
+    let newConditions;
+    if (isSelected) {
+      newConditions = currentConditions.filter(
+        (name) => name !== conditionName
+      );
+    } else {
+      newConditions = [...currentConditions, conditionName];
+    }
+
+    onFilterChange("conditions", newConditions);
+  };
 
   return (
     <>
       <aside className="w-2/10 pr-8">
         <CategoryFilter
-          brands={BRANDS}
-          selectedBrand={filters.brand}
+          brands={availableFilters.brands}
+          selectedBrands={filters.brands}
           onBrandChange={handleBrandChange}
         />
         <PriceFilter value={filters.priceRange} onChange={handlePriceChange} />
         <ColorFilter
           selectedColors={filters.colors}
           onColorChange={handleColorChange}
-          colors={COLORS}
+          colors={availableFilters.colors}
+        />
+        <ConditionsFilter
+          conditions={availableFilters.conditions}
+          selectedConditions={filters.conditions}
+          onConditionChange={handleConditionChange}
         />
       </aside>
     </>

@@ -3,8 +3,8 @@ import React from "react";
 const ColorFilter = ({ colors, selectedColors, onColorChange }) => {
   return (
     <div className="mb-8 border border-gray-300 rounded-lg py-7 px-5 shadow-xl/20">
-      <h3 className="text-3xl font-serif font-bold text-gray-800 mb-2">
-        Color
+      <h3 className="text-3xl font-playfair font-bold text-gray-800 mb-2">
+        Colors
       </h3>
 
       <div className="relative h-1 mb-6">
@@ -12,7 +12,7 @@ const ColorFilter = ({ colors, selectedColors, onColorChange }) => {
         <div className="absolute w-20 h-1 bg-yellow-400 bottom-0"></div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 font-playfair">
         {colors.map((color) => (
           <label
             key={color.name}
