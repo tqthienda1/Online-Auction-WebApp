@@ -17,8 +17,10 @@ const mockUpData = {
 const Header = () => {
   return (
     <header>
-      <div className="flex w-full py-10 justify-around">
-        <div className="w-80 h-10 border">LOGO</div>
+      <div className="flex w-full py-5 justify-around">
+        <Link to="/" className="w-80 h-10 border">
+          LOGO
+        </Link>
         <SearchBar className="w-xl" />
         <div className="flex gap-1">
           <Link className="flex items-center border-1 border-brand font-semibold rounded-3xl py-3 px-9 text-brand">
