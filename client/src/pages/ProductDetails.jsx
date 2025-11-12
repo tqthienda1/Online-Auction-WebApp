@@ -4,6 +4,7 @@ import DetailNavBar from "../components/DetailNavBar.jsx";
 import ProductDescription from "../components/ProductDescription.jsx";
 import { useState } from "react";
 import ProductBidPlace from "../components/ProductBidPlace.jsx";
+import BidHistory from "../components/BidHistory.jsx";
 
 const ProductDetails = () => {
   const images = [
@@ -55,6 +56,39 @@ const ProductDetails = () => {
     highestBid: "57,000",
   };
 
+  const bidHistory = [
+    {
+      id: "1",
+      bidderName: "Sarah Investor",
+      date: "2025-11-12T14:32:00Z",
+      price: 230.0,
+    },
+    {
+      id: "2",
+      bidderName: "Michael Tran",
+      date: "2025-11-12T14:45:00Z",
+      price: 245.5,
+    },
+    {
+      id: "3",
+      bidderName: "Anna Lee",
+      date: "2025-11-12T15:02:00Z",
+      price: 250.0,
+    },
+    {
+      id: "4",
+      bidderName: "Long Ngo",
+      date: "2025-11-12T15:15:00Z",
+      price: 257.5,
+    },
+    {
+      id: "5",
+      bidderName: "David Nguyen",
+      date: "2025-11-12T15:29:00Z",
+      price: 263.0,
+    },
+  ];
+
   const [curFrame, setCurFrame] = useState("description");
 
   const handleFrameChange = (frame) => {
@@ -81,6 +115,8 @@ const ProductDetails = () => {
               backImage={backImage}
             />
           )}
+
+          {curFrame === "bidhistory" && <BidHistory BidHistory={bidHistory} />}
         </div>
         <ProductBidPlace
           endingDate={endingDate}
