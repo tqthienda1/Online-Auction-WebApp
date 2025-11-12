@@ -8,7 +8,7 @@ import { Fragment } from "react";
 const renderRoutes = (routes, Wrapper = Fragment) => {
   return routes.map((route, index) => {
     const Page = route.component;
-    const Layout = route.layout;
+    const Layout = route.layout || Fragment;
 
     return (
       <Route
