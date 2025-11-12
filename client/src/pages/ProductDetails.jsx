@@ -45,6 +45,16 @@ const ProductDetails = () => {
     },
   ];
 
+  const seller = {
+    name: "Long Ngo",
+    rate: "4.5",
+  };
+
+  const bidder = {
+    name: "Long Ngo",
+    highestBid: "57,000",
+  };
+
   const [curFrame, setCurFrame] = useState("description");
 
   const handleFrameChange = (frame) => {
@@ -76,6 +86,8 @@ const ProductDetails = () => {
           endingDate={endingDate}
           price={price}
           buyNowPrice={buyNowPrice}
+          seller={seller}
+          bidder={bidder}
         />
       </div>
     </>
