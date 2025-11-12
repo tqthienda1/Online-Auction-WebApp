@@ -1,8 +1,15 @@
 import { useState, useEffect } from "react";
 import { getTimeRemaining } from "../helper/getTimeRemaining";
 import InputPrice from "./InputPrice";
+import SellerInformation from "./SellerInformation";
 
-const ProductBidPlace = ({ endingDate, price, buyNowPrice }) => {
+const ProductBidPlace = ({
+  endingDate,
+  price,
+  buyNowPrice,
+  seller,
+  bidder,
+}) => {
   const [timeLeft, setTimeLeft] = useState(getTimeRemaining(endingDate));
 
   useEffect(() => {
@@ -87,6 +94,7 @@ const ProductBidPlace = ({ endingDate, price, buyNowPrice }) => {
           </button>
         </div>
       </div>
+      <SellerInformation seller={seller} bidder={bidder} />
     </div>
   );
 };
