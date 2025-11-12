@@ -3,7 +3,7 @@ import ProductCard from "./ProductCard";
 
 const ProductList = ({ products, sortBy, onSortChange }) => {
   return (
-    <section className="w-8/10 pl-15">
+    <section className="pl-15">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.length > 0 ? (
           products.map((product) => (
