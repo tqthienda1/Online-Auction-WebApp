@@ -10,7 +10,7 @@ const MOCK_PRODUCTS = [
     id: 1,
     name: "Fujifilm X-T5 (Body Only)",
     category: "camera",
-    price: 1699, // Giá hiện tại (current bid)
+    price: 1699,
     imageUrl: "/image/camera.png",
     brand: "Fujifilm",
     color: "Black",
