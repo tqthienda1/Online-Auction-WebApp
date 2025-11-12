@@ -7,11 +7,19 @@ import ConditionsFilter from "./ConditionsFilter";
 
 const SideBar = ({ filters, availableFilters, onFilterChange }) => {
   const handleBrandChange = (brandName) => {
-    onFilterChange("brand", brandName);
+    const isAlreadySelected = filters.brand === brandName;
+
+    if (isAlreadySelected) {
+      onFilterChange("brand", "");
+    } else {
+      onFilterChange("brand", brandName);
+    }
   };
+
   const handlePriceChange = (priceValue) => {
     onFilterChange("priceRange", priceValue);
   };
+
   const handleColorChange = (colorName) => {
     const currentColors = filters.colors || [];
     const isSelected = currentColors.includes(colorName);
@@ -25,6 +33,7 @@ const SideBar = ({ filters, availableFilters, onFilterChange }) => {
 
     onFilterChange("colors", newColors);
   };
+
   const handleConditionChange = (conditionName) => {
     const currentConditions = filters.conditions || [];
     const isSelected = currentConditions.includes(conditionName);
@@ -43,7 +52,7 @@ const SideBar = ({ filters, availableFilters, onFilterChange }) => {
 
   return (
     <>
-      <aside className="w-2/10 pr-8">
+      <aside className="pr-8">
         <CategoryFilter
           brands={availableFilters.brands}
           selectedBrands={filters.brand}
