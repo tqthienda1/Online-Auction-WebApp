@@ -23,10 +23,16 @@ const Header = () => {
         </Link>
         <SearchBar className="w-xl" />
         <div className="flex gap-1">
-          <Link className="flex items-center border-1 border-brand font-semibold rounded-3xl py-3 px-9 text-brand">
+          <Link
+            to="/login"
+            className="flex items-center border-1 border-brand font-semibold rounded-3xl py-3 px-9 text-brand"
+          >
             Login
           </Link>
-          <Link className="flex items-center bg-brand font-semibold rounded-3xl py-3 px-9 text-white">
+          <Link
+            to="/signup"
+            className="flex items-center bg-brand font-semibold rounded-3xl py-3 px-9 text-white"
+          >
             Sign Up
           </Link>
         </div>
