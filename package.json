@@ -5,7 +5,7 @@
     "client": "cd client && npm run dev",
     "setup": "npm install --prefix server && npm install --prefix client",
     "ic": "npm install --prefix client --",
-    "sc": "npm install --prefix server --"
+    "is": "npm install --prefix server --"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
