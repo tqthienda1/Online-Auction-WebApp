@@ -31,3 +31,7 @@
   --font-playfair: "Playfair Display", sans-serif;
   --color-brand: #292929;
 }
+
+.swiper-wrapper {
+  @apply pointer-events-none;
+}
