@@ -15,6 +15,12 @@ const ImageCarousel = ({ products }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const swiperRef = useRef(null);
 
+  //product info
+  const [productInfo, setProductInfo] = useState([]);
+
+  //bid icon
+  const [bidIcon, setBidIcon] = useState(false);
+
   const handleSlideChange = async (index) => {
     //Prevent user click continuously
     if (isAnimating) return;
@@ -27,8 +33,24 @@ const ImageCarousel = ({ products }) => {
     await new Promise((resolve) => setTimeout(resolve, 600));
     setIsHide(true);
 
-    //changing slide animation and wait
+    //changing slide animation
     swiperRef.current.slideTo(index);
+    setBidIcon(true);
+
+    //Update slide info
+    const product = products[swiperRef.current.activeIndex];
+
+    setProductInfo([
+      { label: "Name", key: product.name },
+      { label: "Current price", key: product.currentPrice },
+      { label: "Highest bidder", key: product.highestBidder },
+      { label: "Buy now", key: product.buyNowPrice },
+      { label: "Date added", key: product.startDate },
+      { label: "Time ends", key: product.endDate },
+      { label: "Total bids", key: product.totalBids },
+    ]);
+
+    //wait changing slide animation
     await new Promise((resolve) => setTimeout(resolve, 600));
 
     //show info bar again
@@ -72,14 +94,19 @@ const ImageCarousel = ({ products }) => {
         onInit={(swiper) => {
           const activeSlide = swiper.slides[swiper.activeIndex];
 
+          const product = products[swiper.activeIndex];
+
+          setProductInfo([
+            { label: "Name", key: product.name },
+            { label: "Current price", key: product.currentPrice },
+            { label: "Highest bidder", key: product.highestBidder },
+            { label: "Buy now", key: product.buyNowPrice },
+            { label: "Date added", key: product.startDate },
+            { label: "Time ends", key: product.endDate },
+            { label: "Total bids", key: product.totalBids },
+          ]);
+
           setSlideWidth(activeSlide.offsetWidth);
-        }}
-        onSlideChange={(swiper) => {
-          console.log("Active slide index:", swiper.activeIndex);
-          console.log(
-            "Centered slide element:",
-            swiper.slides[swiper.activeIndex]
-          );
         }}
         className="w-full h-[500px]"
       >
@@ -91,9 +118,35 @@ const ImageCarousel = ({ products }) => {
             <img
               src={item.image}
               alt=""
-              className=" w-full h-full object-cover rounded-t-2xl select-none"
+              className={`w-full h-full object-cover rounded-t-2xl select-none transition-filter duration-300 ${
+                index === swiperRef.current?.activeIndex
+                  ? "hover:brightness-30"
+                  : ""
+              }`}
               draggable={false}
+              onMouseEnter={() => {
+                if (index === swiperRef.current?.activeIndex) {
+                  setBidIcon(true);
+                }
+              }}
+              onMouseLeave={() => {
+                if (index === swiperRef.current?.activeIndex) {
+                  setBidIcon(false);
+                }
+              }}
             />
+            {index === swiperRef.current?.activeIndex ? (
+              <div
+                className={`flex flex-col gap-3 absolute text-white max-w-[80px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity duration-300 ${
+                  bidIcon ? "opacity-full" : "opacity-0"
+                }`}
+              >
+                <img src="/image/auction-bid.svg" alt="" />
+                <div className="font-bold text-xl">Bid now</div>
+              </div>
+            ) : (
+              ""
+            )}
           </SwiperSlide>
         ))}
       </Swiper>
@@ -102,7 +155,23 @@ const ImageCarousel = ({ products }) => {
           isUp ? "-translate-y-full" : "translate-y-0"
         } ${isHide ? "opacity-0" : "opacity-full"}`}
         style={{ width: slideWidth }}
-      ></div>
+      >
+        <div className="h-full w-full flex flex-col justify-between text-white p-7">
+          <h1 className="w-full text-center text-3xl font-bold">
+            {productInfo.length > 0 ? productInfo[0].key : ""}
+          </h1>
+
+          {productInfo.slice(1).map((item, index) => (
+            <div
+              key={index}
+              className="flex justify-between text-xl font-light"
+            >
+              <div>{item.label}</div>
+              <div>{item.key}</div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
