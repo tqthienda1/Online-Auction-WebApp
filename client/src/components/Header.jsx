@@ -25,7 +25,7 @@ const Header = () => {
         <div className="flex gap-1">
           <Link
             to="/login"
-            className="flex items-center border-1 border-brand font-semibold rounded-3xl py-3 px-9 text-brand"
+            className="flex items-center border border-brand font-semibold rounded-3xl py-3 px-9 text-brand"
           >
             Login
           </Link>
