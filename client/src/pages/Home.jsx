@@ -14,7 +14,7 @@ const mockUpData = {
     },
     {
       image: "/image/buddha.jpg",
-      name: "Vangogh",
+      name: "Buddha",
       currentPrice: 30000,
       highestBidder: "thiendepzai",
       buyNowPrice: 50000,
@@ -24,7 +24,7 @@ const mockUpData = {
     },
     {
       image: "/image/complex.jpg",
-      name: "Vangogh",
+      name: "Complex",
       currentPrice: 30000,
       highestBidder: "thiendepzai",
       buyNowPrice: 50000,
@@ -34,7 +34,7 @@ const mockUpData = {
     },
     {
       image: "/image/food.jpg",
-      name: "Vangogh",
+      name: "Food",
       currentPrice: 30000,
       highestBidder: "thiendepzai",
       buyNowPrice: 50000,
@@ -44,7 +44,7 @@ const mockUpData = {
     },
     {
       image: "/image/art.jpg",
-      name: "Vangogh",
+      name: "Art",
       currentPrice: 30000,
       highestBidder: "thiendepzai",
       buyNowPrice: 50000,
