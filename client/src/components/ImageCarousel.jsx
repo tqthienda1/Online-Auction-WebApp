@@ -62,7 +62,10 @@ const ImageCarousel = ({ products }) => {
         slideToClickedSlide={false}
         onSwiper={(swiper) => (swiperRef.current = swiper)}
         onClick={(swiper) => {
-          if (swiper.clickedIndex !== undefined) {
+          if (
+            swiper.clickedIndex !== undefined &&
+            swiper.clickedIndex !== swiper.activeIndex
+          ) {
             handleSlideChange(swiper.clickedIndex);
           }
         }}
