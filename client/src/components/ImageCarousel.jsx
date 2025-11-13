@@ -35,6 +35,7 @@ const ImageCarousel = ({ products }) => {
 
     //changing slide animation
     swiperRef.current.slideTo(index);
+    setBidIcon(true);
 
     //Update slide info
     const product = products[swiperRef.current.activeIndex];
