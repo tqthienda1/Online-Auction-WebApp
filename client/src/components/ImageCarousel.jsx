@@ -30,11 +30,12 @@ const ImageCarousel = ({ products }) => {
 
     //hide info bar
     setIsUp(true);
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    await new Promise((resolve) => setTimeout(resolve, 300));
     setIsHide(true);
 
     //changing slide animation
     swiperRef.current.slideTo(index);
+    // console.log("show");
     setBidIcon(true);
 
     //Update slide info
@@ -60,7 +61,7 @@ const ImageCarousel = ({ products }) => {
     //after show is done, stop changing slide animation
     setTimeout(() => {
       setIsAnimating(false);
-    }, 600);
+    }, 300);
   };
 
   return (
@@ -124,20 +125,23 @@ const ImageCarousel = ({ products }) => {
                   : ""
               }`}
               draggable={false}
-              onMouseEnter={() => {
+              onMouseOver={() => {
                 if (index === swiperRef.current?.activeIndex) {
                   setBidIcon(true);
                 }
               }}
-              onMouseLeave={() => {
-                if (index === swiperRef.current?.activeIndex) {
+              onMouseMove={() => {
+                if (index !== swiperRef.current?.activeIndex) {
                   setBidIcon(false);
                 }
+              }}
+              onMouseOut={() => {
+                setBidIcon(false);
               }}
             />
             {index === swiperRef.current?.activeIndex ? (
               <div
-                className={`flex flex-col gap-3 absolute text-white max-w-[80px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity duration-300 ${
+                className={`flex flex-col gap-3 absolute text-white max-w-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity duration-300 ${
                   bidIcon ? "opacity-full" : "opacity-0"
                 }`}
               >
@@ -151,13 +155,13 @@ const ImageCarousel = ({ products }) => {
         ))}
       </Swiper>
       <div
-        className={`"h-full aspect-6/3 bg-brand rounded-b-2xl transform transition-transform duration-500 ${
+        className={`"h-full aspect-6/3 bg-white rounded-b-2xl transform transition-transform duration-300 ${
           isUp ? "-translate-y-full" : "translate-y-0"
         } ${isHide ? "opacity-0" : "opacity-full"}`}
         style={{ width: slideWidth }}
       >
-        <div className="h-full w-full flex flex-col justify-between text-white p-7">
-          <h1 className="w-full text-center text-3xl font-bold">
+        <div className="h-full w-full flex flex-col justify-between text-brand p-7">
+          <h1 className="w-full text-center text-3xl font-bold font-playfair">
             {productInfo.length > 0 ? productInfo[0].key : ""}
           </h1>
 
