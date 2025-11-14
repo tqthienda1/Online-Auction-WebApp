@@ -5,7 +5,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-const ImageCarousel = ({ products }) => {
+const ProductCoverflow = ({ products }) => {
   //scale bar width with slide width
   const [slideWidth, setSlideWidth] = useState("400px");
 
@@ -184,4 +184,4 @@ const ImageCarousel = ({ products }) => {
   );
 };
 
-export default ImageCarousel;
+export default ProductCoverflow;
