@@ -98,7 +98,7 @@ const ProductDetails = () => {
   // useEffect(() => {
   //   let isMounted = true;
 
-  //   const loadProduct = async (productId) => {
+  //   const loadProduct = a  sync (productId) => {
   //     try {
   //       setIsLoading(true);
   //       setError(null);
