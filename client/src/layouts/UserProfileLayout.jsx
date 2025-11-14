@@ -1,11 +1,11 @@
 import Header from "../components/Header";
-import CategoriesBar from "../components/CategoriesBar";
 
 const MainLayout = ({ children }) => {
   return (
     <div>
-      <Header />
-      <CategoriesBar categories={mockUpData.categories} />
+      <div className="border-b border-brand">
+        <Header />
+      </div>
       <main>{children}</main>
     </div>
   );

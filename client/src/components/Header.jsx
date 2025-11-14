@@ -37,8 +37,6 @@ const Header = () => {
           </Link>
         </div>
       </div>
-
-      <CategoriesBar categories={mockUpData.categories} />
     </header>
   );
 };
