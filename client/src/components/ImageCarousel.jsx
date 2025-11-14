@@ -36,7 +36,6 @@ const ImageCarousel = ({ products }) => {
     //changing slide animation
     swiperRef.current.slideTo(index);
     // console.log("show");
-    setBidIcon(true);
 
     //Update slide info
     const product = products[swiperRef.current.activeIndex];
@@ -135,8 +134,13 @@ const ImageCarousel = ({ products }) => {
                   setBidIcon(false);
                 }
               }}
-              onMouseOut={() => {
-                setBidIcon(false);
+              onMouseOut={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget)) {
+                  setBidIcon(false);
+                }
+              }}
+              onClick={() => {
+                setBidIcon(true);
               }}
             />
             {index === swiperRef.current?.activeIndex ? (
