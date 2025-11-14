@@ -1,4 +1,4 @@
-import ImageCarousel from "../components/ImageCarousel";
+import ProductCoverflow from "../components/ProductCoverflow";
 
 const mockUpData = {
   products: [
@@ -58,7 +58,7 @@ const mockUpData = {
 const Home = () => {
   return (
     <div className="">
-      <ImageCarousel products={mockUpData.products} />
+      <ProductCoverflow products={mockUpData.products} />
     </div>
   );
 };
