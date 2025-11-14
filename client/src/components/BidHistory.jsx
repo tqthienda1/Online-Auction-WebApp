@@ -19,7 +19,7 @@ const BidHistory = ({ BidHistory }) => {
               </div>
             </div>
 
-            <p className="text-2xl font-semibold">$ {b.price}</p>
+            <p className="text-2xl font-semibold">${b.price}</p>
           </div>
         ))}
       </div>

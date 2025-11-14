@@ -5,6 +5,7 @@ import ProductDescription from "../components/ProductDescription.jsx";
 import { useEffect, useState } from "react";
 import ProductBidPlace from "../components/ProductBidPlace.jsx";
 import BidHistory from "../components/BidHistory.jsx";
+import SimilarProducts from "../components/SimilarProducts.jsx";
 
 const ProductDetails = () => {
   const product = {
@@ -19,8 +20,8 @@ const ProductDetails = () => {
     code: "6104R-001H",
     isActive: "true",
     endingDate: "2025-11-19T12:05:00",
-    price: "57,000",
-    buyNowPrice: "100,000",
+    price: "557,000",
+    buyNowPrice: "600,000",
     descriptions: [
       {
         title: "Heavenly radiance",
@@ -73,6 +74,48 @@ const ProductDetails = () => {
         bidderName: "David Nguyen",
         date: "2025-11-12T15:29:00Z",
         price: 263.0,
+      },
+    ],
+    relatedProducts: [
+      {
+        name: "Grand Complications",
+        price: "150,700",
+        buyNowPrice: "313,900",
+        endingDate: "2025-11-19T12:05:00",
+        img: "/image/detail_1.jpg",
+        highestBid: "Ngo Long",
+      },
+      {
+        name: "Grand Complications",
+        price: "150,700",
+        buyNowPrice: "313,900",
+        endingDate: "2025-11-19T12:05:00",
+        img: "/image/detail_1.jpg",
+        highestBid: "Ngo Long",
+      },
+      {
+        name: "Grand Complications",
+        price: "150,700",
+        buyNowPrice: "313,900",
+        endingDate: "2025-11-19T12:05:00",
+        img: "/image/detail_1.jpg",
+        highestBid: "Ngo Long",
+      },
+      {
+        name: "Grand Complications",
+        price: "150,700",
+        buyNowPrice: "313,900",
+        endingDate: "2025-11-19T12:05:00",
+        img: "/image/detail_1.jpg",
+        highestBid: "Ngo Long",
+      },
+      {
+        name: "Grand Complications",
+        price: "150,700",
+        buyNowPrice: "313,900",
+        endingDate: "2025-11-19T12:05:00",
+        img: "/image/detail_1.jpg",
+        highestBid: "Ngo Long",
       },
     ],
   };
@@ -133,7 +176,7 @@ const ProductDetails = () => {
       {isLoading && <div>Loading...</div>}
       {isError && <div>{isError}</div>}
       {!isLoading && !isError && (
-        <>
+        <div className="overflow-hidden">
           <div className="p-10">
             <ProductCarousel images={product.images} />
           </div>
@@ -169,7 +212,17 @@ const ProductDetails = () => {
               bidder={bidder}
             />
           </div>
-        </>
+
+          {/* <div className="flex justify-center items-center mt-20">
+            <div className="bg-yellow-400 h-0.5 w-[50%]"></div>
+          </div> */}
+
+          <div className="flex justify-center items-center mt-20 ">
+            <SimilarProducts products={product.relatedProducts} />
+          </div>
+
+          <div className="h-42 w-12"></div>
+        </div>
       )}
     </>
   );
