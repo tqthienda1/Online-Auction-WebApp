@@ -71,82 +71,92 @@ const ProfileRating = () => {
         <div className="flex items-center mt-4">
           <a
             href="#"
-            className="text-sm font-medium text-fg-brand hover:underline"
+            className="text-sm font-medium text-fg-brand hover:underline text-gray-400"
           >
             5
           </a>
-          <FaStar />
+          <FaStar className="text-sm ml-0.5" />
           <div className="bg-gray-200 w-1/4 h-4 mx-4 bg-neutral-quaternary rounded-lg">
             <div
               className="h-4 bg-yellow-400 rounded-lg"
               style={{ width: "70%" }}
             ></div>
           </div>
-          <span className="text-sm font-medium text-body">70%</span>
+          <span className="text-sm font-medium text-body text-gray-400">
+            70%
+          </span>
         </div>
         <div className="flex items-center mt-4">
           <a
             href="#"
-            className="text-sm font-medium text-fg-brand hover:underline"
+            className="text-sm font-medium text-fg-brand hover:underline text-gray-400"
           >
             4
           </a>
-          <FaStar />
+          <FaStar className="text-sm ml-0.5" />
           <div className="bg-gray-200 w-1/4 h-4 mx-4 bg-neutral-quaternary rounded-lg">
             <div
               className="h-4 bg-yellow-400 rounded-lg"
               style={{ width: "17%" }}
             ></div>
           </div>
-          <span className="text-sm font-medium text-body">17%</span>
+          <span className="text-sm font-medium text-body text-gray-400">
+            17%
+          </span>
         </div>
         <div className="flex items-center mt-4">
           <a
             href="#"
-            className="text-sm font-medium text-fg-brand hover:underline"
+            className="text-sm font-medium text-fg-brand hover:underline text-gray-400"
           >
             3
           </a>
-          <FaStar />
+          <FaStar className="text-sm ml-0.5" />
           <div className="bg-gray-200 w-1/4 h-4 mx-4 bg-neutral-quaternary rounded-lg">
             <div
               className="h-4 bg-yellow-400 rounded-lg"
               style={{ width: "8%" }}
             ></div>
           </div>
-          <span className="text-sm font-medium text-body">8%</span>
+          <span className="text-sm font-medium text-body text-gray-400">
+            8%
+          </span>
         </div>
         <div className="flex items-center mt-4">
           <a
             href="#"
-            className="text-sm font-medium text-fg-brand hover:underline"
+            className="text-sm font-medium text-fg-brand hover:underline text-gray-400"
           >
             2
           </a>
-          <FaStar />
+          <FaStar className="text-sm ml-0.5" />
           <div className="bg-gray-200 w-1/4 h-4 mx-4 bg-neutral-quaternary rounded-lg">
             <div
               className="h-4 bg-yellow-400 rounded-lg"
               style={{ width: "4%" }}
             ></div>
           </div>
-          <span className="text-sm font-medium text-body">4%</span>
+          <span className="text-sm font-medium text-body text-gray-400">
+            4%
+          </span>
         </div>
         <div className="flex items-center mt-4">
           <a
             href="#"
-            className="text-sm font-medium text-fg-brand hover:underline"
+            className="text-sm font-medium text-fg-brand hover:underline text-gray-400"
           >
             1
           </a>
-          <FaStar />
+          <FaStar className="text-sm ml-0.5" />
           <div className="bg-gray-200 w-1/4 h-4 mx-4 bg-neutral-quaternary rounded-lg">
             <div
               className="h-4 bg-yellow-400 rounded-lg"
               style={{ width: "1%" }}
             ></div>
           </div>
-          <span className="text-sm font-medium text-body">1%</span>
+          <span className="text-sm font-medium text-body text-gray-400">
+            1%
+          </span>
         </div>
       </div>
     </div>
