@@ -63,14 +63,14 @@ const SimilarProducts = ({ products }) => {
                         <div className="flex mt-5 justify-between items-center gap-5 w-full">
                           <button
                             type="button"
-                            className="text-lg font-bold w-48 h-12 border border-black transition duration-200 ease-out hover:scale-105 rounded-sm"
+                            className="text-lg font-bold w-1/2 h-12 border border-black transition duration-200 ease-out hover:scale-105 rounded-sm uppercase"
                           >
                             Buy Now
                           </button>
 
                           <button
                             type="button"
-                            className="text-lg font-bold w-48 h-12 bg-yellow-400 transition duration-200 ease-out hover:scale-105 rounded-sm"
+                            className="text-lg font-bold w-1/2 h-12 bg-yellow-400 transition duration-200 ease-out hover:scale-105 rounded-sm uppercase"
                           >
                             Bid Now
                           </button>
