@@ -6,6 +6,9 @@ import { useEffect, useState } from "react";
 import ProductBidPlace from "../components/ProductBidPlace.jsx";
 import BidHistory from "../components/BidHistory.jsx";
 import SimilarProducts from "../components/SimilarProducts.jsx";
+import CommentSection from "@/components/CommentSection.jsx";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const ProductDetails = () => {
   const product = {
@@ -118,6 +121,25 @@ const ProductDetails = () => {
         highestBid: "Ngo Long",
       },
     ],
+    comments: [
+      {
+        username: "Tran Quoc Thien",
+        title: "Question about changing the watch strap",
+        content: "Can I customize the type of strap to my preference?",
+        createdAt: "2025-11-19T12:05:00",
+        img: "",
+        numOfLike: 12,
+      },
+      {
+        username: "Nguyen Dang Duc Thinh",
+        title: "Mint condition iPhone!",
+        content:
+          "This iPhone is absolutely perfect. All accessories included, battery health at 100%. Seller was very responsive.",
+        createdAt: "2025-11-19T12:05:00",
+        img: "",
+        numOfLike: 12,
+      },
+    ],
   };
 
   const seller = {
@@ -167,6 +189,10 @@ const ProductDetails = () => {
   //   };
   // }, []);
 
+  useEffect(() => {
+    AOS.init({ duration: 800, once: true });
+  }, []);
+
   const handleFrameChange = (frame) => {
     setCurFrame(frame);
   };
@@ -176,8 +202,8 @@ const ProductDetails = () => {
       {isLoading && <div>Loading...</div>}
       {isError && <div>{isError}</div>}
       {!isLoading && !isError && (
-        <div className="overflow-hidden">
-          <div className="p-10">
+        <div className="overflow-hidden" data-aos="fade-up">
+          <div className="p-10" data-aos="fade-down">
             <ProductCarousel images={product.images} />
           </div>
           <ProductTitle
@@ -186,7 +212,7 @@ const ProductDetails = () => {
             isActive={product.isActive}
           />
 
-          <div className="flex">
+          <div className="flex" data-aos="fade-up">
             <div className="flex flex-col w-3/4 ">
               <DetailNavBar
                 frame={curFrame}
@@ -212,12 +238,14 @@ const ProductDetails = () => {
               bidder={bidder}
             />
           </div>
+          <div data-aos="zoom-in">
+            <CommentSection comments={product.comments} />
+          </div>
 
-          {/* <div className="flex justify-center items-center mt-20">
-            <div className="bg-yellow-400 h-0.5 w-[50%]"></div>
-          </div> */}
-
-          <div className="flex justify-center items-center mt-20 ">
+          <div
+            className="flex justify-center items-center mt-20"
+            data-aos="zoom-in"
+          >
             <SimilarProducts products={product.relatedProducts} />
           </div>
 
