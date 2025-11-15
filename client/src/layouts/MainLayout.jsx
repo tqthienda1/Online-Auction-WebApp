@@ -17,7 +17,7 @@ const MainLayout = ({ children }) => {
   return (
     <div>
       <Header />
-      <CategoriesBar categories={mockUpData.categories} />
+      {/* // <CategoriesBar} /> */}
       <main>{children}</main>
     </div>
   );
