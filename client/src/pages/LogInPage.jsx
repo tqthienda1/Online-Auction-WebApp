@@ -3,9 +3,16 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { FaEye, FaEyeSlash, FaGoogle, FaFacebookF, FaTwitter } from 'react-icons/fa';
-
+import {z} from 'zod'
+import { zodResolver } from "@hookform/resolvers/zod";
 const LogInPage = () => {
-    const { register, handleSubmit } = useForm();
+    const schema = z.object({
+        identifier: z.string().nonempty("Identifier is required"),
+        password: z.string().nonempty("Password is required"),
+    });
+    const {register, handleSubmit, formState: {errors}} = useForm({
+        resolver: zodResolver(schema),
+    })
     const [showPass, setShowPass] = useState(false);
 
     const onSubmit = (data) => {
@@ -25,21 +32,31 @@ const LogInPage = () => {
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     <div>
-                        <label className="sr-only">Username/ Email</label>
+                        <label htmlFor="identifier" className="sr-only">Username/Email</label>
                         <input
                             type="text"
+                            name="identifier"
+                            id="identifier"
                             {...register('identifier')}
-                            placeholder="Username/ Email"
+                            placeholder="Username/Email"
                             className="w-full border-b border-gray-300 focus:outline-none py-3 placeholder-gray-400"
                         />
-                    </div>
 
-                    <div className="relative">
-                        <label className="sr-only">Password</label>
+                    <span className="text-red-600 text-sm mt-1 block">
+                        {errors.identifier? errors.identifier.message : ""}
+                    </span>
+                    </div>
+                    
+                    <div className="password">
+                        <label 
+                        htmlFor="password"
+                        className="sr-only">Password</label>
                         <input
                             type={showPass ? 'text' : 'password'}
                             {...register('password')}
                             placeholder="Password"
+                            name="password"
+                            id="password"
                             className="w-full border-b border-gray-300 focus:outline-none py-3 placeholder-gray-400 pr-10"
                         />
                         <button
@@ -50,10 +67,15 @@ const LogInPage = () => {
                         >
                             {showPass ? <FaEye /> : <FaEyeSlash />}
                         </button>
+                        <span className="text-red-600 text-sm mt-1 block">
+                            {errors.password ? errors.password.message : ''}
+                        </span>
                     </div>
 
                     <div>
-                        <button className="w-full bg-black text-white py-3 rounded-md hover:opacity-60">Log In</button>
+                        <button 
+                        type="submit"
+                        className="w-full bg-black text-white py-3 rounded-md hover:opacity-60">Log In</button>
                     </div>
                 </form>
 
