@@ -35,6 +35,7 @@ const ProductCoverflow = ({ products }) => {
 
     //changing slide animation
     swiperRef.current.slideTo(index);
+    setBidIcon(true);
     // console.log("show");
 
     //Update slide info
@@ -138,9 +139,6 @@ const ProductCoverflow = ({ products }) => {
                 if (!e.currentTarget.contains(e.relatedTarget)) {
                   setBidIcon(false);
                 }
-              }}
-              onClick={() => {
-                setBidIcon(true);
               }}
             />
             {index === swiperRef.current?.activeIndex ? (
