@@ -3,8 +3,25 @@ import {useForm} from 'react-hook-form';
 import ReCAPTCHA from 'react-google-recaptcha';
 import {Link} from 'react-router-dom'
 import {FaGoogle, FaFacebookF, FaTwitter } from 'react-icons/fa';
+import {z} from 'zod'
+import {zodResolver} from "@hookform/resolvers/zod"
+const schema = z.object({
+    username: z.string().nonempty("Username is required"),
+    password: z.string().nonempty("Password is required"),
+    confirmPassword:z.string().nonempty("Please confirm your password"),
+    fullname: z.string().nonempty("Full name is required"),
+    address: z.string().nonempty("Address is required"),
+    email: z.string().nonempty("Email is required").email("Email format is not valid")
+})
+.refine((data) => data.confirmPassword === data.password,{
+    message: "Password do not match",
+    path: ["confirmPassword"]
+})
 const SignUpPage = () => {
-    const {register, handleSubmit,  watch, formState: { errors }} = useForm();
+    const {register, handleSubmit,  watch, formState: { errors }} = useForm({
+        resolver: zodResolver(schema),
+        mode: "onBlur",
+    });
     const password = watch("Password");
     const [recaptchaToken, setRecaptchaToken] = useState(null);
     const onSubmit = (data) => {
@@ -15,8 +32,6 @@ const SignUpPage = () => {
         console.log('sign up data', data);
     };
     return (
-
-    
     <div className="min-h-screen flex items-center justify-center bg-white px-6 pb-6">
         <div className="max-w-xl w-full">
             <div className="flex justify-center">
@@ -27,70 +42,93 @@ const SignUpPage = () => {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div>
-                    <label className ="sr-only">Username</label>
+                    <label htmlFor="username" className ="sr-only">Username</label>
                     <input
                         type="text"
-                        {...register('Username')}
+                        {...register('username')}
                         placeholder="Username"
+                        id="username"
                         className="w-full border-b border-gray-300 focus:outline-none py-3 placeholder-gray-400"
                     />
+                    <span className="text-red-600 text-sm mt-1 block">
+                        {errors.username? errors.username.message : ""}
+                    </span>
                 </div>
 
                 <div>
-                    <label className="sr-only">Password</label>
+                    <label htmlFor="password" className="sr-only">Password</label>
                     <input
                         type="password"
-                        {...register('Password')}
+                        id="password"
+                        {...register('password')}
                         placeholder="Password"
                         className="w-full border-b border-gray-300 focus:outline-none py-3 placeholder-gray-400"
                     />
+                    <span className="text-red-600 text-sm mt-1 block">
+                        {errors.password? errors.password.message : ""}
+                    </span>
                 </div>
 
                 <div>
-                    <label className="sr-only">Confirm password</label>
+                    <label htmlFor="confirmPassword" className="sr-only">Confirm password</label>
                     <input
                         type="password"
-                        {...register('Confirm', {
-                            validate: value =>
-                            value === password || "Passwords do not match"
-                        })}
+                        id="confirmPassword"
+                        {...register('confirmPassword'
+                        //     , {
+                        //     validate: value =>
+                        //     value === password || "Passwords do not match"
+                        // }
+                    )}
                         placeholder="Confirm password"
                         className="w-full border-b border-gray-300 focus:outline-none py-3 placeholder-gray-400"
                     />
-
-                    {errors.Confirm && (
-                            <p className="text-red-500 text-sm mt-1">{errors.Confirm.message}</p>
-                            )}
+                    <span className="text-red-600 text-sm mt-1 block">
+                        {errors.confirmPassword? errors.confirmPassword.message: ""}
+                    </span>
+                    
                 </div>
 
                 <div>
-                    <label className="sr-only">Full name</label>
+                    <label htmlFor="fullname"className="sr-only">Full name</label>
                     <input
                         type="text"
-                        {...register('name')}
+                        id="fullname"
+                        {...register('fullname')}
                         placeholder="Full name"
                         className="w-full border-b border-gray-300 focus:outline-none py-3 placeholder-gray-400"
                     />
+                    <span className="text-red-600 text-sm mt-1 block">
+                        {errors.fullname? errors.fullname.message: ""}
+                    </span>
                 </div>
 
                 <div>
-                    <label className="sr-only">Email</label>
+                    <label htmlFor="email"className="sr-only">Email</label>
                     <input
                         type="text"
-                        {...register('Email')}
+                        id="email"
+                        {...register('email')}
                         placeholder="Email"
                         className="w-full border-b border-gray-300 focus:outline-none py-3 placeholder-gray-400"
                     />
+                    <span className="text-red-600 text-sm mt-1 block">
+                        {errors.email? errors.email.message: ""}
+                    </span>
                 </div>
 
                 <div>
-                    <label className="sr-only">Address</label>
+                    <label htmlFor="address" className="sr-only">Address</label>
                     <input
                         type="text"
-                        {...register('Address')}
+                        id="address"
+                        {...register('address')}
                         placeholder="Address"
                         className="w-full border-b border-gray-300 focus:outline-none py-3 placeholder-gray-400"
                     />
+                    <span className="text-red-600 text-sm mt-1 block">
+                        {errors.address? errors.address.message: ""}
+                    </span>
                 </div>
 
                  <div className="my-4">
