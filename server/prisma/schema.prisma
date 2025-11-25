@@ -1,0 +1,183 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  BIDDER
+  SELLER
+  ADMIN
+}
+
+enum UpgradeStatus {
+  PENDING
+  FAILED
+  ACCEPT
+}
+
+model User {
+  id String @id @default(uuid())
+  username String
+  email String @unique
+  dob DateTime 
+  password String?
+  address String
+  role Role
+  ratingPos Int
+  ratingNeg Int
+
+  givenRatings Rating[] @relation("GivenRatings")
+  receivedRatings Rating[] @relation("ReceivedRatings")
+  sellingProduct Product[] @relation("ProductSeller")
+  highestBidProducts Product[] @relation("HighestBidder")
+  watchList WatchList[] @relation("UserWatchList")
+  comments Comment[] @relation("UserComment")
+  upgradeRequest UpgradeRequest? @relation("UserUpgradeRequest")
+  boughtOrders Order[] @relation("Buyer")
+  soldOrders Order[] @relation("Seller")
+  bids Bid[] @relation("Bidder")
+}
+
+model Product {
+  id String @id @default(uuid())
+  sellerID String
+  highestBidderID String?
+  productName String
+  productAvt String
+  categoryID String
+  startingPrice Int
+  bidStep Int
+  buyNowPrice Int?
+  currentPrice Int?
+  startTime DateTime
+  endTime DateTime
+  autoExtend Boolean @default(false)
+  sold Boolean @default(false)
+  ratingRequired Boolean @default(false)
+
+  seller User @relation("ProductSeller",fields: [sellerID], references: [id], onDelete: Cascade)
+  highestBidder User? @relation("HighestBidder", fields: [highestBidderID], references: [id], onDelete: Cascade)
+  category Category @relation("ProductCategory", fields: [categoryID], references: [id], onDelete: Restrict)
+  productDescriptions ProductDescription[] @relation("ProductDescription")
+  productImages ProductImage[] @relation("ProductImages")
+  bids Bid[] @relation("BidProduct")
+  inWatchList WatchList[] @relation("ProductWatchList")
+  comments Comment[] @relation("ProductComment")
+  order Order? @relation("OrderProduct")
+  rating Rating? 
+}
+
+model ProductDescription {
+  id String @id @default(uuid())
+  productID String
+  productDescription String
+  createdAt DateTime
+
+  product Product @relation("ProductDescription", fields: [productID], references: [id], onDelete: Cascade)
+}
+
+model ProductImage {
+  imageID String @id @default(uuid())
+  productID String
+  imageURL String
+  order Int
+
+  product Product @relation("ProductImages", fields: [productID], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id String @id @default(uuid())
+  name String
+  parentID String?
+
+  product Product[] @relation("ProductCategory")
+  categoryParent Category? @relation("TreeCategory", fields: [parentID], references: [id], onDelete: Cascade)
+  categoryChild Category[] @relation("TreeCategory")
+}
+
+model Bid {
+  id String @id @default(uuid())
+  productID String
+  bidderID String
+  maxPrice Int
+  createdAt DateTime
+
+  product Product @relation("BidProduct", fields: [productID], references: [id], onDelete: Restrict)
+  bidder User @relation("Bidder", fields: [bidderID], references: [id], onDelete: Restrict)
+}
+
+model WatchList {
+  userID String
+  productID String
+
+  @@id([userID, productID])
+
+  user User @relation("UserWatchList", fields: [userID], references: [id], onDelete: Cascade)
+  product Product @relation("ProductWatchList", fields: [productID], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id String @id @default(uuid())
+  parentID String?
+  userID String
+  productID String
+  content String
+  createdAt DateTime
+
+  user User @relation("UserComment", fields: [userID], references: [id], onDelete: Cascade)
+  product Product @relation("ProductComment", fields: [productID], references: [id], onDelete: Cascade)
+  parentComment Comment? @relation("TreeComment",fields: [parentID], references: [id], onDelete: Cascade)
+  childComments Comment[] @relation("TreeComment")
+}
+
+model UpgradeRequest {
+  id String @id @default(uuid())
+  userID String @unique
+  status UpgradeStatus
+  createdAt DateTime
+  decidedTime DateTime?
+
+  user User @relation("UserUpgradeRequest", fields: [userID], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  productID String @id
+  sellerID String
+  buyerID String 
+  shippingAddress String
+  paymentInvoice String?
+  shippingInvoice String?
+  receiveStatus Boolean @default(false)
+
+  buyer User @relation("Buyer", fields: [buyerID], references: [id], onDelete: Restrict)
+  seller User @relation("Seller", fields: [sellerID], references: [id], onDelete: Restrict)
+  product Product @relation("OrderProduct", fields: [productID], references: [id], onDelete: Restrict)
+}
+
+model Rating {
+  productID String @id
+  raterID String
+  rateeID String
+  isPos Boolean
+  comment String?
+
+  rater User @relation("GivenRatings" ,fields: [raterID], references: [id], onDelete: Cascade)
+  ratee User @relation("ReceivedRatings", fields: [rateeID], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productID], references: [id], onDelete: Cascade)
+}
+
+model SystemParameter {
+  id String @id @default(uuid())
+  autoExtendTime DateTime
+  recentlyProductTime DateTime
+}
