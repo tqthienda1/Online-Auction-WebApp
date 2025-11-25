@@ -23,7 +23,7 @@ const HomeProductCarousel = ({ heading, product }) => {
       <h1 className="font-playfair text-5xl my-7 font-semibold">{heading}</h1>
       <div className="flex w-full">
         <button className={`prev-btn${swiperID}`}>
-          <FaArrowLeft className="text-3xl" />
+          <FaArrowLeft className="text-3xl m-10" />
         </button>
 
         <Swiper
@@ -39,13 +39,13 @@ const HomeProductCarousel = ({ heading, product }) => {
           onSlideChange={() => console.log("slide change")}
         >
           <SwiperSlide>
-            <div className="flex items-center justify-center w-full">
+            <div className="flex items-center justify-center w-full h-full">
               <img
                 src="/image/dining_room.jpg"
                 alt=""
-                className="max-w-[1000px] aspect-5/3 rounded-3xl"
+                className="flex-[6] w-full h-auto aspect-3/2 rounded-3xl"
               />
-              <div className="flex flex-col justify-between bg-brand w-[450px] h-[550px] rounded-r-3xl text-white p-10">
+              <div className="flex flex-col justify-between bg-brand flex-[2] h-[80%] rounded-r-3xl text-white p-10">
                 <h1 className="text-4xl text-center">{product.name}</h1>
                 {productInfo.map((item, index) => (
                   <div key={index} className="flex justify-between">
@@ -58,13 +58,13 @@ const HomeProductCarousel = ({ heading, product }) => {
           </SwiperSlide>
 
           <SwiperSlide>
-            <div className="flex items-center justify-center w-full">
+            <div className="flex items-center justify-center w-full h-full">
               <img
                 src="/image/dining_room.jpg"
                 alt=""
-                className="w-[1000px] aspect-5/3 rounded-3xl"
+                className="flex-[6] w-full h-auto aspect-3/2 rounded-3xl"
               />
-              <div className="flex flex-col justify-between bg-brand w-[450px] h-[550px] rounded-r-3xl text-white p-10">
+              <div className="flex flex-col justify-between bg-brand flex-[2] h-[80%] rounded-r-3xl text-white p-10">
                 <h1 className="text-4xl text-center">{product.name}</h1>
                 {productInfo.map((item, index) => (
                   <div key={index} className="flex justify-between">
@@ -77,7 +77,7 @@ const HomeProductCarousel = ({ heading, product }) => {
           </SwiperSlide>
         </Swiper>
         <button className={`next-btn${swiperID}`}>
-          <FaArrowRight className="text-3xl" />
+          <FaArrowRight className="text-3xl m-10" />
         </button>
       </div>
     </div>
