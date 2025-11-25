@@ -39,7 +39,7 @@ const HomeProductCarousel = ({ heading, product }) => {
           onSlideChange={() => console.log("slide change")}
         >
           <SwiperSlide>
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center w-full">
               <img
                 src="/image/dining_room.jpg"
                 alt=""
@@ -58,11 +58,11 @@ const HomeProductCarousel = ({ heading, product }) => {
           </SwiperSlide>
 
           <SwiperSlide>
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center w-full">
               <img
                 src="/image/dining_room.jpg"
                 alt=""
-                className="max-w-[1000px] aspect-5/3 rounded-3xl"
+                className="w-[1000px] aspect-5/3 rounded-3xl"
               />
               <div className="flex flex-col justify-between bg-brand w-[450px] h-[550px] rounded-r-3xl text-white p-10">
                 <h1 className="text-4xl text-center">{product.name}</h1>
