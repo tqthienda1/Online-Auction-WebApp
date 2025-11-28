@@ -28,7 +28,7 @@ const HomeProductCarousel = ({ heading, product }) => {
 
         <Swiper
           modules={[Navigation, Autoplay]}
-          spaceBetween={10}
+          spaceBetween={50}
           slidesPerView={1}
           navigation={{
             nextEl: `.next-btn${swiperID}`,
@@ -43,7 +43,7 @@ const HomeProductCarousel = ({ heading, product }) => {
               <img
                 src="/image/dining_room.jpg"
                 alt=""
-                className="flex-[6] w-full h-auto aspect-3/2 rounded-3xl"
+                className="w-3xl h-auto aspect-3/2 rounded-3xl"
               />
               <div className="flex flex-col justify-between bg-brand flex-[2] h-[80%] rounded-r-3xl text-white p-10">
                 <h1 className="text-4xl text-center">{product.name}</h1>
@@ -62,7 +62,7 @@ const HomeProductCarousel = ({ heading, product }) => {
               <img
                 src="/image/dining_room.jpg"
                 alt=""
-                className="flex-[6] w-full h-auto aspect-3/2 rounded-3xl"
+                className="w-3xl h-auto aspect-3/2 rounded-3xl"
               />
               <div className="flex flex-col justify-between bg-brand flex-[2] h-[80%] rounded-r-3xl text-white p-10">
                 <h1 className="text-4xl text-center">{product.name}</h1>
