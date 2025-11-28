@@ -1,4 +1,5 @@
 import Header from "../components/Header";
+import Footer from "@/components/Footer";
 import CategoriesBar from "../components/CategoriesBar";
 
 const mockUpData = {
@@ -15,10 +16,11 @@ const mockUpData = {
 
 const MainLayout = ({ children }) => {
   return (
-    <div>
+    <div className="h-screen flex flex-col">
       <Header />
       <CategoriesBar categories={mockUpData.categories} />
-      <main>{children}</main>
+      <main className="flex-1">{children}</main>
+      <Footer />
     </div>
   );
 };
