@@ -1,4 +1,5 @@
 import ProductCoverflow from "../components/ProductCoverflow";
+import HomeProductCarousel from "../components/HomeProductCarousel";
 
 const mockUpData = {
   products: [
@@ -53,12 +54,31 @@ const mockUpData = {
       totalBids: 10,
     },
   ],
+  product: {
+    image: "/image/dining_room.jpg",
+    name: "E-10: English Dining Room of the Georgian Period, 1770-90",
+    currentPrice: 30000,
+    highestBidder: "thiendepzai",
+    buyNowPrice: 50000,
+    startDate: "13/07/2025",
+    endDate: "30/10/2025",
+    totalBids: 10,
+  },
 };
 
 const Home = () => {
   return (
     <div className="">
       <ProductCoverflow products={mockUpData.products} />
+
+      <HomeProductCarousel
+        heading="Most Bidden Items"
+        product={mockUpData.product}
+      />
+      <HomeProductCarousel
+        heading="Highest - price Items"
+        product={mockUpData.product}
+      />
     </div>
   );
 };
