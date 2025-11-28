@@ -16,7 +16,7 @@ const schema = z.object({
 });
 
 const AddProductsPage = () => {
-  const { register, handleSubmit, setValue, watch, getValues, formState: { errors } } = useForm({
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
   });
 
