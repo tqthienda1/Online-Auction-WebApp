@@ -8,6 +8,8 @@ import LogInPage from "../pages/LogInPage";
 import SignUpPage from "../pages/SignUpPage";
 import UserProfile from "../pages/UserProfile";
 import AddProductsPage from "../pages/AddProductsPage";
+import BuyerPaymentPage from "@/pages/BuyerPaymentPage";
+import SellerPaymentPage from "@/pages/SellerPaymentPage";
 const guestRoutes = [
   { path: "/", component: Home, layout: MainLayout },
   { path: "/products", component: ProductDetails, layout: MainLayout },
@@ -16,6 +18,8 @@ const guestRoutes = [
   { path: "/add-products", component: AddProductsPage, layout: MainLayout },
   { path: "/user_profile", component: UserProfile, layout: UserProfileLayout },
   { path: "/:category", component: CategoryPage, layout: MainLayout },
+  { path: "/BuyerPayment", component: BuyerPaymentPage, layout: MainLayout },
+  { path: "/SellerPayment", component: SellerPaymentPage, layout: MainLayout },
 ];
 
 const bidderRoutes = [];
