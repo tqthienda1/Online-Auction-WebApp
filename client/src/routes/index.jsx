@@ -14,6 +14,7 @@ import AdminControlPanel from "@/pages/AdminControlPanel";
 import AdminCategoriesPage from "@/pages/AdminCategoriesPage";
 import AdminProductsPage from "@/pages/AdminProductsPage";
 import AdminUsersPage from "@/pages/AdminUsersPage";
+import NotFoundPage from "../pages/NotFoundPage";
 
 const guestRoutes = [
   { path: "/", component: Home, layout: MainLayout },
@@ -35,6 +36,8 @@ const guestRoutes = [
   },
   { path: "/admin/users", component: AdminUsersPage, layout: AdminLayout },
   { path: "/:category", component: CategoryPage, layout: MainLayout },
+  { path: "/category/:category", component: CategoryPage, layout: MainLayout },
+  { path: "*", component: NotFoundPage, layout: MainLayout },
 ];
 
 const bidderRoutes = [];
