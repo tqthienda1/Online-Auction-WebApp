@@ -4,7 +4,7 @@ import z from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod";
 
-function DeliveryComfirmation() {
+function DeliveryComfirmation({onConfirmed}) {
     const schema = z.object({
         itemReceived: z.boolean().refine(val => val === true, "You must confirm receipt of the item"),
     });
@@ -15,7 +15,8 @@ function DeliveryComfirmation() {
 
         const onSubmit = (data) => {
                 console.log('delivery confirmed', data)
-        }
+                if(typeof onConfirmed === 'function') onConfirmed()
+        }      
 
     return (
         <div className="mx-auto bg-white p-6 rounded-lg shadow-sm border border-gray-100">

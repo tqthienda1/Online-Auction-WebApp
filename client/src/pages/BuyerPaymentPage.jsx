@@ -9,7 +9,7 @@ import BuyerProgress from '../components/order/BuyerProgress'
 //let status = ["Provide Payment Information", "Confirm Delivery", "Rate Seller"]
 //let status = "Provide Payment Information"; 
 const BuyerPaymentPage = () => {
-  const status = "Rate Seller";
+  const [currentStep, setCurrentStep] = useState(1);
   return (
     <div className=" mx-auto px-4 sm:px-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
@@ -36,18 +36,18 @@ const BuyerPaymentPage = () => {
       </div>
 
       <div className="mt-6">
-        <BuyerProgress />
+        <BuyerProgress currentStep={currentStep}/>
 
         <div className="mt-6">
-          {status === "Provide Payment Information" && (
-            <PaymentAndShippingInfo />
+          {currentStep === 1 && (
+            <PaymentAndShippingInfo onUploaded={() => setCurrentStep(2)}/>
           )}
 
-          {status === "Confirm Delivery" && (
-            <DeliveryComfirmation />
+          {currentStep ===  2 && (
+            <DeliveryComfirmation onConfirmed={()=> setCurrentStep(3)}/>
           )}
 
-          {status === "Rate Seller" && (
+          {currentStep === 3 && (
             <Rating type="seller" />
           )}
         </div>
