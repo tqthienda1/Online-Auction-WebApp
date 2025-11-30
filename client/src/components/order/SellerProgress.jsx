@@ -16,7 +16,7 @@ const SellerProgress = ({ currentStep }) => {
             className={`w-10 h-10 flex items-center justify-center rounded-full border text-lg font-semibold
               ${
                 currentStep === step.id
-                  ? "bg-orange-500 text-white border-orange-500"
+                  ? "bg-amber-300 text-white border-amber-300"
                   : "bg-white text-gray-600 border-gray-300"
               }
             `}
@@ -33,10 +33,6 @@ const SellerProgress = ({ currentStep }) => {
             {step.label}
           </span>
 
-          {/* Line (only if not last) */}
-          {index < steps.length - 1 && (
-            <div className="flex-1 h-[2px] bg-gray-300 mx-4"></div>
-          )}
         </div>
       ))}
     </div>

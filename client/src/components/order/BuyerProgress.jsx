@@ -1,6 +1,6 @@
 import React from "react";
 
-const StepProgress = ({ currentStep }) => {
+const BuyerProgress = ({ currentStep }) => {
   const steps = [
     { id: 1, label: "Provide Payment" },
     { id: 2, label: "Confirm Delivery" },
@@ -8,7 +8,7 @@ const StepProgress = ({ currentStep }) => {
   ];
 
   return (
-    <div className="flex items-center justify-between w-full max-w-4xl mx-auto py-6">
+    <div className="flex items-center justify-between w-full py-6">
       {steps.map((step, index) => (
         <div key={step.id} className="flex items-center w-full">
           {/* Circle */}
@@ -33,14 +33,11 @@ const StepProgress = ({ currentStep }) => {
             {step.label}
           </span>
 
-          {/* Line (only if not last) */}
-          {index < steps.length - 1 && (
-            <div className="flex-1 h-[2px] bg-gray-300 mx-4"></div>
-          )}
+
         </div>
       ))}
     </div>
   );
 };
 
-export default StepProgress;
+export default BuyerProgress;
