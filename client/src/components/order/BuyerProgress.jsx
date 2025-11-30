@@ -1,6 +1,6 @@
 import React from "react";
 
-const BuyerProgress = ({ currentStep }) => {
+const SellerProgress = ({ currentStep }) => {
   const steps = [
     { id: 1, label: "Provide Payment" },
     { id: 2, label: "Confirm Delivery" },
@@ -8,7 +8,7 @@ const BuyerProgress = ({ currentStep }) => {
   ];
 
   return (
-    <div className="flex items-center justify-between w-full py-6">
+    <div className="flex items-center justify-between w-full max-w-4xl mx-auto py-6">
       {steps.map((step, index) => (
         <div key={step.id} className="flex items-center w-full">
           {/* Circle */}
@@ -16,7 +16,7 @@ const BuyerProgress = ({ currentStep }) => {
             className={`w-10 h-10 flex items-center justify-center rounded-full border text-lg font-semibold
               ${
                 currentStep === step.id
-                  ? "bg-orange-500 text-white border-orange-500"
+                  ? "bg-amber-300 text-white border-amber-300"
                   : "bg-white text-gray-600 border-gray-300"
               }
             `}
@@ -33,11 +33,10 @@ const BuyerProgress = ({ currentStep }) => {
             {step.label}
           </span>
 
-
         </div>
       ))}
     </div>
   );
 };
 
-export default BuyerProgress;
+export default SellerProgress;

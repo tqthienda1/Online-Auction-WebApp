@@ -39,16 +39,16 @@ function SellerPaymentPage() {
                                 <div className="mt-6 space-y-6">
                                         {currentStep === 1 && (
                                                 <>
-                                                        <CancelOrder />
-                                                        <PaymentReceivedConfirm onConfirmed={() => setCurrentStep(2)} />
+                                                <CancelOrder />
+                                                <PaymentReceivedConfirm onConfirmed={() => setCurrentStep(2)} />
                                                 </>
                                         )}
 
                                         {currentStep === 2 && (
-                                                <>
-                                                        <CancelOrder />
-                                                        <ShippingInvoice onUploaded={() => setCurrentStep(3)} />
-                                                </>
+                                        <>
+                                                <CancelOrder />
+                                                <ShippingInvoice onUploaded={() => setCurrentStep(3)} />
+                                        </>
                                         )}
 
                                         {currentStep === 3 && (
