@@ -22,18 +22,18 @@ const Rating = ({ type = "item" }) => {
   };
 
   return (
-    <div className="w-full mx-auto px-4 sm:px-6 bg-white p-4 sm:p-6 rounded-lg shadow-md border border-gray-100">
+    <div className="w-full mx-auto px-4 sm:px-6 bg-white p-4 sm:p-6 rounded-lg shadow-md border border-gray-100 justify-center items-center">
       <h3 className="text-2xl font-serif font-semibold mb-4 tracking-tight">Rate this {type}</h3>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <div className="flex items-center gap-3 flex-wrap justify-center sm:justify-start">
+          <div className="flex items-center gap-3 flex-wrap justify-center ">
             <button
               type="button"
-              onClick={() => setScore((s) => Math.max(0, s - 1))}
+              onClick={() => setScore((s) => s = -1)}
               className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-40"
               aria-label="decrease rating"
-              disabled={score <= 0}
+              disabled={score <= -1}
             >
               -
             </button>
@@ -42,10 +42,10 @@ const Rating = ({ type = "item" }) => {
 
             <button
               type="button"
-              onClick={() => setScore((s) => Math.min(5, s + 1))}
+              onClick={() => setScore((s) => s = 1)}
               className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#FBBC04] text-white hover:bg-[#e0a800] disabled:opacity-40"
               aria-label="increase rating"
-              disabled={score >= 5}
+              disabled={score >= 1}
             >
               +
             </button>
