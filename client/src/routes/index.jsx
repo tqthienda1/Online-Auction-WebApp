@@ -10,11 +10,14 @@ import LogInPage from "../pages/LogInPage";
 import SignUpPage from "../pages/SignUpPage";
 import UserProfile from "../pages/UserProfile";
 import AddProductsPage from "../pages/AddProductsPage";
+import BuyerPaymentPage from "@/pages/BuyerPaymentPage";
+import SellerPaymentPage from "@/pages/SellerPaymentPage";
 import AdminControlPanel from "@/pages/AdminControlPanel";
 import AdminCategoriesPage from "@/pages/AdminCategoriesPage";
 import AdminProductsPage from "@/pages/AdminProductsPage";
 import AdminUsersPage from "@/pages/AdminUsersPage";
 import NotFoundPage from "../pages/NotFoundPage";
+import path from "path";
 
 const guestRoutes = [
   { path: "/", component: Home, layout: MainLayout },
@@ -24,6 +27,8 @@ const guestRoutes = [
   { path: "/add-products", component: AddProductsPage, layout: MainLayout },
   { path: "/user_profile", component: UserProfile, layout: UserProfileLayout },
   { path: "/admin", component: AdminControlPanel, layout: AdminLayout },
+  { path: "/buyer/payment", component: BuyerPaymentPage, layout: MainLayout },
+  {path: "/seller/payment", component: SellerPaymentPage, layout: MainLayout},
   {
     path: "/admin/categories",
     component: AdminCategoriesPage,
