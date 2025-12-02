@@ -9,6 +9,7 @@ import SimilarProducts from "../components/SimilarProducts.jsx";
 import CommentSection from "@/components/CommentSection.jsx";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import QuestionBox from "@/components/QuestionBox.jsx";
 
 const ProductDetails = () => {
   const product = {
@@ -197,6 +198,7 @@ const ProductDetails = () => {
     setCurFrame(frame);
   };
 
+  const [question, setQuestion] = useState("");
   return (
     <>
       {isLoading && <div>Loading...</div>}
@@ -241,6 +243,8 @@ const ProductDetails = () => {
           <div data-aos="zoom-in">
             <CommentSection comments={product.comments} />
           </div>
+
+          <QuestionBox />
 
           <div
             className="flex justify-center items-center mt-20"
