@@ -1,12 +1,34 @@
 import prisma from "../prismaClient.js";
-import { v4 as uuidv4 } from "uuid";
 
-export const getAllComment = async (req, res) => {
+export const replyComment = async (req, res) => {
   try {
-    const allComments = await prisma.comment.findMany();
-    return res.status(200).json(allComments);
+    const { commentID } = req.params;
+    const { userID, content } = req.body;
+
+    if (!content || content.trim() === "") {
+      return res.status(400).json({ message: "Content cannot be empty" });
+    }
+
+    const parentComment = await prisma.comment.findUnique({
+      where: { id: commentID },
+    });
+    if (!parentComment) {
+      return res.status(404).json({ message: "Parent comment not found" });
+    }
+
+    const reply = await prisma.comment.create({
+      data: {
+        userID,
+        productID: parentComment.productID,
+        content,
+        parentID: parentComment.id,
+        createdAt: new Date(),
+      },
+    });
+
+    return res.status(201).json(reply);
   } catch (error) {
-    console.error("Get all comments failed:", error);
+    console.error("Reply comment failed:", error);
     return res.status(500).json({
       message: "A system error occurred. Please try again later.",
     });
@@ -25,9 +47,26 @@ export const createComment = async (req, res) => {
       });
     }
 
+    const product = await prisma.product.findUnique({
+      where: { id: productID },
+    });
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    if (parentID) {
+      const parentComment = await prisma.comment.findUnique({
+        where: { id: parentID },
+      });
+      if (!parentComment || parentComment.productID !== productID) {
+        return res.status(400).json({ message: "Invalid parent comment" });
+      }
+    }
+
+    if (content.trim().length === 0) {
+      return res.status(400).json({ message: "Content cannot be empty" });
+    }
+
     const comment = await prisma.comment.create({
       data: {
-        id: uuidv4(),
         userID,
         productID,
         content,
@@ -36,7 +75,7 @@ export const createComment = async (req, res) => {
       },
     });
 
-    return res.sendStatus(201);
+    return res.status(201).json(comment);
   } catch (error) {
     console.error("Create comment failed:", error);
     return res.status(500).json({
@@ -72,10 +111,7 @@ export const updateComment = async (req, res) => {
       data: { content },
     });
 
-    return res.status(200).json({
-      message: "Updated successfully.",
-      data: updated,
-    });
+    return res.sendStatus(204);
   } catch (error) {
     console.error("Update comment failed:", error);
     return res.status(500).json({
