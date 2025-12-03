@@ -29,8 +29,8 @@ model User {
   password String?
   address String
   role Role
-  ratingPos Int
-  ratingNeg Int
+  ratingPos Int @default(0)
+  ratingNeg Int @default(0)
 
   givenRatings Rating[] @relation("GivenRatings")
   receivedRatings Rating[] @relation("ReceivedRatings")

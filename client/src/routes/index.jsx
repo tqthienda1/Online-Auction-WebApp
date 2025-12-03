@@ -28,7 +28,7 @@ const guestRoutes = [
   { path: "/user_profile", component: UserProfile, layout: UserProfileLayout },
   { path: "/admin", component: AdminControlPanel, layout: AdminLayout },
   { path: "/buyer/payment", component: BuyerPaymentPage, layout: MainLayout },
-  {path: "/seller/payment", component: SellerPaymentPage, layout: MainLayout},
+  { path: "/seller/payment", component: SellerPaymentPage, layout: MainLayout },
   {
     path: "/admin/categories",
     component: AdminCategoriesPage,
