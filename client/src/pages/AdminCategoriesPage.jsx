@@ -40,11 +40,11 @@ const AdminCategoriesPage = () => {
   const forms = [
     {
       id: "Add",
-      fields: ["Category Name", "Description"],
+      fields: ["Category", "Category", "Description"],
     },
     {
       id: "Edit",
-      fields: ["Category Name", "Description"],
+      fields: ["Category", "Category", "Description"],
     },
   ];
 
@@ -75,6 +75,7 @@ const AdminCategoriesPage = () => {
 
       {openForm && (
         <AdminForm
+          categories={categories}
           openForm={openForm}
           forms={forms}
           onClose={() => setOpenForm(null)}
