@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 
 export default function RichTextEditor({ onChange }) {
-
   return (
     <Editor
       apiKey={import.meta.env.VITE_RichTextEditorApiKey}
