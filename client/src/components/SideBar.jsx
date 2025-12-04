@@ -5,70 +5,15 @@ import PriceFilter from "./PriceFilter";
 import ColorFilter from "./ColorFilter";
 import ConditionsFilter from "./ConditionsFilter";
 
-const SideBar = ({ filters, availableFilters, onFilterChange }) => {
-  const handleBrandChange = (brandName) => {
-    const isAlreadySelected = filters.brand === brandName;
-
-    if (isAlreadySelected) {
-      onFilterChange("brand", "");
-    } else {
-      onFilterChange("brand", brandName);
-    }
-  };
-
+const SideBar = ({ filters, onFilterChange }) => {
   const handlePriceChange = (priceValue) => {
     onFilterChange("priceRange", priceValue);
-  };
-
-  const handleColorChange = (colorName) => {
-    const currentColors = filters.colors || [];
-    const isSelected = currentColors.includes(colorName);
-
-    let newColors;
-    if (isSelected) {
-      newColors = currentColors.filter((name) => name !== colorName);
-    } else {
-      newColors = [...currentColors, colorName];
-    }
-
-    onFilterChange("colors", newColors);
-  };
-
-  const handleConditionChange = (conditionName) => {
-    const currentConditions = filters.conditions || [];
-    const isSelected = currentConditions.includes(conditionName);
-
-    let newConditions;
-    if (isSelected) {
-      newConditions = currentConditions.filter(
-        (name) => name !== conditionName
-      );
-    } else {
-      newConditions = [...currentConditions, conditionName];
-    }
-
-    onFilterChange("conditions", newConditions);
   };
 
   return (
     <>
       <aside className="pr-8">
-        <CategoryFilter
-          brands={availableFilters.brands}
-          selectedBrands={filters.brand}
-          onBrandChange={handleBrandChange}
-        />
         <PriceFilter value={filters.priceRange} onChange={handlePriceChange} />
-        <ColorFilter
-          selectedColors={filters.colors}
-          onColorChange={handleColorChange}
-          colors={availableFilters.colors}
-        />
-        <ConditionsFilter
-          conditions={availableFilters.conditions}
-          selectedConditions={filters.conditions}
-          onConditionChange={handleConditionChange}
-        />
       </aside>
     </>
   );
