@@ -8,9 +8,9 @@ const schema = z.object({
   productName: z.string().nonempty("Product name is required"),
   category: z.string().nonempty("Category is required"),
   subCategory: z.string().nonempty("Sub category is required"),
-  startingPrice: z.number({ invalid_type_error: "Starting price must be a number" }).min(0, "Starting price must be at least 0"),
-  bidStep: z.number({ invalid_type_error: "Bid step must be a number" }).min(0, "Bid step must be at least 0"),
-  buyNowPrice: z.number().min(0, "Buy now price must be at least 0").optional(),
+  startingPrice: z.coerce.number({ invalid_type_error: "Starting price must be a number" }).min(0, "Starting price must be at least 0"),
+  bidStep: z.coerce.number({ invalid_type_error: "Bid step must be a number" }).min(0, "Bid step must be at least 0"),
+  buyNowPrice: z.coerce.number().min(0, "Buy now price must be at least 0").optional(),
   productImages: z.array(z.instanceof(File)).min(3, "You must upload at least 3 images"),
   productDescription: z.string().nonempty("Product description is required"),
 });

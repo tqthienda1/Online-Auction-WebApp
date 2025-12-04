@@ -4,12 +4,14 @@ import PaymentAndShippingInfo from '../components/order/PaymentAndShippingInfo'
 import DeliveryComfirmation from '../components/order/DeliveryComfirmation'
 import Rating from '../components/order/Rating'
 import BuyerProgress from '../components/order/BuyerProgress'
+import ChatModal from '../components/order/ChatModal'
 
 //create status array: provide information, confirm delivery, rate
 //let status = ["Provide Payment Information", "Confirm Delivery", "Rate Seller"]
 //let status = "Provide Payment Information"; 
 const BuyerPaymentPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [chatOpen, setChatOpen] = useState(false);
   return (
     <div className=" mx-auto px-4 sm:px-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
@@ -30,7 +32,7 @@ const BuyerPaymentPage = () => {
           </div>
 
           <div>
-            <button className="px-4 py-2 bg-[#FBBC04] text-white rounded">Chat with Seller</button>
+            <button onClick={() => setChatOpen(true)} className="px-4 py-2 bg-[#FBBC04] text-white rounded">Chat with Seller</button>
           </div>
         </div>
       </div>
@@ -52,6 +54,8 @@ const BuyerPaymentPage = () => {
           )}
         </div>
       </div>
+
+      <ChatModal isOpen={chatOpen} onClose={() => setChatOpen(false)} counterpartyName="Seller" />
     </div>
   )
 }
