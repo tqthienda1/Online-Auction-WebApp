@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import logo from "../../public/image/logo.png";
 
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
@@ -55,11 +56,8 @@ const AdminLayout = ({ children }) => {
       </div>
       <div className="flex flex-col w-full justify-center">
         <div className="flex border-b border-border bg-card px-6 py-4">
-          <Link
-            to="/"
-            className="flex items-center justify-start w-80 h-10 border"
-          >
-            LOGO
+          <Link to="/" className="flex items-center justify-start h-10">
+            <img src={logo} alt="LOGO" className="h-full object-contain" />
           </Link>
           <div className="w-full flex items-center justify-end">
             <Button
@@ -78,7 +76,12 @@ const AdminLayout = ({ children }) => {
               <Button variant="ghost" size="icon">
                 <Settings className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="text-destructive">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-destructive"
+                onClick={() => navigate("/login")}
+              >
                 <LogOut className="h-5 w-5" />
               </Button>
             </div>

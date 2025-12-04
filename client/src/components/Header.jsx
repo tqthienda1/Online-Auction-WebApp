@@ -2,6 +2,8 @@ import SearchBar from "./SearchBar";
 import CategoriesBar from "./CategoriesBar";
 import { Link } from "react-router-dom";
 
+import logo from "../../public/image/logo.png";
+
 const mockUpData = {
   categories: [
     "Fashion",
@@ -18,8 +20,8 @@ const Header = () => {
   return (
     <header>
       <div className="flex w-full py-5 justify-around">
-        <Link to="/" className="w-80 h-10 border">
-          LOGO
+        <Link to="/" className="h-10 flex items-center">
+          <img src={logo} alt="LOGO" className="h-full object-contain" />
         </Link>
         <SearchBar className="w-xl" />
         <div className="flex gap-1">

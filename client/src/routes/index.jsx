@@ -40,8 +40,11 @@ const guestRoutes = [
     layout: AdminLayout,
   },
   { path: "/admin/users", component: AdminUsersPage, layout: AdminLayout },
-  { path: "/:category", component: CategoryPage, layout: MainLayout },
-  { path: "/category/:category", component: CategoryPage, layout: MainLayout },
+  {
+    path: "/category/:id",
+    component: CategoryPage,
+    layout: MainLayout,
+  },
   { path: "*", component: NotFoundPage, layout: MainLayout },
 ];
 

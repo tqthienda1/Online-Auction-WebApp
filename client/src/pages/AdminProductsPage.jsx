@@ -42,6 +42,30 @@ const AdminProductsPage = () => {
     { header: "Action", accessor: "actions" },
   ];
 
+  const [categories, setCategories] = useState([
+    {
+      id: 1,
+      name: "Điện Tử",
+      description: "Các sản phẩm điện tử",
+      productCount: 245,
+      createdAt: "2025-01-15",
+    },
+    {
+      id: 2,
+      name: "Quần Áo",
+      description: "Quần áo nam nữ",
+      productCount: 189,
+      createdAt: "2025-01-16",
+    },
+    {
+      id: 3,
+      name: "Sách",
+      description: "Sách và tài liệu",
+      productCount: 56,
+      createdAt: "2025-01-18",
+    },
+  ]);
+
   const forms = [
     {
       id: "Add",
@@ -86,6 +110,7 @@ const AdminProductsPage = () => {
 
       {openForm && (
         <AdminForm
+          categories={categories}
           openForm={openForm}
           forms={forms}
           onClose={() => setOpenForm(null)}

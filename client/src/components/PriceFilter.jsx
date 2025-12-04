@@ -18,7 +18,8 @@ const PriceFilter = ({ value, onChange }) => {
           range
           allowCross={false}
           min={0}
-          max={5000}
+          max={50000000}
+          defaultValue={50000000}
           value={value}
           onChange={onChange}
         />

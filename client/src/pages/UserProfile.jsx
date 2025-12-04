@@ -1,127 +1,147 @@
-import React from "react";
+import React, { useState } from "react";
 import ProfileInfo from "../components/ProfileInfo";
 import ProfileReviews from "../components/ProfileReviews";
 import ProfileTab from "../components/ProfileTab";
 import ProductList from "@/components/ProductList";
 
-const MOCK_BANNERS = {
-  camera: { title: "Camera", imageUrl: "/image/camera.png" },
-  laptop: { title: "Laptop", imageUrl: "/image/camera.png" },
-};
-const MOCK_PRODUCTS = [
-  {
-    id: 1,
-    name: "Fujifilm X-T5 (Body Only)",
-    category: "camera",
-    price: 1699,
-    imageUrl: "/image/camera.png",
-    brand: "Fujifilm",
-    color: "Black",
-    condition: "New",
-    highestBidder: "****abc",
-    buyNowPrice: 2000,
-    endDate: "25/10/2025",
-    timeLeft: "1h left",
-  },
-  {
-    id: 2,
-    name: "Sony Alpha a7 IV",
-    category: "camera",
-    price: 2499,
-    imageUrl: "/image/camera.png",
-    brand: "Sony",
-    color: "Black",
-    condition: "Used",
-    highestBidder: "****fgh",
-    buyNowPrice: 2800,
-    endDate: "26/10/2025",
-    timeLeft: "2d left",
-  },
-  {
-    id: 3,
-    name: "Canon EOS R6 Mark II",
-    category: "camera",
-    price: 2499,
-    imageUrl: "/image/camera.png",
-    brand: "Canon",
-    color: "Grey",
-    condition: "New",
-    highestBidder: "****jkl",
-    buyNowPrice: 2700,
-    endDate: "25/10/2025",
-    timeLeft: "3h left",
-  },
-  {
-    id: 4,
-    name: 'MacBook Pro 14"',
-    category: "laptop",
-    price: 1999,
-    imageUrl: "/image/camera.png",
-    brand: "Apple",
-    color: "Grey",
-    condition: "New",
-    highestBidder: "****xyz",
-    buyNowPrice: 2300,
-    endDate: "27/10/2025",
-    timeLeft: "4d left",
-  },
-  {
-    id: 5,
-    name: "Dell XPS 15",
-    category: "laptop",
-    price: 1799,
-    imageUrl: "/image/camera.png",
-    brand: "Dell",
-    color: "Black",
-    condition: "Used",
-    highestBidder: "****123",
-    buyNowPrice: 2000,
-    endDate: "25/10/2025",
-    timeLeft: "10h left",
-  },
-  {
-    id: 6,
-    name: "Fujifilm X-E4",
-    category: "camera",
-    price: 849,
-    imageUrl: "/image/camera.png",
-    brand: "Fujifilm",
-    color: "Silver",
-    condition: "Used",
-    highestBidder: "****456",
-    buyNowPrice: 1000,
-    endDate: "26/10/2025",
-    timeLeft: "1d left",
-  },
-  {
-    id: 7,
-    name: "Sony a6700",
-    category: "camera",
-    price: 1399,
-    imageUrl: "/image/camera.png",
-    brand: "Sony",
-    color: "Black",
-    condition: "New",
-    highestBidder: "****789",
-    buyNowPrice: 1500,
-    endDate: "28/10/2025",
-    timeLeft: "5d left",
-  },
-];
-
 const UserProfile = () => {
+  const [tab, setTab] = useState("love");
+
+  const MOCK_PRODUCTS = [
+    {
+      id: "p1-1111-aaaa-bbbb-0001",
+      sellerID: "u-seller-001",
+      highestBidderID: null,
+      productName: "iPhone 14 Pro Max 256GB",
+      productAvt: "/image/camera.png",
+      categoryID: "cate-electronics",
+      startingPrice: 15000000,
+      bidStep: 200000,
+      buyNowPrice: 23000000,
+      currentPrice: 15000000,
+      startTime: "2025-01-01T10:00:00.000Z",
+      endTime: "2025-01-05T10:00:00.000Z",
+      autoExtend: true,
+      sold: false,
+      ratingRequired: false,
+    },
+
+    {
+      id: "p2-1111-aaaa-bbbb-0002",
+      sellerID: "u-seller-002",
+      highestBidderID: "u-bidder-777",
+      productName: "Macbook Air M2 2023",
+      productAvt: "/image/camera.png",
+      categoryID: "cate-electronics",
+      startingPrice: 18000000,
+      bidStep: 300000,
+      buyNowPrice: 28000000,
+      currentPrice: 19600000,
+      startTime: "2025-01-03T12:00:00.000Z",
+      endTime: "2025-01-07T12:00:00.000Z",
+      autoExtend: true,
+      sold: false,
+      ratingRequired: false,
+    },
+
+    {
+      id: "p3-1111-aaaa-bbbb-0003",
+      sellerID: "u-seller-003",
+      highestBidderID: null,
+      productName: "Giày Nike Air Jordan 1 Retro",
+      productAvt: "/image/camera.png",
+      categoryID: "cate-fashion",
+      startingPrice: 2500000,
+      bidStep: 100000,
+      buyNowPrice: 4500000,
+      currentPrice: 2500000,
+      startTime: "2025-01-04T08:00:00.000Z",
+      endTime: "2025-01-09T08:00:00.000Z",
+      autoExtend: false,
+      sold: false,
+      ratingRequired: false,
+    },
+
+    {
+      id: "p4-1111-aaaa-bbbb-0004",
+      sellerID: "u-seller-004",
+      highestBidderID: null,
+      productName: "Đồng hồ Casio G-Shock GA-2100",
+      productAvt: "/image/camera.png",
+      categoryID: "cate-accessories",
+      startingPrice: 1200000,
+      bidStep: 50000,
+      buyNowPrice: 2500000,
+      currentPrice: 1200000,
+      startTime: "2025-01-02T09:30:00.000Z",
+      endTime: "2025-01-06T09:30:00.000Z",
+      autoExtend: false,
+      sold: false,
+      ratingRequired: false,
+    },
+
+    {
+      id: "p5-1111-aaaa-bbbb-0005",
+      sellerID: "u-seller-002",
+      highestBidderID: "u-bidder-999",
+      productName: "Tai nghe Sony WH-1000XM5",
+      productAvt: "/image/camera.png",
+      categoryID: "cate-electronics",
+      startingPrice: 5000000,
+      bidStep: 150000,
+      buyNowPrice: 8000000,
+      currentPrice: 5450000,
+      startTime: "2025-01-03T07:00:00.000Z",
+      endTime: "2025-01-06T07:00:00.000Z",
+      autoExtend: true,
+      sold: false,
+      ratingRequired: false,
+    },
+
+    {
+      id: "p6-1111-aaaa-bbbb-0006",
+      sellerID: "u-seller-001",
+      highestBidderID: null,
+      productName: "Bàn phím cơ Keychron K6",
+      productAvt: "/image/camera.png",
+      categoryID: "cate-computer-accessories",
+      startingPrice: 1500000,
+      bidStep: 50000,
+      buyNowPrice: 3000000,
+      currentPrice: 1500000,
+      startTime: "2025-01-01T15:00:00.000Z",
+      endTime: "2025-01-04T15:00:00.000Z",
+      autoExtend: false,
+      sold: false,
+      ratingRequired: false,
+    },
+  ];
+
+  const wishlistItems = MOCK_PRODUCTS.slice(0, 2);
+  const biddingItems = MOCK_PRODUCTS.slice(2, 4);
+  const wonAuctions = MOCK_PRODUCTS.slice(4, 6);
+
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center justify-center">
       <ProfileInfo />
       <ProfileReviews />
-      <ProfileTab />
-      <ProductList
-        products={MOCK_PRODUCTS}
-        // sortBy={filters.sortBy}
-        // onSortChange={(newValue) =>
-        //   handleFilterChange("sortBy", newValue)
-        // }
-      />
+      <ProfileTab tab={tab} setTab={setTab} />
+      <div className="my-10">
+        <ProductList
+          showType={tab === "love" ? 2 : tab === "bidding" ? 3 : 4}
+          products={
+            tab === "love"
+              ? wishlistItems
+              : tab === "bidding"
+              ? biddingItems
+              : wonAuctions
+          }
+          // sortBy={filters.sortBy}
+          // onSortChange={(newValue) =>
+          //   handleFilterChange("sortBy", newValue)
+          // }
+        />
+      </div>
     </div>
   );
 };
