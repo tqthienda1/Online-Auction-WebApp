@@ -22,7 +22,6 @@ export const addProduct = async (req, res) => {
     if (
       productName === "" ||
       category === "" ||
-      subCategory === "" ||
       startingPrice < 1 ||
       bidStep < 1 ||
       productImages.length < 3 ||
@@ -42,12 +41,14 @@ export const addProduct = async (req, res) => {
       return res.status(400).json({ message: "Category not found!" });
     }
 
-    const subCategoryExists = await prisma.category.findUnique({
-      where: { name: subCategory, parentID: categoryExists.id },
-    });
+    if (subCategory !== "") {
+      const subCategoryExists = await prisma.category.findUnique({
+        where: { name: subCategory, parentID: categoryExists.id },
+      });
 
-    if (!subCategoryExists) {
-      return res.status(400).json({ message: "Sub category not found!" });
+      if (!subCategoryExists) {
+        return res.status(400).json({ message: "Sub category not found!" });
+      }
     }
 
     const product = await prisma.product.create({
@@ -55,7 +56,7 @@ export const addProduct = async (req, res) => {
         sellerID: req.user,
         productName: productName,
         productAvt: productImages[0],
-        category: { connect: { name: category } },
+        category: { connect: { name: subCategory } },
         startingPrice: startingPrice,
         bidStep: bidStep,
         buyNowPrice: buyNowPrice ?? null,

@@ -50,6 +50,7 @@ const AddProductsPage = () => {
   const [files, setFiles] = useState([]);
   const [description, setDescription] = useState("");
   const [descEmpty, setDescEmpty] = useState(false);
+  const [disableSubcate, setDisableSubcate] = useState(true);
 
   const onFilesChange = (e) => {
     const newFiles = Array.from(e.target.files || []);
@@ -64,6 +65,10 @@ const AddProductsPage = () => {
 
   const handleRemoveFile = (idx) => {
     setFiles((prev) => prev.filter((item, index) => index !== idx));
+  };
+
+  const handleSelectCategory = () => {
+    setDisableSubcate(false);
   };
 
   const onSubmit = (data) => {
@@ -112,8 +117,11 @@ const AddProductsPage = () => {
             <select
               {...register("category")}
               className="w-full border border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400"
+              onChange={handleSelectCategory}
             >
-              <option value="">Add Category</option>
+              <option value="" hidden>
+                Add Category
+              </option>
               <option value="furniture">Furniture</option>
             </select>
             {errors.category && (
@@ -128,10 +136,15 @@ const AddProductsPage = () => {
               Sub Category:
             </label>
             <select
+              disabled={disableSubcate}
               {...register("subCategory")}
-              className="w-full border border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400"
+              className={`w-full border border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400 ${
+                disableSubcate && "bg-gray-200 cursor-not-allowed"
+              }`}
             >
-              <option value="">Add Sub Category</option>
+              <option value="" hidden>
+                Add Sub Category
+              </option>
               <option value="laptop">Laptop</option>
             </select>
             {errors.subCategory && (
@@ -241,7 +254,7 @@ const AddProductsPage = () => {
             <div className="flex-1">
               <label
                 htmlFor="ratingRequired"
-                className=" text-gray-800 text-sm font-medium mb-2"
+                className=" text-gray-800 text-sm font-medium mb-2 cursor-pointer"
               >
                 Bidder must have been rated before:
               </label>
@@ -249,14 +262,14 @@ const AddProductsPage = () => {
                 {...register("ratingRequired")}
                 id="ratingRequired"
                 type="checkbox"
-                className="border ml-1 accent-yellow-400 border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400"
+                className="border ml-1 accent-yellow-400 border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400 cursor-pointer"
               />
             </div>
 
             <div className="flex-1">
               <label
                 htmlFor="autoExtend"
-                className=" text-gray-800 text-sm font-medium mb-2"
+                className=" text-gray-800 text-sm font-medium mb-2 cursor-pointer"
               >
                 Auto extend:
               </label>
@@ -264,7 +277,7 @@ const AddProductsPage = () => {
                 {...register("autoExtend")}
                 id="autoExtend"
                 type="checkbox"
-                className="border ml-1 accent-yellow-400 border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400"
+                className="border ml-1 accent-yellow-400 border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400 cursor-pointer"
               />
             </div>
           </div>
