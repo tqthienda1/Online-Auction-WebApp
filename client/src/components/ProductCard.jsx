@@ -1,23 +1,24 @@
 import React from "react";
-
 import { RiAuctionLine } from "react-icons/ri";
 import { BsFillCartCheckFill } from "react-icons/bs";
 
 const RECENTLY_ADDED_MINUTES = 30;
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, showType }) => {
   const checkIsRecent = (timestamp) => {
     if (!timestamp) return false;
 
     const createdAt = new Date(timestamp);
     const now = new Date();
-
-    const diffInMinutes = (now.getTime() - createdAt.getTime()) / (1000 * 60);
+    const diffInMinutes = (now - createdAt) / (1000 * 60);
 
     return diffInMinutes < RECENTLY_ADDED_MINUTES;
   };
 
-  const isRecentlyAdded = checkIsRecent(product.createdAt);
+  // mock data không có createdAt → tắt tính năng này nếu cần
+  const isRecentlyAdded = product.createdAt
+    ? checkIsRecent(product.createdAt)
+    : false;
 
   return (
     <div className="relative flex flex-col justify-between border border-gray-200 rounded-lg shadow-sm bg-white p-4 transition-shadow hover:shadow-xl">
@@ -27,56 +28,177 @@ const ProductCard = ({ product }) => {
         </span>
       )}
 
-      <div>
-        <div className="aspect-video w-full mb-3 flex items-center justify-center ">
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className="max-h-40 max-w-full object-contain"
-          />
+      {showType === 1 && (
+        <>
+          <div className="w-[250px]">
+            <div className="aspect-video w-full mb-3 flex items-center justify-center ">
+              <img
+                src={product.productAvt}
+                alt={product.productName}
+                className="max-h-40 max-w-[250px] object-contain"
+              />
+            </div>
+
+            <div className="flex items-center justify-center text-gray-500 mb-2">
+              <RiAuctionLine className="w-7 h-7 mr-2" />
+              <span className="text-brand font-semibold">
+                {product.bidCount || 0}
+              </span>
+            </div>
+
+            <h3 className="text-center font-semibold text-gray-800 mb-1 truncate font-playfair">
+              {product.productName}
+            </h3>
+
+            <p className="text-center text-yellow-500 font-bold text-lg mb-4">
+              {product.currentPrice.toLocaleString()}₫
+            </p>
+
+            <div className="text-sm text-gray-600 space-y-1 mb-4">
+              <p className="flex justify-between">
+                <span>Highest bidder:</span>
+                <span className="font-medium">
+                  {product.highestBidderID || "None"}
+                </span>
+              </p>
+              <p className="flex justify-between">
+                <span>Buy now:</span>
+                <span className="font-medium text-yellow-500">
+                  {product.buyNowPrice.toLocaleString()}₫
+                </span>
+              </p>
+              <p className="flex justify-between text-gray-500">
+                <span>End:</span>
+                <span>{new Date(product.endTime).toLocaleString()}</span>
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-3">
+            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md border-2 border-gray-300 text-brand font-semibold hover:bg-gray-100">
+              <RiAuctionLine className="w-5 h-5 mr-1" />
+              Bid now
+            </button>
+            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md border-2 border-gray-300 text-brand font-semibold bg-yellow-500 hover:bg-yellow-600">
+              <BsFillCartCheckFill className="w-5 h-5 mr-1" />
+              Buy now
+            </button>
+          </div>
+        </>
+      )}
+
+      {showType === 2 && (
+        <div className="w-[250px]">
+          <div className="flex flex-col aspect-video w-full items-center justify-center">
+            <img
+              src={product.productAvt}
+              alt={product.productName}
+              className="max-h-40 max-w-full object-contain"
+            />
+
+            <h3 className="text-center font-semibold text-gray-800 mb-1 truncate font-playfair mt-5">
+              {product.productName}
+            </h3>
+
+            <div className=" space-y-1 mb-4 w-full">
+              <p className="flex flex-col justify-center items-center">
+                <span className="text-sm text-gray-600">Current price:</span>
+                <span className="text-lg font-bold text-yellow-400">
+                  {product.currentPrice.toLocaleString()}₫
+                </span>
+              </p>
+
+              <p className="flex text-sm justify-between text-gray-500">
+                <span>End:</span>
+                <span>{new Date(product.endTime).toLocaleString()}</span>
+              </p>
+            </div>
+            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md border-2 border-gray-300 text-brand font-semibold bg-yellow-500 hover:bg-yellow-600">
+              Bid now
+            </button>
+          </div>
         </div>
+      )}
 
-        <div className="flex items-center justify-center text-gray-500 mb-2">
-          <RiAuctionLine className="w-7 h-7 mr-2" />
-          <span className="text-brand font-semibold">{product.bidCount}</span>
+      {showType === 3 && (
+        <div className="w-[250px]">
+          <div className="flex flex-col aspect-video w-full items-center justify-center">
+            <img
+              src={product.productAvt}
+              alt={product.productName}
+              className="max-h-40 max-w-full object-contain"
+            />
+
+            <h3 className="text-center font-semibold text-gray-800 mb-1 truncate font-playfair mt-5">
+              {product.productName}
+            </h3>
+
+            <div className=" space-y-1 mb-4 w-full">
+              <p className="flex flex-col">
+                <span className="text-sm text-gray-600">Current price:</span>
+                <span className="text-lg font-bold text-yellow-400 flex items-center justify-center">
+                  {product.currentPrice.toLocaleString()}₫
+                </span>
+              </p>
+
+              <p className="flex flex-col">
+                <span className="text-sm text-gray-600">Highest price:</span>
+                <span className="text-lg font-bold text-yellow-400 flex items-center justify-center">
+                  {product.currentPrice.toLocaleString()}₫
+                </span>
+              </p>
+
+              <p className="flex text-sm justify-between text-gray-500">
+                <span>End:</span>
+                <span>{new Date(product.endTime).toLocaleString()}</span>
+              </p>
+            </div>
+            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md border-2 border-gray-300 text-brand font-semibold bg-yellow-500 hover:bg-yellow-600">
+              Raise the bid
+            </button>
+          </div>
         </div>
+      )}
 
-        <h3 className="text-center font-semibold text-gray-800 mb-1 truncate font-playfair">
-          {product.name}
-        </h3>
+      {showType === 4 && (
+        <div className="w-[250px]">
+          <div className="flex flex-col aspect-video w-full items-center justify-center">
+            <img
+              src={product.productAvt}
+              alt={product.productName}
+              className="max-h-40 max-w-full object-contain"
+            />
 
-        <p className="text-center text-yellow-500 font-bold text-lg mb-4">
-          ${product.price.toFixed(2)}
-        </p>
+            <h3 className="text-center font-semibold text-gray-800 mb-1 truncate font-playfair mt-5">
+              {product.productName}
+            </h3>
 
-        <div className="text-sm text-gray-600 space-y-1 mb-4">
-          <p className="flex justify-between">
-            <span>Highest bidder:</span>
-            <span className="font-medium">{product.highestBidder}</span>
-          </p>
-          <p className="flex justify-between">
-            <span>Buy now:</span>
-            <span className="font-medium text-yellow-500">
-              ${product.buyNowPrice}
-            </span>
-          </p>
-          <p className="flex justify-between text-gray-500">
-            <span>{product.endDate}</span>
-            <span>{product.timeLeft}</span>
-          </p>
+            <div className=" space-y-1 mb-4 w-full">
+              <p className="flex flex-col">
+                <span className="text-sm text-gray-600">Won price:</span>
+                <span className="text-lg font-bold text-yellow-400 flex items-center justify-center">
+                  {product.currentPrice.toLocaleString()}₫
+                </span>
+              </p>
+
+              <p className="flex gap-1 text-gray-600 justify-between items-center">
+                <span className="text-sm ">Seller:</span>
+                <span className="text-sm font-semibold">
+                  {product.sellerID}
+                </span>
+              </p>
+
+              <p className="flex text-sm justify-between text-gray-500">
+                <span>End:</span>
+                <span>{new Date(product.endTime).toLocaleString()}</span>
+              </p>
+            </div>
+            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md border-2 border-gray-300 text-brand font-semibold bg-yellow-500 hover:bg-yellow-600">
+              Rate the seller
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div className="flex items-center justify-center gap-3">
-        <button className="w-full flex items-center justify-center p-2 rounded-md border-2 border-gray-300 text-brand font-semibold hover:bg-gray-100 transition-colors">
-          <RiAuctionLine className="w-5 h-5 mr-2" />
-          Bid now
-        </button>
-        <button className="w-full flex items-center justify-center p-2 rounded-md border-2 border-gray-300 text-brand font-semibold hover:bg-yellow-600 transition-colors bg-yellow-500">
-          <BsFillCartCheckFill className="w-5 h-5 mr-2" />
-          Buy now
-        </button>
-      </div>
+      )}
     </div>
   );
 };
