@@ -11,6 +11,7 @@
     "concurrently": "^9.2.1"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.86.0",
     "rc-slider": "^11.1.9",
     "react-google-recaptcha": "^3.1.0"
   }

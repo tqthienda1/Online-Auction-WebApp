@@ -2,9 +2,14 @@ import bcrypt from "bcrypt";
 import prisma from "../prismaClient.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import dotenv from "dotenv";
+
+import { supabase } from "../libs/client.js";
+
+dotenv.config();
 
 const ACCESS_TOKEN_TTL = "30m";
-const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 1000; // 14 NGAY
+const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 1000;
 
 export const signUp = async (req, res) => {
   try {
@@ -18,32 +23,44 @@ export const signUp = async (req, res) => {
       });
     }
 
-    const duplicate = await prisma.user.findUnique({
-      where: { email },
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
     });
 
-    if (duplicate) {
-      return res.status(409).json({
-        message:
-          "This email address is already associated with an existing account.",
+    if (authError) {
+      console.error("Supabase auth failed:", authError);
+      return res.status(400).json({ error: authError.message });
+    }
+
+    const supabaseId = authData.user.id;
+
+    const existingUser = await prisma.user.findUnique({
+      where: { supabaseId },
+    });
+
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User already exists in local database.",
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     await prisma.user.create({
       data: {
+        supabaseId,
         username,
-        password: hashedPassword,
-        email,
-        dob,
+        dob: new Date(dob),
         address,
         role: "BIDDER",
         ratingPos: 0,
         ratingNeg: 0,
       },
     });
-    return res.sendStatus(204);
+
+    return res.status(201).json({
+      message: "User registered successfully.",
+      userId: username,
+    });
   } catch (error) {
     console.error("Registration failed", error);
     return res
@@ -52,7 +69,7 @@ export const signUp = async (req, res) => {
   }
 };
 
-export const signin = async (req, res) => {
+export const signIn = async (req, res) => {
   try {
     // Lấy thông tin
     const { email, password } = req.body;
@@ -76,7 +93,7 @@ export const signin = async (req, res) => {
         .json({ message: "Email or password is incorrect." });
     }
 
-    const passwordCorrect = await bcrypt.compare(password, user.hashedPassword);
+    const passwordCorrect = await bcrypt.compare(password, user.password);
 
     if (!passwordCorrect) {
       return res
@@ -87,12 +104,33 @@ export const signin = async (req, res) => {
     // tao access token bang jwt
     const accessToken = jwt.sign(
       { userId: user.id },
-      process.env.ACCESS_TOKEN_SERECT,
+      process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: ACCESS_TOKEN_TTL }
     );
 
     // tao refresh token
     const refreshToken = crypto.randomBytes(64).toString("hex");
+    const tokenHash = await bcrypt.hash(refreshToken, 10);
+    const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL);
+
+    await prisma.session.create({
+      data: {
+        userID: user.id,
+        tokenHash,
+        expiresAt,
+      },
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: REFRESH_TOKEN_TTL,
+    });
+
+    return res
+      .status(200)
+      .json({ message: `User ${user.username} has logged in.` }, accessToken);
   } catch (error) {
     console.error("Login failed", error);
     return res
