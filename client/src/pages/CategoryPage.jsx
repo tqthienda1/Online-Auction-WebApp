@@ -6,118 +6,123 @@ import CategoryBanner from "../components/CategoryBanner";
 import Sidebar from "../components/SideBar";
 import ProductList from "../components/ProductList";
 
-const MOCK_BANNERS = {
-  camera: { title: "Camera", imageUrl: "/image/camera.png" },
-  laptop: { title: "Laptop", imageUrl: "/image/camera.png" },
-};
 const MOCK_PRODUCTS = [
   {
-    id: 1,
-    name: "Fujifilm X-T5 (Body Only)",
-    category: "camera",
-    price: 1699,
-    imageUrl: "/image/camera.png",
-    brand: "Fujifilm",
-    color: "Black",
-    condition: "New",
-    highestBidder: "****abc",
-    buyNowPrice: 2000,
-    endDate: "25/10/2025",
-    timeLeft: "1h left",
+    id: "p1-1111-aaaa-bbbb-0001",
+    sellerID: "u-seller-001",
+    highestBidderID: null,
+    productName: "iPhone 14 Pro Max 256GB",
+    productAvt: "/images/products/iphone14promax.jpg",
+    categoryID: "cate-electronics",
+    startingPrice: 15000000,
+    bidStep: 200000,
+    buyNowPrice: 23000000,
+    currentPrice: 15000000,
+    startTime: "2025-01-01T10:00:00.000Z",
+    endTime: "2025-01-05T10:00:00.000Z",
+    autoExtend: true,
+    sold: false,
+    ratingRequired: false,
   },
+
   {
-    id: 2,
-    name: "Sony Alpha a7 IV",
-    category: "camera",
-    price: 2499,
-    imageUrl: "/image/camera.png",
-    brand: "Sony",
-    color: "Black",
-    condition: "Used",
-    highestBidder: "****fgh",
-    buyNowPrice: 2800,
-    endDate: "26/10/2025",
-    timeLeft: "2d left",
+    id: "p2-1111-aaaa-bbbb-0002",
+    sellerID: "u-seller-002",
+    highestBidderID: "u-bidder-777",
+    productName: "Macbook Air M2 2023",
+    productAvt: "/images/products/macbook-air-m2.jpg",
+    categoryID: "cate-electronics",
+    startingPrice: 18000000,
+    bidStep: 300000,
+    buyNowPrice: 28000000,
+    currentPrice: 19600000,
+    startTime: "2025-01-03T12:00:00.000Z",
+    endTime: "2025-01-07T12:00:00.000Z",
+    autoExtend: true,
+    sold: false,
+    ratingRequired: false,
   },
+
   {
-    id: 3,
-    name: "Canon EOS R6 Mark II",
-    category: "camera",
-    price: 2499,
-    imageUrl: "/image/camera.png",
-    brand: "Canon",
-    color: "Grey",
-    condition: "New",
-    highestBidder: "****jkl",
-    buyNowPrice: 2700,
-    endDate: "25/10/2025",
-    timeLeft: "3h left",
+    id: "p3-1111-aaaa-bbbb-0003",
+    sellerID: "u-seller-003",
+    highestBidderID: null,
+    productName: "Giày Nike Air Jordan 1 Retro",
+    productAvt: "/images/products/jordan1.jpg",
+    categoryID: "cate-fashion",
+    startingPrice: 2500000,
+    bidStep: 100000,
+    buyNowPrice: 4500000,
+    currentPrice: 2500000,
+    startTime: "2025-01-04T08:00:00.000Z",
+    endTime: "2025-01-09T08:00:00.000Z",
+    autoExtend: false,
+    sold: false,
+    ratingRequired: false,
   },
+
   {
-    id: 4,
-    name: 'MacBook Pro 14"',
-    category: "laptop",
-    price: 1999,
-    imageUrl: "/image/camera.png",
-    brand: "Apple",
-    color: "Grey",
-    condition: "New",
-    highestBidder: "****xyz",
-    buyNowPrice: 2300,
-    endDate: "27/10/2025",
-    timeLeft: "4d left",
+    id: "p4-1111-aaaa-bbbb-0004",
+    sellerID: "u-seller-004",
+    highestBidderID: null,
+    productName: "Đồng hồ Casio G-Shock GA-2100",
+    productAvt: "/images/products/gshock-ga2100.jpg",
+    categoryID: "cate-accessories",
+    startingPrice: 1200000,
+    bidStep: 50000,
+    buyNowPrice: 2500000,
+    currentPrice: 1200000,
+    startTime: "2025-01-02T09:30:00.000Z",
+    endTime: "2025-01-06T09:30:00.000Z",
+    autoExtend: false,
+    sold: false,
+    ratingRequired: false,
   },
+
   {
-    id: 5,
-    name: "Dell XPS 15",
-    category: "laptop",
-    price: 1799,
-    imageUrl: "/image/camera.png",
-    brand: "Dell",
-    color: "Black",
-    condition: "Used",
-    highestBidder: "****123",
-    buyNowPrice: 2000,
-    endDate: "25/10/2025",
-    timeLeft: "10h left",
+    id: "p5-1111-aaaa-bbbb-0005",
+    sellerID: "u-seller-002",
+    highestBidderID: "u-bidder-999",
+    productName: "Tai nghe Sony WH-1000XM5",
+    productAvt: "/images/products/sony-wh1000xm5.jpg",
+    categoryID: "cate-electronics",
+    startingPrice: 5000000,
+    bidStep: 150000,
+    buyNowPrice: 8000000,
+    currentPrice: 5450000,
+    startTime: "2025-01-03T07:00:00.000Z",
+    endTime: "2025-01-06T07:00:00.000Z",
+    autoExtend: true,
+    sold: false,
+    ratingRequired: false,
   },
+
   {
-    id: 6,
-    name: "Fujifilm X-E4",
-    category: "camera",
-    price: 849,
-    imageUrl: "/image/camera.png",
-    brand: "Fujifilm",
-    color: "Silver",
-    condition: "Used",
-    highestBidder: "****456",
-    buyNowPrice: 1000,
-    endDate: "26/10/2025",
-    timeLeft: "1d left",
-  },
-  {
-    id: 7,
-    name: "Sony a6700",
-    category: "camera",
-    price: 1399,
-    imageUrl: "/image/camera.png",
-    brand: "Sony",
-    color: "Black",
-    condition: "New",
-    highestBidder: "****789",
-    buyNowPrice: 1500,
-    endDate: "28/10/2025",
-    timeLeft: "5d left",
+    id: "p6-1111-aaaa-bbbb-0006",
+    sellerID: "u-seller-001",
+    highestBidderID: null,
+    productName: "Bàn phím cơ Keychron K6",
+    productAvt: "/images/products/keychron-k6.jpg",
+    categoryID: "cate-computer-accessories",
+    startingPrice: 1500000,
+    bidStep: 50000,
+    buyNowPrice: 3000000,
+    currentPrice: 1500000,
+    startTime: "2025-01-01T15:00:00.000Z",
+    endTime: "2025-01-04T15:00:00.000Z",
+    autoExtend: false,
+    sold: false,
+    ratingRequired: false,
   },
 ];
 
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 2;
 
 const CategoryPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { category } = useParams();
+  const { id } = useParams();
   const [products, setProducts] = useState([]);
   const [banner, setBanner] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -125,127 +130,54 @@ const CategoryPage = () => {
   const mainContentRef = useRef(null);
   const currentPage = Number(searchParams.get("page") || 1);
 
-  const [availableFilters, setAvailableFilters] = useState({
-    brands: [],
-    colors: [],
-    conditions: [],
-  });
-
   const filters = {
-    brand: searchParams.get("brand") || "",
-    colors: searchParams.getAll("colors") || [],
-    conditions: searchParams.getAll("conditions") || [],
     priceRange: [
       Number(searchParams.get("minPrice") || 0),
-      Number(searchParams.get("maxPrice") || 5000),
+      Number(searchParams.get("maxPrice") || 50000000),
     ],
-    sortBy: searchParams.get("sortBy") || "recently_added",
+    sortBy: searchParams.get("sortBy") || "default",
   };
 
   useEffect(() => {
     try {
       setIsLoading(true);
 
-      const categoryProducts = MOCK_PRODUCTS.filter(
-        (p) => p.category === category
-      );
+      const categoryProducts = MOCK_PRODUCTS.filter((p) => p.categoryID === id);
 
-      const applyFilters = (products, skipFilter) => {
+      const applyFilters = (products) => {
         return products.filter((p) => {
-          if (
-            skipFilter !== "brand" &&
-            filters.brand &&
-            p.brand !== filters.brand
-          )
-            return false;
-          if (
-            skipFilter !== "colors" &&
-            filters.colors.length > 0 &&
-            !filters.colors.includes(p.color)
-          )
-            return false;
-          if (
-            skipFilter !== "conditions" &&
-            filters.conditions.length > 0 &&
-            !filters.conditions.includes(p.condition)
-          )
-            return false;
-          if (
-            skipFilter !== "price" &&
-            (p.price < filters.priceRange[0] || p.price > filters.priceRange[1])
-          )
-            return false;
-          return true;
+          return (
+            Number(p.currentPrice) >= Number(filters.priceRange[0]) &&
+            Number(p.currentPrice) <= Number(filters.priceRange[1])
+          );
         });
       };
 
-      const brandContextProducts = applyFilters(categoryProducts, "brand");
-      const availableBrands = [
-        ...new Set(brandContextProducts.map((p) => p.brand)),
-      ];
+      const filteredProducts = applyFilters(categoryProducts);
 
-      const colorContextProducts = applyFilters(categoryProducts, "colors");
-      const colorsMap = colorContextProducts.reduce((acc, p) => {
-        acc[p.color] = (acc[p.color] || 0) + 1;
-        return acc;
-      }, {});
-      const availableColors = Object.keys(colorsMap).map((name) => ({
-        name,
-        count: colorsMap[name],
-      }));
-
-      const conditionContextProducts = applyFilters(
-        categoryProducts,
-        "conditions"
-      );
-      const conditionsMap = conditionContextProducts.reduce((acc, p) => {
-        acc[p.condition] = (acc[p.condition] || 0) + 1;
-        return acc;
-      }, {});
-      const availableConditions = Object.keys(conditionsMap).map((name) => ({
-        name,
-        count: conditionsMap[name],
-      }));
-
-      setAvailableFilters({
-        brands: availableBrands,
-        colors: availableColors,
-        conditions: availableConditions,
-      });
-
-      const allFilteredProducts = applyFilters(categoryProducts, null);
-
-      const newTotalPages = Math.ceil(
-        allFilteredProducts.length / ITEMS_PER_PAGE
-      );
+      const newTotalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
       setTotalPages(newTotalPages);
 
       const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
-      const pagedProducts = allFilteredProducts.slice(
+      const pagedProducts = filteredProducts.slice(
         offset,
         offset + ITEMS_PER_PAGE
       );
 
       setProducts(pagedProducts);
-      setBanner(MOCK_BANNERS[category]);
     } catch (err) {
       setError(err);
     } finally {
       setIsLoading(false);
     }
-  }, [category, searchParams]);
+  }, [id, searchParams]);
 
   const handleFilterChange = (filterName, value) => {
     setSearchParams((prevParams) => {
-      if (filterName === "colors" || filterName === "conditions") {
-        prevParams.delete(filterName);
-        value.forEach((item) => prevParams.append(filterName, item));
-      } else if (filterName === "priceRange") {
+      if (filterName === "priceRange") {
         prevParams.set("minPrice", value[0]);
         prevParams.set("maxPrice", value[1]);
-      } else {
-        prevParams.set(filterName, value);
       }
       prevParams.set("page", "1");
       return prevParams;
@@ -282,24 +214,17 @@ const CategoryPage = () => {
         <div>Cannot find banner.</div>
       )}
 
-      <main ref={mainContentRef} className="grid grid-cols-10 gap-8 px-5 py-10">
+      <main
+        ref={mainContentRef}
+        className="grid grid-cols-10 gap-8 px-5 py-10 mt-10"
+      >
         <div className="col-span-2">
-          <Sidebar
-            filters={filters}
-            availableFilters={availableFilters}
-            onFilterChange={handleFilterChange}
-          />
+          <Sidebar filters={filters} onFilterChange={handleFilterChange} />
         </div>
 
         <div className="col-span-8 flex flex-col">
           <div className="grow">
-            <ProductList
-              products={products}
-              sortBy={filters.sortBy}
-              onSortChange={(newValue) =>
-                handleFilterChange("sortBy", newValue)
-              }
-            />
+            <ProductList showType={1} products={products} />
           </div>
 
           <ReactPaginate
