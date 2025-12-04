@@ -49,7 +49,7 @@ export const signUp = async (req, res) => {
       data: {
         supabaseId,
         username,
-        dob: new Date(dob),
+        dob,
         address,
         role: "BIDDER",
         ratingPos: 0,
@@ -71,10 +71,9 @@ export const signUp = async (req, res) => {
 
 export const signIn = async (req, res) => {
   try {
-    // Lấy thông tin
     const { email, password } = req.body;
+    console.log(email, password);
 
-    // Validate thông tin
     if (!email || !password) {
       return res.status(400).json({
         message:
@@ -82,55 +81,30 @@ export const signIn = async (req, res) => {
       });
     }
 
-    // So hashedPassword với password coi có đúng k
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const { data: authData, error: authError } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (!user) {
+    console.log(authData, authError);
+
+    if (authError) {
       return res
         .status(401)
         .json({ message: "Email or password is incorrect." });
     }
 
-    const passwordCorrect = await bcrypt.compare(password, user.password);
+    const supabaseId = authData.user.id;
+    const accessToken = authData.session.access_token;
+    const refreshToken = authData.session.refresh_token;
 
-    if (!passwordCorrect) {
-      return res
-        .status(401)
-        .json({ message: "Email or password is incorrect." });
-    }
-
-    // tao access token bang jwt
-    const accessToken = jwt.sign(
-      { userId: user.id },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: ACCESS_TOKEN_TTL }
-    );
-
-    // tao refresh token
-    const refreshToken = crypto.randomBytes(64).toString("hex");
-    const tokenHash = await bcrypt.hash(refreshToken, 10);
-    const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL);
-
-    await prisma.session.create({
-      data: {
-        userID: user.id,
-        tokenHash,
-        expiresAt,
-      },
+    return res.status(200).json({
+      message: "Login successful",
+      userId: supabaseId,
+      accessToken,
+      refreshToken,
     });
-
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: REFRESH_TOKEN_TTL,
-    });
-
-    return res
-      .status(200)
-      .json({ message: `User ${user.username} has logged in.` }, accessToken);
   } catch (error) {
     console.error("Login failed", error);
     return res
