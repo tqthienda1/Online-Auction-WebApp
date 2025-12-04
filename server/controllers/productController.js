@@ -1,7 +1,7 @@
 import prisma from "../prismaClient.js";
 import { addDescription } from "../services/productDescription.service.js";
 import { addProductImages } from "../services/productImages.service.js";
-import multer from "multer";
+import { uploadFilesToSupabase } from "../services/supabase.service.js";
 
 export const addProduct = async (req, res) => {
   try {
@@ -19,7 +19,7 @@ export const addProduct = async (req, res) => {
       autoExtend,
     } = req.body;
 
-    const files = req.files; 
+    const files = req.files;
 
     if (
       productName === "" ||
@@ -54,7 +54,8 @@ export const addProduct = async (req, res) => {
       }
     }
 
-    const productImages = files.map((f) => f.originalname);
+    const productImages = await uploadFilesToSupabase(files);
+    console.log(productImages);
 
     const product = await prisma.product.create({
       data: {
