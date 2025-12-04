@@ -1,6 +1,7 @@
 import prisma from "../prismaClient.js";
 import { addDescription } from "../services/productDescription.service.js";
 import { addProductImages } from "../services/productImages.service.js";
+import multer from "multer";
 
 export const addProduct = async (req, res) => {
   try {
@@ -11,7 +12,6 @@ export const addProduct = async (req, res) => {
       startingPrice,
       bidStep,
       buyNowPrice,
-      productImages,
       description,
       startDate,
       endDate,
@@ -19,12 +19,15 @@ export const addProduct = async (req, res) => {
       autoExtend,
     } = req.body;
 
+    const files = req.files; 
+
     if (
       productName === "" ||
       category === "" ||
       startingPrice < 1 ||
       bidStep < 1 ||
-      productImages.length < 3 ||
+      !files ||
+      files.length < 3 ||
       description === "" ||
       startDate === "" ||
       endDate === "" ||
@@ -51,19 +54,23 @@ export const addProduct = async (req, res) => {
       }
     }
 
+    const productImages = files.map((f) => f.originalname);
+
     const product = await prisma.product.create({
       data: {
-        sellerID: req.user,
+        seller: { connect: { id: req.user } },
         productName: productName,
         productAvt: productImages[0],
-        category: { connect: { name: subCategory } },
-        startingPrice: startingPrice,
-        bidStep: bidStep,
-        buyNowPrice: buyNowPrice ?? null,
+        category: {
+          connect: { name: subCategory === "" ? category : subCategory },
+        },
+        startingPrice: Number(startingPrice),
+        bidStep: Number(bidStep),
+        buyNowPrice: Number(buyNowPrice) ?? null,
         startTime: new Date(startDate),
         endTime: new Date(endDate),
-        autoExtend: autoExtend,
-        ratingRequired: ratingRequired,
+        autoExtend: Boolean(autoExtend),
+        ratingRequired: Boolean(ratingRequired),
       },
     });
 

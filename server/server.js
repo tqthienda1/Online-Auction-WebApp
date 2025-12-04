@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 
-import authRoutes from "./routes/auth.routes.js";
+// import authRoutes from "./routes/auth.routes.js";
 // import userRoutes from "./routes/user.routes.js";
 // import categoryRoutes from "./routes/category.routes.js";
 import productRoutes from "./routes/product.routes.js";
@@ -26,7 +26,7 @@ app.use(cors());
 
 app.get("/", (req, res) => res.send("Server is live!"));
 
-app.use("/auth", authRoutes);
+// app.use("/auth", authRoutes);
 // app.use("/users", userRoutes);
 // app.use("/user", userRoutes);
 // app.use("/categories", categoryRoutes);
