@@ -3,11 +3,13 @@ import ShippingInvoice from '../components/order/ShippingInvoice';
 import CancelOrder from '../components/order/CancelOrder';
 import Rating from '../components/order/Rating';
 import SellerProgress from '../components/order/SellerProgress';
+import ChatModal from '../components/order/ChatModal';
 import React, { useState } from 'react'
 
 function SellerPaymentPage() {
    const [currentStep, setCurrentStep] = useState(1);
    const [isCancelled, setIsCancelled] = useState(false);
+   const [chatOpen, setChatOpen] = useState(false);
 
    if (isCancelled) {
       return (
@@ -46,7 +48,7 @@ function SellerPaymentPage() {
                </div>
 
                <div>
-                       <button className="px-4 py-2 bg-[#FBBC04] text-white rounded">Chat with buyer</button>
+                       <button onClick={() => setChatOpen(true)} className="px-4 py-2 bg-[#FBBC04] text-white rounded">Chat with buyer</button>
                </div>
            </div>
          </div>
@@ -74,6 +76,8 @@ function SellerPaymentPage() {
               )}
            </div>
          </div>
+
+      <ChatModal isOpen={chatOpen} onClose={() => setChatOpen(false)} counterpartyName="Buyer" />
      </div>
    )
 }
