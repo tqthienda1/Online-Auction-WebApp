@@ -22,35 +22,34 @@ enum UpgradeStatus {
 }
 
 model User {
-  id String @id @default(uuid())
-  username String
-  email String @unique
-  dob DateTime @db.Date
-  password String?
-  address String
-  role Role
-  ratingPos Int
-  ratingNeg Int
+  id          String    @id       @default(uuid())   @db.Uuid
+  supabaseId  String   @unique               
+  username    String
+  dob         DateTime  @db.Date
+  address     String
+  role        Role
+  ratingPos   Int
+  ratingNeg   Int
 
-  givenRatings Rating[] @relation("GivenRatings")
-  receivedRatings Rating[] @relation("ReceivedRatings")
-  sellingProduct Product[] @relation("ProductSeller")
-  highestBidProducts Product[] @relation("HighestBidder")
-  watchList WatchList[] @relation("UserWatchList")
-  comments Comment[] @relation("UserComment")
-  upgradeRequest UpgradeRequest? @relation("UserUpgradeRequest")
-  boughtOrders Order[] @relation("Buyer")
-  soldOrders Order[] @relation("Seller")
-  bids Bid[] @relation("Bidder")
+  givenRatings       Rating[]      @relation("GivenRatings")
+  receivedRatings    Rating[]      @relation("ReceivedRatings")
+  sellingProduct     Product[]     @relation("ProductSeller")
+  highestBidProducts Product[]     @relation("HighestBidder")
+  watchList          WatchList[]   @relation("UserWatchList")
+  comments           Comment[]     @relation("UserComment")
+  upgradeRequest     UpgradeRequest? @relation("UserUpgradeRequest")
+  boughtOrders       Order[]       @relation("Buyer")
+  soldOrders         Order[]       @relation("Seller")
+  bids               Bid[]         @relation("Bidder")
 }
 
 model Product {
   id String @id @default(uuid())
-  sellerID String
-  highestBidderID String?
+  sellerID String @db.Uuid
+  highestBidderID String? @db.Uuid
   productName String
   productAvt String
-  categoryID String
+  categoryID String 
   startingPrice Int
   bidStep Int
   buyNowPrice Int?
@@ -83,8 +82,8 @@ model ProductDescription {
 }
 
 model ProductImage {
-  imageID String @id @default(uuid())
-  productID String
+  imageID String @id @default(uuid()) 
+  productID String 
   imageURL String
   order Int
 
@@ -94,7 +93,7 @@ model ProductImage {
 model Category {
   id String @id @default(uuid())
   name String
-  parentID String?
+  parentID String? 
 
   product Product[] @relation("ProductCategory")
   categoryParent Category? @relation("TreeCategory", fields: [parentID], references: [id], onDelete: Cascade)
@@ -102,9 +101,9 @@ model Category {
 }
 
 model Bid {
-  id String @id @default(uuid())
-  productID String
-  bidderID String
+  id String @id @default(uuid()) 
+  productID String 
+  bidderID String @db.Uuid
   maxPrice Int
   createdAt DateTime
 
@@ -113,8 +112,8 @@ model Bid {
 }
 
 model WatchList {
-  userID String
-  productID String
+  userID String @db.Uuid
+  productID String 
 
   @@id([userID, productID])
 
@@ -123,10 +122,10 @@ model WatchList {
 }
 
 model Comment {
-  id String @id @default(uuid())
-  parentID String?
-  userID String
-  productID String
+  id String @id @default(uuid()) 
+  parentID String? 
+  userID String @db.Uuid
+  productID String 
   content String
   createdAt DateTime
 
@@ -137,8 +136,8 @@ model Comment {
 }
 
 model UpgradeRequest {
-  id String @id @default(uuid())
-  userID String @unique
+  id String @id @default(uuid()) 
+  userID String @unique @db.Uuid
   status UpgradeStatus
   createdAt DateTime
   decidedTime DateTime?
@@ -148,8 +147,8 @@ model UpgradeRequest {
 
 model Order {
   productID String @id
-  sellerID String
-  buyerID String 
+  sellerID String @db.Uuid
+  buyerID String @db.Uuid
   shippingAddress String
   paymentInvoice String?
   shippingInvoice String?
@@ -161,9 +160,9 @@ model Order {
 }
 
 model Rating {
-  productID String @id
-  raterID String
-  rateeID String
+  productID String @id 
+  raterID String @db.Uuid
+  rateeID String @db.Uuid
   isPos Boolean
   comment String?
 
@@ -173,7 +172,7 @@ model Rating {
 }
 
 model SystemParameter {
-  id String @id @default(uuid())
+  id String @id @default(uuid()) 
   autoExtendTime DateTime
   recentlyProductTime DateTime
 }
