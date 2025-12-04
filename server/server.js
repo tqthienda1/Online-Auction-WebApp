@@ -1,6 +1,6 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import "dotenv/config";
 
 import authRoutes from "./routes/auth.routes.js";
 // import userRoutes from "./routes/user.routes.js";
@@ -10,7 +10,7 @@ import authRoutes from "./routes/auth.routes.js";
 // import productImgRoutes from "./routes/productImage.routes.js";
 // import bidRoutes from "./routes/bid.routes.js";
 // import watchlistRoutes from "./routes/watchlist.routes.js";
-// import commentRoutes from "./routes/comment.routes.js";
+import commentRoutes from "./routes/comment.routes.js";
 // import upgradeRoutes from "./routes/upgrade.routes.js";
 // import orderRoutes from "./routes/order.routes.js";
 // import ratingRoutes from "./routes/rating.routes.js";
@@ -35,7 +35,7 @@ app.use("/auth", authRoutes);
 // app.use("/images", productImgRoutes);
 // app.use("/bids", bidRoutes);
 // app.use("/watchlist", watchlistRoutes);
-// app.use("/comments", commentRoutes);
+app.use("/comments", commentRoutes);
 // app.use("/upgrade", upgradeRoutes);
 // app.use("/orders", orderRoutes);
 // app.use("/rating", ratingRoutes);
