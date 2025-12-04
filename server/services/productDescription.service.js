@@ -1,12 +1,12 @@
-import prisma from "../prismaClient";
+import prisma from "../prismaClient.js";
 
 export const addDescription = async (productID, productDescription) => {
   try {
-    if (productID === "" || description === "") {
+    if (productID === "" || productDescription === "") {
       throw new Error("Add description failed: Data fields are missing!");
     }
 
-    productExists = await prisma.product.findUnique({
+    const productExists = await prisma.product.findUnique({
       where: { id: productID },
     });
 
@@ -14,13 +14,13 @@ export const addDescription = async (productID, productDescription) => {
       throw new Error("Add description failed: Product not be found!");
     }
 
-    const description = await prisma.productdescription.create({
+    const description = await prisma.ProductDescription.create({
       data: {
         productID,
         productDescription,
       },
     });
   } catch (error) {
-    throw new Error("Add description failed: ", error);
+    throw new Error(`Add description failed: ${error}`);
   }
 };

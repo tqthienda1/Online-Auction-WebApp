@@ -1,4 +1,4 @@
-import prisma from "../prismaClient";
+import prisma from "../prismaClient.js";
 
 export const addProductImages = async (productID, productImages) => {
   try {
@@ -6,7 +6,7 @@ export const addProductImages = async (productID, productImages) => {
       throw new Error("Add images failed: Data fields are missing!");
     }
 
-    productExists = await prisma.product.findUnique({
+    const productExists = await prisma.product.findUnique({
       where: { id: productID },
     });
 
@@ -14,7 +14,7 @@ export const addProductImages = async (productID, productImages) => {
       throw new Error("Add images failed: Product not be found!");
     }
 
-    const images = await prisma.productimage.createMany({
+    const images = await prisma.ProductImage.createMany({
       data: productImages.map((item, index) => ({
         productID,
         imageURL: item,
@@ -22,6 +22,6 @@ export const addProductImages = async (productID, productImages) => {
       })),
     });
   } catch (error) {
-    throw new Error("Add images failed: ", error);
+    throw new Error(`Add images failed: ${error}`);
   }
 };
