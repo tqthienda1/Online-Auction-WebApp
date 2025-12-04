@@ -76,7 +76,7 @@ model ProductDescription {
   id String @id @default(uuid())
   productID String
   productDescription String
-  createdAt DateTime
+  createdAt DateTime @default(now())
 
   product Product @relation("ProductDescription", fields: [productID], references: [id], onDelete: Cascade)
 }

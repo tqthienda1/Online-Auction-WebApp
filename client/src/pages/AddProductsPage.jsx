@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import RichTextEditor from "../components/RichTextEditor";
+import { IoMdClose } from "react-icons/io";
 
 const schema = z.object({
   productName: z.string().nonempty("Product name is required"),
@@ -30,6 +31,10 @@ const schema = z.object({
   productImages: z
     .array(z.instanceof(File), "You must upload at least 3 images")
     .min(3, "You must upload at least 3 images"),
+  startDate: z.string().min(1, "Start date is required"),
+  endDate: z.string().min(1, "End date is required"),
+  ratingRequired: z.boolean().default(false),
+  autoExtend: z.boolean().default(false),
 });
 
 const AddProductsPage = () => {
@@ -55,6 +60,10 @@ const AddProductsPage = () => {
 
   const handleDescriptionChange = (newContent) => {
     setDescription(newContent);
+  };
+
+  const handleRemoveFile = (idx) => {
+    setFiles((prev) => prev.filter((item, index) => index !== idx));
   };
 
   const onSubmit = (data) => {
@@ -196,15 +205,68 @@ const AddProductsPage = () => {
               )}
             </div>
           </div>
-          <div className="flex">
-            <div>
-              <label htmlFor="">Start date</label>
+          <div className="flex gap-4 mb-8">
+            <div className="flex-1">
+              <label className="block text-gray-800 text-sm font-medium mb-2">
+                Start date:
+              </label>
               <input
+                {...register("startDate")}
                 type="datetime-local"
                 className="w-full border border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400"
               />
+              {errors.startDate && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.startDate.message}
+                </p>
+              )}
             </div>
-            <div></div>
+            <div className="flex-1">
+              <label className="block text-gray-800 text-sm font-medium mb-2">
+                End date:
+              </label>
+              <input
+                {...register("endDate")}
+                type="datetime-local"
+                className="w-full border border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400"
+              />
+              {errors.endDate && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.endDate.message}
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 mb-8">
+            <div className="flex-1">
+              <label
+                htmlFor="ratingRequired"
+                className=" text-gray-800 text-sm font-medium mb-2"
+              >
+                Bidder must have been rated before:
+              </label>
+              <input
+                {...register("ratingRequired")}
+                id="ratingRequired"
+                type="checkbox"
+                className="border ml-1 accent-yellow-400 border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400"
+              />
+            </div>
+
+            <div className="flex-1">
+              <label
+                htmlFor="autoExtend"
+                className=" text-gray-800 text-sm font-medium mb-2"
+              >
+                Auto extend:
+              </label>
+              <input
+                {...register("autoExtend")}
+                id="autoExtend"
+                type="checkbox"
+                className="border ml-1 accent-yellow-400 border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400"
+              />
+            </div>
           </div>
         </div>
 
@@ -238,7 +300,7 @@ const AddProductsPage = () => {
             </label>
             {/* File List */}
             <div className="flex-1">
-              <div className="space-y-3">
+              <div className="space-y-3 overflow-y-auto max-h-80 pr-5">
                 {files.length === 0 ? (
                   <p className="text-gray-400 text-sm">
                     No images uploaded yet
@@ -262,6 +324,11 @@ const AddProductsPage = () => {
                           {Math.round(file.size / 1024)} KB
                         </div>
                       </div>
+
+                      <IoMdClose
+                        onClick={() => handleRemoveFile(idx)}
+                        className="text-xl cursor-pointer"
+                      />
                     </div>
                   ))
                 )}
