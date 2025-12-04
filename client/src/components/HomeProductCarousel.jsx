@@ -22,7 +22,7 @@ const HomeProductCarousel = ({ heading, product }) => {
     <div className="flex flex-col items-center m-30">
       <h1 className="font-playfair text-5xl my-7 font-semibold">{heading}</h1>
       <div className="flex w-full">
-        <button className={`prev-btn${swiperID}`}>
+        <button className={`prev-btn${swiperID} cursor-pointer`}>
           <FaArrowLeft className="text-3xl m-10" />
         </button>
 
@@ -34,7 +34,6 @@ const HomeProductCarousel = ({ heading, product }) => {
             nextEl: `.next-btn${swiperID}`,
             prevEl: `.prev-btn${swiperID}`,
           }}
-          autoplay={{ delay: 2500, disableOnInteraction: false }}
           className="w-full"
           onSlideChange={() => console.log("slide change")}
         >
@@ -45,7 +44,7 @@ const HomeProductCarousel = ({ heading, product }) => {
                 alt=""
                 className="w-3xl h-auto aspect-3/2 rounded-3xl"
               />
-              <div className="flex flex-col justify-between bg-brand flex-[2] h-[80%] rounded-r-3xl text-white p-10">
+              <div className="flex flex-col justify-between bg-brand flex-2 h-[80%] rounded-r-3xl text-white p-10">
                 <h1 className="text-4xl text-center">{product.name}</h1>
                 {productInfo.map((item, index) => (
                   <div key={index} className="flex justify-between">
@@ -64,7 +63,7 @@ const HomeProductCarousel = ({ heading, product }) => {
                 alt=""
                 className="w-3xl h-auto aspect-3/2 rounded-3xl"
               />
-              <div className="flex flex-col justify-between bg-brand flex-[2] h-[80%] rounded-r-3xl text-white p-10">
+              <div className="flex flex-col justify-between bg-brand flex-2 h-[80%] rounded-r-3xl text-white p-10">
                 <h1 className="text-4xl text-center">{product.name}</h1>
                 {productInfo.map((item, index) => (
                   <div key={index} className="flex justify-between">
@@ -76,7 +75,7 @@ const HomeProductCarousel = ({ heading, product }) => {
             </div>
           </SwiperSlide>
         </Swiper>
-        <button className={`next-btn${swiperID}`}>
+        <button className={`next-btn${swiperID} cursor-pointer`}>
           <FaArrowRight className="text-3xl m-10" />
         </button>
       </div>
