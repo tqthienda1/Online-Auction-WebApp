@@ -23,13 +23,15 @@ enum UpgradeStatus {
 
 model User {
   id          String    @id       @default(uuid())   @db.Uuid
-  supabaseId  String   @unique               
-  username    String
-  dob         String
-  address     String
-  role        Role
-  ratingPos   Int
-  ratingNeg   Int
+  supabaseId    String   @unique               
+  username      String
+  dob           String
+  address       String
+  role          Role
+  ratingPos     Int
+  ratingNeg     Int
+  emailVerified Boolean   @default(false)
+
 
   givenRatings       Rating[]      @relation("GivenRatings")
   receivedRatings    Rating[]      @relation("ReceivedRatings")
