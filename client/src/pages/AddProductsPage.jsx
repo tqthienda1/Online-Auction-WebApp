@@ -1,41 +1,51 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import RichTextEditor from "../components/RichTextEditor";
-import { IoMdClose } from "react-icons/io";
+import { IoMdClose, IoIosCloseCircleOutline } from "react-icons/io";
+import { IoCheckmarkCircleOutline } from "react-icons/io5";
+import { BsQuestionCircle } from "react-icons/bs";
+import { http } from "../lib/utils.js";
+import { Spinner } from "@/components/ui/spinner";
+import { useNavigate } from "react-router-dom";
 
-const schema = z.object({
-  productName: z.string().nonempty("Product name is required"),
-  category: z.string().nonempty("Category is required"),
-  subCategory: z.string().nonempty("Sub category is required"),
-  startingPrice: z
-    .number("Starting price must be a number")
-    .min(1, "Starting price must be at least 0"),
-  bidStep: z
-    .number("Bid step must be a number")
-    .min(1, "Bid step must be at least 0"),
-  buyNowPrice: z.preprocess((val) => {
-    if (val === "" || val === undefined || val === null) {
-      return undefined; // bỏ trống hợp lệ
-    }
+const schema = z
+  .object({
+    productName: z.string().nonempty("Product name is required"),
+    category: z.string().nonempty("Category is required"),
+    subCategory: z.string().nonempty("Sub category is required"),
+    startingPrice: z
+      .number("Starting price must be a number")
+      .min(1, "Starting price must be at least 0"),
+    bidStep: z
+      .number("Bid step must be a number")
+      .min(1, "Bid step must be at least 0"),
+    buyNowPrice: z.preprocess((val) => {
+      if (val === "" || val === undefined || val === null) {
+        return undefined;
+      }
 
-    const num = Number(val);
+      const num = Number(val);
 
-    if (isNaN(num)) {
-      return val; // hoặc undefined / để refine báo lỗi
-    }
+      if (isNaN(num)) {
+        return val;
+      }
 
-    return num; // giá trị số hợp lệ
-  }, z.number().min(0).optional()),
-  productImages: z
-    .array(z.instanceof(File), "You must upload at least 3 images")
-    .min(3, "You must upload at least 3 images"),
-  startDate: z.string().min(1, "Start date is required"),
-  endDate: z.string().min(1, "End date is required"),
-  ratingRequired: z.boolean().default(false),
-  autoExtend: z.boolean().default(false),
-});
+      return num;
+    }, z.number().min(0).optional()),
+    productImages: z
+      .array(z.instanceof(File), "You must upload at least 3 images")
+      .min(3, "You must upload at least 3 images"),
+    startDate: z.string().min(1, "Start date is required"),
+    endDate: z.string().min(1, "End date is required"),
+    ratingRequired: z.boolean().default(false),
+    autoExtend: z.boolean().default(false),
+  })
+  .refine((data) => new Date(data.startDate) < new Date(data.endDate), {
+    message: "End date must be greater than Start date",
+    path: ["endDate"],
+  });
 
 const AddProductsPage = () => {
   const {
@@ -47,10 +57,17 @@ const AddProductsPage = () => {
     resolver: zodResolver(schema),
   });
 
+  const navigate = useNavigate();
+
   const [files, setFiles] = useState([]);
   const [description, setDescription] = useState("");
   const [descEmpty, setDescEmpty] = useState(false);
   const [disableSubcate, setDisableSubcate] = useState(true);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [data, setData] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
 
   const onFilesChange = (e) => {
     const newFiles = Array.from(e.target.files || []);
@@ -71,17 +88,70 @@ const AddProductsPage = () => {
     setDisableSubcate(false);
   };
 
-  const onSubmit = (data) => {
+  const confirmSubmit = async () => {
+    if (loading) return;
+    setLoading(true);
+    const rawData = { ...data, description };
+    const dataForm = new FormData();
+    console.log(rawData);
+
+    for (const file of rawData.productImages) {
+      dataForm.append("productImages", file);
+    }
+
+    dataForm.append("productName", rawData.productName);
+    dataForm.append("description", rawData.description);
+    dataForm.append("autoExtend", rawData.autoExtend);
+    dataForm.append("ratingRequired", rawData.ratingRequired);
+    dataForm.append("bidStep", rawData.bidStep);
+    dataForm.append("startingPrice", rawData.startingPrice);
+    dataForm.append("buyNowPrice", rawData.buyNowPrice);
+    dataForm.append("category", rawData.category);
+    dataForm.append("subCategory", "");
+    dataForm.append("startDate", rawData.startDate);
+    dataForm.append("endDate", rawData.endDate);
+
+    console.log(dataForm);
+
+    try {
+      const res = await http.post("/products", dataForm);
+
+      if (res.status === 201) {
+        setSuccess(true);
+      }
+    } catch (error) {
+      setError(true);
+      console.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClickPublish = () => {
     if (description === "") {
       setDescEmpty(true);
       return;
     }
     setDescEmpty(false);
-    console.log("Form submitted:", { ...data, description });
+  };
+
+  const handleClose = () => {
+    setShowConfirm(false);
+    setLoading(false);
+    setError(false);
+    setSuccess(false);
+    if (success) {
+      navigate("/");
+    }
+  };
+
+  const onSubmit = (data) => {
+    setShowConfirm(true);
+    setData(data);
   };
 
   return (
-    <div className="px-10 py-12 bg-white">
+    <div className="px-10 py-12 bg-white w-full h-full">
       <h1 className="text-center text-4xl font-playfair font-bold mb-12">
         Add Products
       </h1>
@@ -122,7 +192,7 @@ const AddProductsPage = () => {
               <option value="" hidden>
                 Add Category
               </option>
-              <option value="furniture">Furniture</option>
+              <option value="Laptop">Laptop</option>
             </select>
             {errors.category && (
               <p className="text-red-500 text-sm mt-1">
@@ -139,13 +209,13 @@ const AddProductsPage = () => {
               disabled={disableSubcate}
               {...register("subCategory")}
               className={`w-full border border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400 ${
-                disableSubcate && "bg-gray-200 cursor-not-allowed"
+                disableSubcate && "opacity-30 cursor-not-allowed"
               }`}
             >
               <option value="" hidden>
                 Add Sub Category
               </option>
-              <option value="laptop">Laptop</option>
+              <option value="Laptop">Laptop</option>
             </select>
             {errors.subCategory && (
               <p className="text-red-500 text-sm mt-1">
@@ -367,12 +437,103 @@ const AddProductsPage = () => {
           <div className="flex justify-end">
             <button
               type="submit"
+              onClick={handleClickPublish}
               className="bg-yellow-500 text-white px-8 py-3 mt-3 rounded-lg font-semibold hover:bg-yellow-600 transition cursor-pointer"
             >
               Publish
             </button>
           </div>
         </div>
+        {showConfirm && (
+          <div
+            id="popup-modal"
+            tabIndex={-1}
+            className="flex h-screen bg-black/50 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 max-h-full"
+          >
+            <div className="relative p-4 w-full max-w-md max-h-full">
+              <div className="relative bg-white border border-default rounded-base shadow-sm p-4 md:p-6 rounded-lg">
+                {!loading && (
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                    className="cursor-pointer absolute top-3 end-2.5 text-body bg-transparent hover:bg-neutral-tertiary hover:text-heading rounded-base text-sm w-9 h-9 ms-auto inline-flex justify-center items-center"
+                    data-modal-hide="popup-modal"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width={24}
+                      height={24}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18 17.94 6M18 18 6.06 6"
+                      />
+                    </svg>
+                    <span className="sr-only">Close modal</span>
+                  </button>
+                )}
+                {!loading && !success && !error && (
+                  <div className="p-4 md:p-5 text-center h-60">
+                    <BsQuestionCircle className="w-full text-7xl text-yellow-500" />
+                    <h3 className="my-6 text-body font-semibold">
+                      Are you sure you want to sell this product?
+                    </h3>
+                    <div className="flex items-center space-x-4 justify-center">
+                      <button
+                        onClick={confirmSubmit}
+                        data-modal-hide="popup-modal"
+                        type="button"
+                        className="rounded-lg text-white font-semibold bg-yellow-500 box-border border border-transparent hover:bg-danger-strong focus:ring-4 focus:ring-danger-medium shadow-xs leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none cursor-pointer hover:bg-yellow-400"
+                      >
+                        Yes, I'm sure
+                      </button>
+                      <button
+                        data-modal-hide="popup-modal"
+                        type="button"
+                        onClick={() => setShowConfirm(false)}
+                        className="focus:outline-none text-body font-semibold bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs leading-5 rounded-base text-sm px-4 py-2.5 rounded-lg cursor-pointer hover:bg-red-400 hover:text-white"
+                      >
+                        No, cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {loading && !success && !error && (
+                  <div className="flex flex-col justify-center p-4 md:p-5 text-center h-60">
+                    <Spinner className="size-8 w-full text-yellow-500" />
+                    <h3 className="font-semibold my-6 text-body">Loading</h3>
+                  </div>
+                )}
+
+                {!loading && !success && error && (
+                  <div className="flex flex-col justify-center p-4 md:p-5 text-center h-60">
+                    <IoIosCloseCircleOutline className="w-full text-7xl text-yellow-500" />
+                    <h3 className="my-6 text-body font-semibold">
+                      Add the product is failed
+                    </h3>
+                  </div>
+                )}
+
+                {!loading && success && !error && (
+                  <div className="flex flex-col justify-center p-4 md:p-5 text-center h-60">
+                    <IoCheckmarkCircleOutline className="w-full text-7xl text-yellow-500" />
+                    <h3 className="my-6 text-body font-semibold">
+                      Add the product successfully
+                    </h3>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </form>
     </div>
   );

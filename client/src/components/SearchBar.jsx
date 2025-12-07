@@ -7,7 +7,7 @@ const SearchBar = ({ className }) => {
     >
       <FaMagnifyingGlass className="text-gray-500 mr-2" />
       <input
-        className="bg-transparent flex-1 outline-none"
+        className="bg-transparent flex-1 outline-none border-0"
         type="text"
         placeholder="Find your favorite item..."
       />

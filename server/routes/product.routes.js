@@ -6,7 +6,7 @@ const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 const mockUser = (req, res, next) => {
-  req.user = "d633e2da-7286-4be7-a870-e12d9f5519ef"; // hoặc object user
+  req.user = "07000d2e-90d9-4523-8f68-bddd658b484e"; // hoặc object user
   next();
 };
 
