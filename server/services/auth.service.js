@@ -94,3 +94,53 @@ export const changePassword = async ({ email, oldPassword, newPassword }) => {
 
   return { message: "Password changed successfully." };
 };
+
+export const signOut = async () => {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    throw { status: 400, message: error.message };
+  }
+
+  return { message: "Sign-out successful." };
+};
+
+export const requestOtp = async (email) => {
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: "http://localhost:3000",
+  });
+
+  if (error) {
+    throw { status: 400, message: error.message };
+  }
+
+  return { message: "Send email OTP request successful" };
+};
+
+export const verifyOtp = async (email, token) => {
+  const { data, error } = await supabase.auth.verifyOtp({
+    email,
+    token,
+    type: "recovery",
+  });
+
+  if (error) {
+    throw { status: 400, message: error.message };
+  }
+
+  return {
+    message: "OTP verified",
+  };
+};
+
+export const resetPassword = async (newPassword, accessToken) => {
+  const { data, error } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) {
+    throw { status: 400, message: error.message };
+  }
+
+  return { message: "Reset password successful." };
+};

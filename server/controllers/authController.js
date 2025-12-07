@@ -86,3 +86,76 @@ export const changePassword = async (req, res) => {
     });
   }
 };
+
+export const signOut = async (req, res) => {
+  try {
+    const result = await authService.signOut();
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(err.status || 500).json({
+      message: err.message || "Internal server error",
+    });
+  }
+};
+
+export const requestOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        message:
+          "Some required information is missing. Please review and complete the form.",
+      });
+    }
+
+    const result = await authService.requestOtp(email);
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(err.status || 500).json({
+      message: err.message || "Internal server error",
+    });
+  }
+};
+
+export const verifyOtp = async (req, res) => {
+  try {
+    const { email, token } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        message:
+          "Some required information is missing. Please review and complete the form.",
+      });
+    }
+
+    const result = await authService.verifyOtp(email, token);
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(err.status || 500).json({
+      message: err.message || "Internal server error",
+    });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+
+    if (!newPassword) {
+      return res.status(400).json({
+        message: "Some required information is missing.",
+      });
+    }
+
+    const result = await authService.resetPassword(newPassword);
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return res
+      .status(err.status || 500)
+      .json({ message: err.message || "Interal server error" });
+  }
+};
