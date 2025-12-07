@@ -21,18 +21,25 @@ export const addProduct = async (req, res) => {
 
     const files = req.files;
 
+    if (buyNowPrice) {
+      if (Number(buyNowPrice) < 1) {
+        return res.status(400).json({ message: "Buy now price min is 1!" });
+      }
+    }
+
     if (
       productName === "" ||
       category === "" ||
-      startingPrice < 1 ||
-      bidStep < 1 ||
+      Number(startingPrice) < 1 ||
+      Number(bidStep) < 1 ||
       !files ||
       files.length < 3 ||
       description === "" ||
       startDate === "" ||
-      endDate === "" ||
-      (buyNowPrice && buyNowPrice < 1)
+      endDate === ""
     ) {
+      console.log(files);
+      console.log(typeof files);
       return res.status(400).json({ message: "Some data fields are missing!" });
     }
 

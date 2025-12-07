@@ -72,6 +72,11 @@ const Home = () => {
       <ProductCoverflow products={mockUpData.products} />
 
       <HomeProductCarousel
+        heading="Ending Soon Items"
+        product={mockUpData.product}
+      />
+
+      <HomeProductCarousel
         heading="Most Bidden Items"
         product={mockUpData.product}
       />

@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import morgan from "morgan";
 
 import authRoutes from "./routes/auth.routes.js";
 // import userRoutes from "./routes/user.routes.js";
@@ -21,8 +22,10 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Middleware
-app.use(express.json());
 app.use(cors());
+app.use(morgan("dev"));
+
+app.use(express.json());
 
 app.get("/", (req, res) => res.send("Server is live!"));
 
@@ -30,7 +33,6 @@ app.use("/auth", authRoutes);
 // app.use("/users", userRoutes);
 // app.use("/user", userRoutes);
 // app.use("/categories", categoryRoutes);
-app.use("/products", productRoutes);
 // app.use("/descriptions", productDescRoutes);
 // app.use("/images", productImgRoutes);
 // app.use("/bids", bidRoutes);
@@ -41,6 +43,8 @@ app.use("/comments", commentRoutes);
 // app.use("/rating", ratingRoutes);
 // app.use("/system", systemRoutes);
 // app.use("/admin", adminRoutes);
+
+app.use("/products", productRoutes);
 
 app.listen(port, () =>
   console.log(`Server is listening at http://localhost:${port}`)
