@@ -12,6 +12,7 @@ import productRoutes from "./routes/product.routes.js";
 // import bidRoutes from "./routes/bid.routes.js";
 // import watchlistRoutes from "./routes/watchlist.routes.js";
 import commentRoutes from "./routes/comment.routes.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 // import upgradeRoutes from "./routes/upgrade.routes.js";
 // import orderRoutes from "./routes/order.routes.js";
 // import ratingRoutes from "./routes/rating.routes.js";
@@ -45,6 +46,8 @@ app.use("/comments", commentRoutes);
 // app.use("/admin", adminRoutes);
 
 app.use("/products", productRoutes);
+
+app.use(errorHandler);
 
 app.listen(port, () =>
   console.log(`Server is listening at http://localhost:${port}`)
