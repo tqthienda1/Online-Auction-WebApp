@@ -20,4 +20,5 @@ router.post("/signout", signOut);
 router.post("/request-otp", requestOtp);
 router.post("/verify-recovery-otp", verifyOtp);
 router.post("/reset-password", resetPassword);
+
 export default router;
