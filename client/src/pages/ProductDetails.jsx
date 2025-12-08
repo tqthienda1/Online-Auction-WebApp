@@ -13,6 +13,7 @@ import QuestionBox from "@/components/QuestionBox.jsx";
 
 const ProductDetails = () => {
   const product = {
+    id: 1,
     images: [
       "/image/detail_1.jpg",
       "/image/detail_2.jpg",
@@ -124,14 +125,17 @@ const ProductDetails = () => {
     ],
     comments: [
       {
+        id: 1,
         username: "Tran Quoc Thien",
         title: "Question about changing the watch strap",
         content: "Can I customize the type of strap to my preference?",
         createdAt: "2025-11-19T12:05:00",
         img: "",
         numOfLike: 12,
+        parentID: null,
       },
       {
+        id: 2,
         username: "Nguyen Dang Duc Thinh",
         title: "Mint condition iPhone!",
         content:
@@ -139,6 +143,49 @@ const ProductDetails = () => {
         createdAt: "2025-11-19T12:05:00",
         img: "",
         numOfLike: 12,
+        parentID: 1,
+      },
+      {
+        id: 3,
+        username: "Tran Quoc Thien",
+        title: "Question about changing the watch strap",
+        content: "Can I customize the type of strap to my preference?",
+        createdAt: "2025-11-19T12:05:00",
+        img: "",
+        numOfLike: 12,
+        parentID: null,
+      },
+      {
+        id: 4,
+        username: "Nguyen Dang Duc Thinh",
+        title: "Mint condition iPhone!",
+        content:
+          "This iPhone is absolutely perfect. All accessories included, battery health at 100%. Seller was very responsive.",
+        createdAt: "2025-11-19T12:05:00",
+        img: "",
+        numOfLike: 12,
+        parentID: 3,
+      },
+      {
+        id: 5,
+        username: "Tran Quoc Thien",
+        title: "Question about changing the watch strap",
+        content: "Can I customize the type of strap to my preference?",
+        createdAt: "2025-11-19T12:05:00",
+        img: "",
+        numOfLike: 12,
+        parentID: null,
+      },
+      {
+        id: 6,
+        username: "Nguyen Dang Duc Thinh",
+        title: "Mint condition iPhone!",
+        content:
+          "This iPhone is absolutely perfect. All accessories included, battery health at 100%. Seller was very responsive.",
+        createdAt: "2025-11-19T12:05:00",
+        img: "",
+        numOfLike: 12,
+        parentID: 5,
       },
     ],
   };
@@ -241,7 +288,7 @@ const ProductDetails = () => {
             />
           </div>
           <div data-aos="zoom-in">
-            <CommentSection comments={product.comments} />
+            <CommentSection type="ask" comments={product.comments} />
           </div>
 
           <QuestionBox />

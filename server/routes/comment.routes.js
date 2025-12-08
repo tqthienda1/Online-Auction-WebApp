@@ -8,9 +8,15 @@ import {
 
 const router = express.Router();
 
-router.post("/products/:productID/", createComment);
-router.post("/:commentID/replies", replyComment);
+const mockUser = (req, res, next) => {
+  req.user = "07000d2e-90d9-4523-8f68-bddd658b484e";
+  next();
+};
+
+router.post("/products/:productID/", mockUser, createComment);
 router.put("/:commentID", updateComment);
 router.delete("/:commentID", deleteComment);
+
+router.post("/:commentID/replies", mockUser, replyComment);
 
 export default router;

@@ -30,6 +30,7 @@ const QuestionBox = (question, setQuestion) => {
               rows={4}
               className="w-full px-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 bg-background text-foreground resize-none"
             ></textarea>
+            <button type="submit">Submit</button>
           </div>
         </div>
       </form>

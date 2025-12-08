@@ -21,7 +21,7 @@ import path from "path";
 
 const guestRoutes = [
   { path: "/", component: Home, layout: MainLayout },
-  { path: "/products", component: ProductDetails, layout: MainLayout },
+  { path: "/products/:id", component: ProductDetails, layout: MainLayout },
   { path: "/signup", component: SignUpPage, layout: BlankLayout },
   { path: "/login", component: LogInPage, layout: BlankLayout },
   { path: "/add-products", component: AddProductsPage, layout: MainLayout },
