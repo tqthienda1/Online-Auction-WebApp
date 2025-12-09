@@ -63,7 +63,7 @@ const LogInPage = () => {
             </span>
           </div>
 
-          <div className="password">
+          <div className="password relative">
             <label htmlFor="password" className="sr-only">
               Password
             </label>
