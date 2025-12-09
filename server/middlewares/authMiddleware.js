@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { supabase } from "../libs/client";
+import { supabase } from "../libs/client.js";
 
 export const authMiddleware = async (req, res, next) => {
   try {
