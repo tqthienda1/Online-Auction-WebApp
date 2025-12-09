@@ -106,7 +106,7 @@ const LogInPage = () => {
         </div>
 
         <div className="mt-8 space-y-4">
-          <button className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3">
+          <button className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3 cursor-pointer">
             <FaGoogle className="text-red-500" />
             <span>Log in with Google</span>
           </button>
