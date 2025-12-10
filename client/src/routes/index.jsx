@@ -41,7 +41,7 @@ const guestRoutes = [
   },
   { path: "/admin/users", component: AdminUsersPage, layout: AdminLayout },
   {
-    path: "/category/:id",
+    path: "/categories/:id",
     component: CategoryPage,
     layout: MainLayout,
   },
