@@ -1,7 +1,7 @@
 import React from "react";
 import ProductCard from "./ProductCard";
 
-const ProductList = ({ products, sortBy, onSortChange, showType }) => {
+const ProductList = ({ products, showType }) => {
   return (
     <section>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 place-items-center">
