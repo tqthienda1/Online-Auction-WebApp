@@ -1,6 +1,24 @@
-import express from "express";
-import { addCategory } from "../controllers/categoryController.js";
+import { Router } from "express";
+import { CategoryController } from "../controllers/categoryController.js";
 
-const router = express.Router();
+const router = Router();
 
-router.post("/", addCategory);
+const mockUser = (req, res, next) => {
+  req.user = "a0859fe9-9bf5-4b7b-adf7-8f7a8675780b";
+  next();
+};
+
+router.get("/", CategoryController.getAll);
+router.get("/tree", CategoryController.getTree);
+router.get("/parents", CategoryController.getParentCategories);
+router.get("/:id/children", CategoryController.getChildren);
+router.get("/:id/products", CategoryController.getProductsByCategory);
+router.get("/:id", CategoryController.getById);
+
+router.post("/", CategoryController.create);
+
+router.put("/:id", CategoryController.update);
+
+router.delete("/:id", CategoryController.delete);
+
+export default router;
