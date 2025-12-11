@@ -75,6 +75,7 @@ export const addProduct = async (req, res) => {
         },
         startingPrice: Number(startingPrice),
         bidStep: Number(bidStep),
+        currentPrice: Number(startingPrice),
         buyNowPrice: Number(buyNowPrice) ?? null,
         startTime: new Date(startDate),
         endTime: new Date(endDate),
