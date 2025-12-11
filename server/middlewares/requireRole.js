@@ -1,21 +1,13 @@
-import { Prisma } from "@prisma/client";
+import prisma from "../prismaClient.js";
 
 export const requireRole = (allowedRoles = []) => {
   return async (req, res, next) => {
     try {
-      const userId = req.user.id;
+      const role = req.user.role;
 
-      const user = await Prisma.findUnique({ where: { id: userId } });
-
-      if (!user) {
-        return res.status(401).json({ message: "Invalid or expired token" });
+      if (!allowedRoles.includes(role)) {
+        return res.status(403).json({ message: "Forbidden. Role not allowed" });
       }
-
-      if (!allowedRoles.includes(user.role)) {
-        return res.json(403).json({ message: "Forbidden. Role not allowed" });
-      }
-
-      req.user.role = user.role;
 
       next();
     } catch (err) {
