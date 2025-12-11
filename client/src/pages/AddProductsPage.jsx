@@ -192,7 +192,7 @@ const AddProductsPage = () => {
               <option value="" hidden>
                 Add Category
               </option>
-              <option value="Laptop">Laptop</option>
+              <option value="Devices">Devices</option>
             </select>
             {errors.category && (
               <p className="text-red-500 text-sm mt-1">
@@ -215,7 +215,7 @@ const AddProductsPage = () => {
               <option value="" hidden>
                 Add Sub Category
               </option>
-              <option value="Laptop">Laptop</option>
+              <option value="Laptops">Laptops</option>
             </select>
             {errors.subCategory && (
               <p className="text-red-500 text-sm mt-1">

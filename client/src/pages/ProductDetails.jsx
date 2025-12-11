@@ -289,9 +289,8 @@ const ProductDetails = () => {
           </div>
           <div data-aos="zoom-in">
             <CommentSection type="ask" comments={product.comments} />
+            <QuestionBox />
           </div>
-
-          <QuestionBox />
 
           <div
             className="flex justify-center items-center mt-20"

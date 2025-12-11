@@ -1,41 +1,77 @@
 import prisma from "../prismaClient.js";
 
-export const ProductService = {
-  async getByCategory(categoryID, filters) {
-    const { skip, limit, minPrice, maxPrice } = filters;
-    console.log(filters);
+export const getProducts = async ({
+  page,
+  limit,
+  search,
+  category,
+  minPrice,
+  maxPrice,
+  sortBy,
+  order,
+  sellerId,
+}) => {
+  const where = {
+    name: search ? { contains: search, mode: "insensitive" } : undefined,
 
-    const sortOptions = {
-      "price-asc": { currentPrice: "asc" },
-      "price-desc": { currentPrice: "desc" },
-      "name-asc": { productName: "asc" },
-      "name-desc": { productName: "desc" },
-      default: { startTime: "desc" },
-    };
+    category: category || undefined,
 
-    const products = await prisma.product.findMany({
-      where: {
-        categoryID,
-        currentPrice: {
-          gte: minPrice,
-          lte: maxPrice,
-        },
-      },
+    sellerId: sellerId || undefined,
+
+    price:
+      minPrice || maxPrice
+        ? {
+            gte: minPrice ? Number(minPrice) : undefined,
+            lte: maxPrice ? Number(maxPrice) : undefined,
+          }
+        : undefined,
+  };
+
+  const orderBy = {
+    [sortBy]: order,
+  };
+
+  const skip = (page - 1) * limit;
+  const take = limit;
+
+  const [products, total] = await Promise.all([
+    prisma.product.findMany({
+      where,
       skip,
-      take: limit,
+      take,
+      orderBy,
+    }),
+    prisma.product.count({ where }),
+  ]);
 
-      include: {
-        category: true,
+  return {
+    products,
+    total,
+  };
+};
+
+export const getProductById = async (productId) => {
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    include: {
+      productImages: {
+        orderBy: { order: "asc" },
       },
-    });
-
-    const total = await prisma.product.count({
-      where: {
-        categoryID,
-        currentPrice: { gte: minPrice, lte: maxPrice },
+      productDescriptions: {
+        orderBy: { createdAt: "asc" },
       },
-    });
+      seller: true,
+      category: true,
+      bids: {
+        orderBy: { createdAt: "desc" },
+      },
+      comments: {
+        orderBy: { createdAt: "desc" },
+      },
+      rating: true,
+      order: true,
+    },
+  });
 
-    return { products, total };
-  },
+  return product;
 };
