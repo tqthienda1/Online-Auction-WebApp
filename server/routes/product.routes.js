@@ -6,6 +6,7 @@ import {
   getProducts,
   getProductById,
   updateProduct,
+  deleteProduct,
 } from "../controllers/productController.js";
 import multer from "multer";
 
@@ -13,7 +14,8 @@ const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 const mockUser = (req, res, next) => {
-  req.user = "1032710c-e82d-45ca-a6bf-702681c6aaab"; // hoặc object user
+  req.user = req.user || {};
+  req.user.id = "1032710c-e82d-45ca-a6bf-702681c6aaab"; // hoặc object user
   next();
 };
 
@@ -24,10 +26,9 @@ router.get("/:id", getProductById);
 // // seller
 // router.post("/", authMiddleware, requireRole(["seller"]), addProduct);
 router.put("/:id", authMiddleware, requireRole(["SELLER"]), updateProduct);
-// router.delete("/:id", authMiddleware, requireRole(["seller"]), deleteProduct);
+router.delete("/:id", authMiddleware, requireRole(["SELLER"]), deleteProduct);
 
 // admin
-
 // router.post("/", mockUser, upload.array("productImages"), addProduct);
 // router.delete("/", deleteProduct);
 
