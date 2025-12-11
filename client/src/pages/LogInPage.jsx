@@ -1,14 +1,8 @@
 import React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-import {
-  FaEye,
-  FaEyeSlash,
-  FaGoogle,
-  FaFacebookF,
-  FaTwitter,
-} from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "../../public/image/logo.png";
@@ -18,6 +12,9 @@ const LogInPage = () => {
     identifier: z.string().nonempty("Identifier is required"),
     password: z.string().nonempty("Password is required"),
   });
+
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -35,7 +32,11 @@ const LogInPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-white px-6 pb-6">
       <div className="max-w-xl w-full">
         <div className="flex justify-center h-20">
-          <img src={logo} className="object-contain h-full" />
+          <img
+            onClick={() => navigate("/")}
+            src={logo}
+            className="object-contain h-full cursor-pointer"
+          />
         </div>
 
         <hr className="my-8 border-gray-200" />
@@ -47,14 +48,14 @@ const LogInPage = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
             <label htmlFor="identifier" className="sr-only">
-              Username/Email
+              Email
             </label>
             <input
               type="text"
               name="identifier"
               id="identifier"
               {...register("identifier")}
-              placeholder="Username/Email"
+              placeholder="Email"
               className="w-full border-b border-gray-300 focus:outline-none py-3 placeholder-gray-400"
             />
 
@@ -63,7 +64,7 @@ const LogInPage = () => {
             </span>
           </div>
 
-          <div className="password">
+          <div className="password relative">
             <label htmlFor="password" className="sr-only">
               Password
             </label>
@@ -78,7 +79,7 @@ const LogInPage = () => {
             <button
               type="button"
               onClick={() => setShowPass((s) => !s)}
-              className="absolute right-0 top-1/2 -translate-y-1/2 mr-2 text-gray-500"
+              className="absolute right-0 top-1/2 -translate-y-1/2 mr-2 text-gray-500 cursor-pointer"
               aria-label={showPass ? "Hide password" : "Show password"}
             >
               {showPass ? <FaEye /> : <FaEyeSlash />}
@@ -91,7 +92,7 @@ const LogInPage = () => {
           <div>
             <button
               type="submit"
-              className="w-full bg-black text-white py-3 rounded-md hover:opacity-60"
+              className="w-full bg-black text-white py-3 rounded-md hover:opacity-60 cursor-pointer"
             >
               Log In
             </button>
@@ -105,19 +106,9 @@ const LogInPage = () => {
         </div>
 
         <div className="mt-8 space-y-4">
-          <button className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3">
+          <button className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3 cursor-pointer">
             <FaGoogle className="text-red-500" />
             <span>Log in with Google</span>
-          </button>
-
-          <button className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3">
-            <FaFacebookF className="text-blue-600" />
-            <span>Log in with Facebook</span>
-          </button>
-
-          <button className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3">
-            <FaTwitter className="text-sky-500" />
-            <span>Log in with Twitter</span>
           </button>
         </div>
 

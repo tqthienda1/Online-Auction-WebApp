@@ -6,116 +6,6 @@ import CategoryBanner from "../components/CategoryBanner";
 import Sidebar from "../components/SideBar";
 import ProductList from "../components/ProductList";
 
-const MOCK_PRODUCTS = [
-  {
-    id: "p1-1111-aaaa-bbbb-0001",
-    sellerID: "u-seller-001",
-    highestBidderID: null,
-    productName: "iPhone 14 Pro Max 256GB",
-    productAvt: "/images/products/iphone14promax.jpg",
-    categoryID: "cate-electronics",
-    startingPrice: 15000000,
-    bidStep: 200000,
-    buyNowPrice: 23000000,
-    currentPrice: 15000000,
-    startTime: "2025-01-01T10:00:00.000Z",
-    endTime: "2025-01-05T10:00:00.000Z",
-    autoExtend: true,
-    sold: false,
-    ratingRequired: false,
-  },
-
-  {
-    id: "p2-1111-aaaa-bbbb-0002",
-    sellerID: "u-seller-002",
-    highestBidderID: "u-bidder-777",
-    productName: "Macbook Air M2 2023",
-    productAvt: "/images/products/macbook-air-m2.jpg",
-    categoryID: "cate-electronics",
-    startingPrice: 18000000,
-    bidStep: 300000,
-    buyNowPrice: 28000000,
-    currentPrice: 19600000,
-    startTime: "2025-01-03T12:00:00.000Z",
-    endTime: "2025-01-07T12:00:00.000Z",
-    autoExtend: true,
-    sold: false,
-    ratingRequired: false,
-  },
-
-  {
-    id: "p3-1111-aaaa-bbbb-0003",
-    sellerID: "u-seller-003",
-    highestBidderID: null,
-    productName: "Giày Nike Air Jordan 1 Retro",
-    productAvt: "/images/products/jordan1.jpg",
-    categoryID: "cate-fashion",
-    startingPrice: 2500000,
-    bidStep: 100000,
-    buyNowPrice: 4500000,
-    currentPrice: 2500000,
-    startTime: "2025-01-04T08:00:00.000Z",
-    endTime: "2025-01-09T08:00:00.000Z",
-    autoExtend: false,
-    sold: false,
-    ratingRequired: false,
-  },
-
-  {
-    id: "p4-1111-aaaa-bbbb-0004",
-    sellerID: "u-seller-004",
-    highestBidderID: null,
-    productName: "Đồng hồ Casio G-Shock GA-2100",
-    productAvt: "/images/products/gshock-ga2100.jpg",
-    categoryID: "cate-accessories",
-    startingPrice: 1200000,
-    bidStep: 50000,
-    buyNowPrice: 2500000,
-    currentPrice: 1200000,
-    startTime: "2025-01-02T09:30:00.000Z",
-    endTime: "2025-01-06T09:30:00.000Z",
-    autoExtend: false,
-    sold: false,
-    ratingRequired: false,
-  },
-
-  {
-    id: "p5-1111-aaaa-bbbb-0005",
-    sellerID: "u-seller-002",
-    highestBidderID: "u-bidder-999",
-    productName: "Tai nghe Sony WH-1000XM5",
-    productAvt: "/images/products/sony-wh1000xm5.jpg",
-    categoryID: "cate-electronics",
-    startingPrice: 5000000,
-    bidStep: 150000,
-    buyNowPrice: 8000000,
-    currentPrice: 5450000,
-    startTime: "2025-01-03T07:00:00.000Z",
-    endTime: "2025-01-06T07:00:00.000Z",
-    autoExtend: true,
-    sold: false,
-    ratingRequired: false,
-  },
-
-  {
-    id: "p6-1111-aaaa-bbbb-0006",
-    sellerID: "u-seller-001",
-    highestBidderID: null,
-    productName: "Bàn phím cơ Keychron K6",
-    productAvt: "/images/products/keychron-k6.jpg",
-    categoryID: "cate-computer-accessories",
-    startingPrice: 1500000,
-    bidStep: 50000,
-    buyNowPrice: 3000000,
-    currentPrice: 1500000,
-    startTime: "2025-01-01T15:00:00.000Z",
-    endTime: "2025-01-04T15:00:00.000Z",
-    autoExtend: false,
-    sold: false,
-    ratingRequired: false,
-  },
-];
-
 const ITEMS_PER_PAGE = 2;
 
 const CategoryPage = () => {
@@ -135,42 +25,34 @@ const CategoryPage = () => {
       Number(searchParams.get("minPrice") || 0),
       Number(searchParams.get("maxPrice") || 50000000),
     ],
-    sortBy: searchParams.get("sortBy") || "default",
   };
 
   useEffect(() => {
-    try {
-      setIsLoading(true);
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
 
-      const categoryProducts = MOCK_PRODUCTS.filter((p) => p.categoryID === id);
+        const minPrice = Number(searchParams.get("minPrice") || 0);
+        const maxPrice = Number(searchParams.get("maxPrice") || 50000000);
+        const page = Number(searchParams.get("page") || 1);
 
-      const applyFilters = (products) => {
-        return products.filter((p) => {
-          return (
-            Number(p.currentPrice) >= Number(filters.priceRange[0]) &&
-            Number(p.currentPrice) <= Number(filters.priceRange[1])
-          );
-        });
-      };
+        const url = `http://localhost:3000/categories/${id}/products?minPrice=${minPrice}&maxPrice=${maxPrice}&page=${page}`;
 
-      const filteredProducts = applyFilters(categoryProducts);
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Failed to fetch products");
 
-      const newTotalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
-      setTotalPages(newTotalPages);
+        const data = await res.json();
 
-      const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+        setProducts(data.data.products);
+        setTotalPages(data.data.totalPages);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-      const pagedProducts = filteredProducts.slice(
-        offset,
-        offset + ITEMS_PER_PAGE
-      );
-
-      setProducts(pagedProducts);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setIsLoading(false);
-    }
+    fetchProducts();
   }, [id, searchParams]);
 
   const handleFilterChange = (filterName, value) => {
