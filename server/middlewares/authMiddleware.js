@@ -1,11 +1,11 @@
-import { Prisma } from "@prisma/client";
 import { supabase } from "../libs/client.js";
+import prisma from "../prismaClient.js";
 
 export const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.starstWith("Bear ")) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ message: "Missing or invalid token" });
     }
 
@@ -17,8 +17,23 @@ export const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ message: "Invalid or expired token" });
     }
 
-    req.user = data.user;
+    const supabaseUser = data.user;
 
+    const dbUser = await prisma.user.findUnique({
+      where: { supabaseId: supabaseUser.id },
+    });
+
+    if (!dbUser) {
+      return res.status(401).json({ message: "User not found in database." });
+    }
+
+    req.user = {
+      supabase: supabaseUser,
+      db: dbUser,
+      id: dbUser.id,
+      supabaseId: supabaseUser.id,
+      role: dbUser.role,
+    };
     next();
   } catch (err) {
     console.error("Auth middleware error:", err);
