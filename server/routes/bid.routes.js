@@ -4,8 +4,10 @@ import * as BidController from "../controllers/bidController.js";
 const router = express.Router();
 
 const mockUser = (req, res, next) => {
-  req.user.id = "07000d2e-90d9-4523-8f68-bddd658b484e"; // hoặc object user
+  req.user = "1032710c-e82d-45ca-a6bf-702681c6aaab"; // hoặc object user
   next();
 };
 
-router.post("/", BidController.placeBid);
+router.post("/", mockUser, BidController.placeBid);
+
+export default router;
