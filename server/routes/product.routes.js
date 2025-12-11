@@ -1,16 +1,34 @@
 import express from "express";
-import { addProduct } from "../controllers/productController.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { requireRole } from "../middlewares/requireRole.js";
+import {
+  addProduct,
+  getProducts,
+  getProductById,
+} from "../controllers/productController.js";
 import multer from "multer";
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 const mockUser = (req, res, next) => {
-  req.user = "07000d2e-90d9-4523-8f68-bddd658b484e"; // hoặc object user
+  req.user = "a0859fe9-9bf5-4b7b-adf7-8f7a8675780b"; // hoặc object user
   next();
 };
 
-router.post("/", mockUser, upload.array("productImages"), addProduct);
+// public;
+router.get("/", getProducts);
+router.get("/:id", getProductById);
+
+// // seller
+// router.post("/", authMiddleware, requireRole(["seller"]), addProduct);
+// router.put("/:id", authMiddleware, requireRole(["seller"]), updateProduct);
+// router.delete("/:id", authMiddleware, requireRole(["seller"]), deleteProduct);
+
+// admin
+
+// router.post("/", mockUser, upload.array("productImages"), addProduct);
 // router.delete("/", deleteProduct);
 
+router.post("/", mockUser, upload.array("productImages"), addProduct);
 export default router;
