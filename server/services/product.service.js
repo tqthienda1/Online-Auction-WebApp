@@ -53,8 +53,8 @@ export const getProducts = async ({
   };
 };
 
-export const getProductById = async (productId) => {
-  const product = await prisma.product.findUnique({
+export const getProductById = async (productId, db = prisma) => {
+  const product = await db.product.findUnique({
     where: { id: productId },
     include: {
       productImages: {
@@ -78,6 +78,23 @@ export const getProductById = async (productId) => {
 
   return product;
 };
+
+export const updateBidInfo = async (
+  productId,
+  highestBidderId,
+  currentPrice,
+  db = prisma
+) => {
+  const updatedProduct = await db.product.update({
+    where: { id: productId },
+    data: {
+      currentPrice,
+      highestBidderID: highestBidderId,
+    },
+  });
+
+  return updatedProduct;
+}
 
 export const addProduct = async (userId, body, files) => {
   const {

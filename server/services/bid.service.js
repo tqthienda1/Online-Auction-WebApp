@@ -1,22 +1,22 @@
 import prisma from "../prismaClient.js";
 
-export const create = async (userId, productId, maxPrice) => {
-  try {
-    return await prisma.bid.create({
-      product: productId,
-      bidder: userId,
+export const create = async (userId, productId, maxPrice, db = prisma) => {
+  return await db.bid.create({
+    data: {
+      product: { connect: { id: productId } },
+      bidder: { connect: { id: userId } },
       maxPrice,
-    });
-  } catch (error) {
-    return error.message;
-  }
+    },
+  });
 };
 
-export const getByProduct = async (productId, order = []) => {
-  try {
-    return await prisma.bid.findMany({
-      where: { productID: productId },
-      orderBy: order,
-    });
-  } catch (error) {}
+export const getByProduct = async (productId, order = [], db = prisma) => {
+  return await db.bid.findMany({
+    where: {
+      product: {
+        id: productId,
+      },
+    },
+    orderBy: order,
+  });
 };
