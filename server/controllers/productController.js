@@ -140,27 +140,47 @@ export const getProductById = async (req, res) => {
     const { id } = req.params;
 
     if (!id) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Product id is required." });
+      return res.status(400).json({ message: "Product id is required." });
     }
 
     const product = await productService.getProductById(id);
 
     if (!product) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Product not found" });
+      return res.status(404).json({ message: "Product not found" });
     }
 
     return res.status(200).json({
-      success: true,
       data: product,
     });
   } catch (err) {
     console.error("Get product by id is fail: ", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { descriptions } = req.body;
+    const userId = req.user?.id;
+
+    if (!Array.isArray(descriptions)) {
+      return res.status(400).json({ message: "Descriptions must be an array" });
+    }
+
+    if (!id) {
+      return res.status(400).json({ message: "Product id is required." });
+    }
+
+    const product = await productService.updateProduct(
+      userId,
+      id,
+      descriptions
+    );
+
+    res.status(200).json({ message: "Update product successful." });
+  } catch (err) {
+    console.error("Update product is fail:", err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

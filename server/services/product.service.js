@@ -75,3 +75,45 @@ export const getProductById = async (productId) => {
 
   return product;
 };
+
+export const updateProduct = async (userId, productId, descriptions) => {
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    select: { sellerID: true, sold: true },
+  });
+
+  if (!product) {
+    throw new Error("Product is not exist.");
+  }
+
+  console.log(userId);
+  console.log(product.sellerID);
+
+  if (userId != product.sellerID) {
+    throw new Error(
+      "Forbbiden. You are not authorized to repair this product."
+    );
+  }
+
+  if (product.sold) {
+    throw new Error("Product is sold.");
+  }
+
+  await prisma.productDescription.deleteMany({
+    where: { productID: productId },
+  });
+
+  if (descriptions.length > 0) {
+    await prisma.productDescription.createMany({
+      data: descriptions.map((text) => ({
+        productID: productId,
+        productDescription: text,
+      })),
+    });
+  }
+
+  return await prisma.productDescription.findMany({
+    where: { productID: productId },
+    orderBy: { createdAt: "asc" },
+  });
+};
