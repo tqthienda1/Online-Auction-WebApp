@@ -116,7 +116,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="">
+    <>
       {!loading && (
         <>
           <ProductCoverflow products={endingSoonProducts} />
@@ -132,12 +132,12 @@ const Home = () => {
         </>
       )}
       {loading && (
-        <div className="flex flex-col justify-center p-4 md:p-5 text-center h-60">
+        <div className="flex flex-col justify-center p-4 md:p-5 text-center h-full">
           <Spinner className="size-8 w-full text-yellow-500" />
           <h3 className="font-semibold my-6 text-body">Loading</h3>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
