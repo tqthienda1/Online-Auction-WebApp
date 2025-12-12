@@ -169,13 +169,14 @@ export const addProduct = async (userId, body, files) => {
       startTime: new Date(startDate),
       endTime: new Date(endDate),
       autoExtend: autoExtend === "true",
-      ratingRequired: autoExtend === "true",
+      ratingRequired: ratingRequired === "true",
     },
   });
 
-  await addDescription(product.id, description);
-
-  await addProductImages(product.id, productImages);
+  await Promise.all([
+    addDescription(product.id, description),
+    addProductImages(product.id, productImages),
+  ]);
 
   return product;
 };
