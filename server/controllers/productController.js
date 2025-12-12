@@ -39,8 +39,6 @@ export const addProduct = async (req, res) => {
       startDate === "" ||
       endDate === ""
     ) {
-      console.log(files);
-      console.log(typeof files);
       return res.status(400).json({ message: "Some data fields are missing!" });
     }
 
@@ -63,7 +61,6 @@ export const addProduct = async (req, res) => {
     }
 
     const productImages = await uploadFilesToSupabase(files);
-    console.log(productImages);
 
     const product = await prisma.product.create({
       data: {
@@ -79,8 +76,8 @@ export const addProduct = async (req, res) => {
         buyNowPrice: Number(buyNowPrice) ?? null,
         startTime: new Date(startDate),
         endTime: new Date(endDate),
-        autoExtend: Boolean(autoExtend),
-        ratingRequired: Boolean(ratingRequired),
+        autoExtend: autoExtend === "true",
+        ratingRequired: ratingRequired === "true",
       },
     });
 

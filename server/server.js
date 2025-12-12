@@ -19,6 +19,8 @@ import { errorHandler } from "./middlewares/errorHandler.js";
 // import systemRoutes from "./routes/system.routes.js";
 // import adminRoutes from "./routes/admin.routes.js";
 
+import { registerCronJobs } from "./cron/index.js";
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -29,6 +31,8 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 app.get("/", (req, res) => res.send("Server is live!"));
+
+registerCronJobs();
 
 app.use("/auth", authRoutes);
 // app.use("/users", userRoutes);

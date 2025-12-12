@@ -93,7 +93,6 @@ const AddProductsPage = () => {
     setLoading(true);
     const rawData = { ...data, description };
     const dataForm = new FormData();
-    console.log(rawData);
 
     for (const file of rawData.productImages) {
       dataForm.append("productImages", file);
@@ -110,8 +109,6 @@ const AddProductsPage = () => {
     dataForm.append("subCategory", "");
     dataForm.append("startDate", rawData.startDate);
     dataForm.append("endDate", rawData.endDate);
-
-    console.log(dataForm);
 
     try {
       const res = await http.post("/products", dataForm);
