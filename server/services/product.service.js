@@ -173,9 +173,10 @@ export const addProduct = async (userId, body, files) => {
     },
   });
 
-  await addDescription(product.id, description);
-
-  await addProductImages(product.id, productImages);
+  await Promise.all([
+    addDescription(product.id, description),
+    addProductImages(product.id, productImages),
+  ]);
 
   return product;
 };
