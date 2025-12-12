@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
+    "node-cron": "^4.2.1",
     "Online-Auction-WebApp": "file:..",
     "pg": "^8.16.3",
     "prisma": "^6.19.0",
