@@ -154,3 +154,45 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Hide scrollbar but keep scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+
+.thumbnail-container {
+  position: relative;
+}
+
+.thumbnail-container::before,
+.thumbnail-container::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 40px; /* độ dài fade */
+  pointer-events: none;
+}
+
+.thumbnail-container::before {
+  top: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 1),
+    rgba(255, 255, 255, 0)
+  );
+}
+
+.thumbnail-container::after {
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 1),
+    rgba(255, 255, 255, 0)
+  );
+}
