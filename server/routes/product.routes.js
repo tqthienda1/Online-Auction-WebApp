@@ -29,7 +29,6 @@ router.put("/:id", authMiddleware, requireRole(["SELLER"]), updateProduct);
 router.delete("/:id", authMiddleware, requireRole(["SELLER"]), deleteProduct);
 
 // admin
-// router.post("/", mockUser, upload.array("productImages"), addProduct);
 // router.delete("/", deleteProduct);
 
 router.post("/", mockUser, upload.array("productImages"), addProduct);

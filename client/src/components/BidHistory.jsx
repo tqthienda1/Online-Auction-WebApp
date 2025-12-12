@@ -1,3 +1,4 @@
+import { maskUsername } from "@/helper/maskUser";
 import { formattedDate } from "../helper/formatDate";
 
 const BidHistory = ({ BidHistory }) => {
@@ -11,15 +12,19 @@ const BidHistory = ({ BidHistory }) => {
           >
             <div className="flex flex-col">
               {/* Bid id */}
-              <p className="text-xl font-medium ">Bid {b.id}</p>
+              <p className="text-xl font-medium ">Bid {index + 1}</p>
               <div className="flex justify-center items-center gap-2">
-                <p className="text-md font-light">{b.bidderName}</p>
+                <p className="text-md font-light">
+                  {maskUsername(b.bidder.username)}
+                </p>
                 <div className="w-1.5 h-1.5 rounded-full bg-neutral-400"></div>
-                <p className="text-md font-light">{formattedDate(b.date)}</p>
+                <p className="text-md font-light">
+                  {formattedDate(b.createdAt)}
+                </p>
               </div>
             </div>
 
-            <p className="text-2xl font-semibold">${b.price}</p>
+            <p className="text-2xl font-semibold">${b.maxPrice}</p>
           </div>
         ))}
       </div>
