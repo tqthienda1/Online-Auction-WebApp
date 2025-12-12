@@ -169,7 +169,7 @@ export const addProduct = async (userId, body, files) => {
       startTime: new Date(startDate),
       endTime: new Date(endDate),
       autoExtend: autoExtend === "true",
-      ratingRequired: autoExtend === "true",
+      ratingRequired: ratingRequired === "true",
     },
   });
 
