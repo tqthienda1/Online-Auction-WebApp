@@ -94,7 +94,7 @@ export const updateBidInfo = async (
   });
 
   return updatedProduct;
-}
+};
 
 export const addProduct = async (userId, body, files) => {
   const {
@@ -168,8 +168,8 @@ export const addProduct = async (userId, body, files) => {
       buyNowPrice: buyNowPrice ? Number(buyNowPrice) : null,
       startTime: new Date(startDate),
       endTime: new Date(endDate),
-      autoExtend: Boolean(autoExtend),
-      ratingRequired: Boolean(ratingRequired),
+      autoExtend: autoExtend === "true",
+      ratingRequired: autoExtend === "true",
     },
   });
 
