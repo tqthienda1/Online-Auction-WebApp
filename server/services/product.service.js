@@ -13,6 +13,7 @@ export const getProducts = async ({
   sortBy,
   order,
   sellerId,
+  sold,
 }) => {
   const where = {
     name: search ? { contains: search, mode: "insensitive" } : undefined,
@@ -28,6 +29,8 @@ export const getProducts = async ({
             lte: maxPrice ? Number(maxPrice) : undefined,
           }
         : undefined,
+
+    sold: sold !== undefined ? sold : undefined,
   };
 
   const orderBy = {
@@ -43,6 +46,11 @@ export const getProducts = async ({
       skip,
       take,
       orderBy,
+      include: {
+        _count: {
+          select: { bids: true },
+        },
+      },
     }),
     prisma.product.count({ where }),
   ]);
@@ -67,10 +75,16 @@ export const getProductById = async (productId, db = prisma) => {
       category: true,
       bids: {
         orderBy: { createdAt: "desc" },
+        include: {
+          bidder: {
+            select: { id: true, username: true },
+          },
+        },
       },
       comments: {
         orderBy: { createdAt: "desc" },
       },
+      highestBidder: true,
       rating: true,
       order: true,
     },

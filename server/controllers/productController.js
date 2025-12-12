@@ -42,10 +42,12 @@ export const getProducts = async (req, res) => {
       sortBy = "startTime",
       order = "desc",
       sellerId,
+      sold,
     } = req.query;
 
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
+    const soldValue = sold === "true" ? true : false;
 
     const { products, total } = await productService.getProducts({
       page: pageNum,
@@ -57,14 +59,21 @@ export const getProducts = async (req, res) => {
       sortBy,
       order,
       sellerId,
+      sold: soldValue,
     });
+
+    const result = products.map((p) => ({
+      ...p,
+      totalBid: p._count.bids,
+      _count: undefined,
+    }));
 
     return res.status(200).json({
       success: true,
       total,
       page: pageNum,
       totalPages: Math.ceil(total / limitNum),
-      data: products,
+      data: result,
     });
   } catch (err) {
     console.log("Get /products fail: ", err);
