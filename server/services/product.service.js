@@ -90,7 +90,25 @@ export const getProductById = async (productId, db = prisma) => {
     },
   });
 
-  return product;
+  if (!product) return null;
+
+  const relatedProducts = await db.product.findMany({
+    where: {
+      categoryID: product.categoryID,
+      id: { not: product.id },
+      sold: false,
+    },
+    select: {
+      id: true,
+      productName: true,
+      productAvt: true,
+      currentPrice: true,
+      buyNowPrice: true,
+      endTime: true,
+    },
+    take: 5,
+  });
+  return { ...product, relatedProducts };
 };
 
 export const updateBidInfo = async (
