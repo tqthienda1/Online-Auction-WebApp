@@ -40,8 +40,8 @@ const AdminLayout = ({ children }) => {
                 className={({ isActive }) =>
                   `w-full justify-start gap-3 block rounded-lg font-semibold ${
                     isActive
-                      ? "bg-brand text-white hover:bg-gray-700 hover:text-white"
-                      : "bg-gray-50 text-brand hover:bg-brand hover:text-gray-50"
+                      ? "bg-yellow-400 text-white "
+                      : "bg-white text-brand hover:bg-yellow-400 hover:text-white"
                   }`
                 }
               >
