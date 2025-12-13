@@ -21,6 +21,15 @@ enum UpgradeStatus {
   ACCEPT
 }
 
+enum OrderStatus {
+  CREATED
+  RECEIVEPAYMENT
+  UPDATESHIPPINGINVOICE
+  PROVIDEBUYERINFO
+  RECEIVEPRODUCT
+  CANCELORDER
+  RATING
+}
 model User {
   id          String    @id       @default(uuid())   @db.Uuid
   supabaseId    String   @unique               
@@ -107,7 +116,7 @@ model Bid {
   productID String 
   bidderID String @db.Uuid
   maxPrice Int
-  createdAt DateTime
+  createdAt DateTime @default(now())
 
   product Product @relation("BidProduct", fields: [productID], references: [id], onDelete: Restrict)
   bidder User @relation("Bidder", fields: [bidderID], references: [id], onDelete: Restrict)
@@ -151,10 +160,10 @@ model Order {
   productID String @id
   sellerID String @db.Uuid
   buyerID String @db.Uuid
-  shippingAddress String
+  shippingAddress String?
   paymentInvoice String?
   shippingInvoice String?
-  receiveStatus Boolean @default(false)
+  status OrderStatus
 
   buyer User @relation("Buyer", fields: [buyerID], references: [id], onDelete: Restrict)
   seller User @relation("Seller", fields: [sellerID], references: [id], onDelete: Restrict)

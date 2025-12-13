@@ -1,6 +1,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, EffectCoverflow } from "swiper/modules";
 import { useState, useRef } from "react";
+
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -46,8 +47,8 @@ const ProductCoverflow = ({ products }) => {
       { label: "Current price", key: product.currentPrice },
       { label: "Highest bidder", key: product.highestBidder },
       { label: "Buy now", key: product.buyNowPrice },
-      { label: "Date added", key: product.startDate },
-      { label: "Time ends", key: product.endDate },
+      { label: "Date added", key: product.startTime },
+      { label: "Time ends", key: product.endTime },
       { label: "Total bids", key: product.totalBids },
     ]);
 
@@ -102,8 +103,8 @@ const ProductCoverflow = ({ products }) => {
             { label: "Current price", key: product.currentPrice },
             { label: "Highest bidder", key: product.highestBidder },
             { label: "Buy now", key: product.buyNowPrice },
-            { label: "Date added", key: product.startDate },
-            { label: "Time ends", key: product.endDate },
+            { label: "Date added", key: product.startTime },
+            { label: "Time ends", key: product.endTime },
             { label: "Total bids", key: product.totalBids },
           ]);
 
@@ -117,7 +118,7 @@ const ProductCoverflow = ({ products }) => {
             className="relative z-10 cursor-pointer pointer-events-auto aspect-3/4 h-full w-[400px] rounded-t-2xl "
           >
             <img
-              src={item.image}
+              src={item.productAvt}
               alt=""
               className={`w-full h-full object-cover rounded-t-2xl select-none transition-filter duration-300 ${
                 index === swiperRef.current?.activeIndex

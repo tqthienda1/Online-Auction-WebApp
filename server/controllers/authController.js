@@ -47,13 +47,13 @@ export const signIn = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
   try {
-    const { token_hash, type } = req.query;
+    const { email, token } = req.body;
 
-    if (!token_hash || type !== "signup") {
+    if (!email || !token) {
       return res.status(400).json({ message: "Invalid verification link." });
     }
 
-    const result = await authService.verifyEmail({ token_hash, type });
+    const result = await authService.verifyEmail({ email, token });
     return res.status(200).json(result);
   } catch (err) {
     return res.status(err.status || 500).json({

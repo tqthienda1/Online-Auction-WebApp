@@ -1,5 +1,5 @@
 import { CategoryService } from "../services/category.service.js";
-import { ProductService } from "../services/product.service.js";
+// import { ProductService } from "../services/product.service.js";
 
 export const CategoryController = {
   async getAll(req, res) {
