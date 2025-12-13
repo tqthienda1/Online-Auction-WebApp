@@ -27,8 +27,8 @@ const guestRoutes = [
   { path: "/add-products", component: AddProductsPage, layout: MainLayout },
   { path: "/user_profile", component: UserProfile, layout: UserProfileLayout },
   { path: "/admin", component: AdminControlPanel, layout: AdminLayout },
-  { path: "/buyer/payment", component: BuyerPaymentPage, layout: MainLayout },
-  { path: "/seller/payment", component: SellerPaymentPage, layout: MainLayout },
+  { path: "/buyer/payment/:productID", component: BuyerPaymentPage, layout: MainLayout },
+  { path: "/seller/payment/:productID", component: SellerPaymentPage, layout: MainLayout },
   {
     path: "/admin/categories",
     component: AdminCategoriesPage,
