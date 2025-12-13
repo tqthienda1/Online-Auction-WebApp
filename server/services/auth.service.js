@@ -6,7 +6,7 @@ export const signUp = async ({ email, password, username, dob, address }) => {
     email,
     password,
     options: {
-      emailRedirectTo: "http://localhost:3000/auth/verify",
+      emailRedirectTo: "http://localhost:5173",
     },
   });
 
@@ -50,10 +50,11 @@ export const signIn = async ({ email, password }) => {
   };
 };
 
-export const verifyEmail = async ({ token_hash, type }) => {
+export const verifyEmail = async ({ email, token }) => {
   const { data, error } = await supabase.auth.verifyOtp({
-    token_hash,
-    type: "signup",
+    email,
+    token,
+    type: "email",
   });
 
   if (error) {

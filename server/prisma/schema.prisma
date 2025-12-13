@@ -116,7 +116,7 @@ model Bid {
   productID String 
   bidderID String @db.Uuid
   maxPrice Int
-  createdAt DateTime
+  createdAt DateTime @default(now())
 
   product Product @relation("BidProduct", fields: [productID], references: [id], onDelete: Restrict)
   bidder User @relation("Bidder", fields: [bidderID], references: [id], onDelete: Restrict)

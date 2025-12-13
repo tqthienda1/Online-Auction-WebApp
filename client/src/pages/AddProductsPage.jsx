@@ -93,7 +93,6 @@ const AddProductsPage = () => {
     setLoading(true);
     const rawData = { ...data, description };
     const dataForm = new FormData();
-    console.log(rawData);
 
     for (const file of rawData.productImages) {
       dataForm.append("productImages", file);
@@ -110,8 +109,6 @@ const AddProductsPage = () => {
     dataForm.append("subCategory", "");
     dataForm.append("startDate", rawData.startDate);
     dataForm.append("endDate", rawData.endDate);
-
-    console.log(dataForm);
 
     try {
       const res = await http.post("/products", dataForm);
@@ -192,7 +189,7 @@ const AddProductsPage = () => {
               <option value="" hidden>
                 Add Category
               </option>
-              <option value="Laptop">Laptop</option>
+              <option value="Devices">Devices</option>
             </select>
             {errors.category && (
               <p className="text-red-500 text-sm mt-1">
@@ -215,7 +212,7 @@ const AddProductsPage = () => {
               <option value="" hidden>
                 Add Sub Category
               </option>
-              <option value="Laptop">Laptop</option>
+              <option value="Laptops">Laptops</option>
             </select>
             {errors.subCategory && (
               <p className="text-red-500 text-sm mt-1">
