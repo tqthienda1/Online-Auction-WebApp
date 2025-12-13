@@ -29,24 +29,19 @@ const SimilarProducts = ({ products }) => {
                   <Card>
                     <CardContent className="flex flex-col aspect-square items-center justify-center p-6">
                       <img
-                        src={p.img}
+                        src={p.productAvt}
                         alt={`image product ${index}`}
                         className="w-58 h-68 object-contain"
                       />
                       <p className="text-xl font-playfair font-medium mt-5">
-                        {p.name}
+                        {p.productName}
                       </p>
 
                       <p className="text-xl font-bold text-yellow-400">
-                        <span className="font-bold">$</span> {p.price}
+                        <span className="font-bold">$</span> {p.currentPrice}
                       </p>
 
                       <div className="flex flex-col w-full justify-center items-center">
-                        <div className="flex w-full justify-between items-end">
-                          <p className="">Highest Bidder</p>
-                          <p>{p.highestBid}</p>
-                        </div>
-
                         <div className="flex w-full justify-between items-end">
                           <p>Buy Now Price</p>
                           <p className="text-yellow-400 font-medium">
@@ -57,7 +52,7 @@ const SimilarProducts = ({ products }) => {
 
                         <div className="flex w-full justify-between items-end">
                           <p>Ending Date</p>
-                          <p>{formattedDate(p.endingDate)}</p>
+                          <p>{formattedDate(p.endTime)}</p>
                         </div>
 
                         <div className="flex mt-5 justify-between items-center gap-5 w-full">
