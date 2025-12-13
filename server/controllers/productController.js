@@ -38,8 +38,6 @@ export const addProduct = async (req, res) => {
       startDate === "" ||
       endDate === ""
     ) {
-      console.log(files);
-      console.log(typeof files);
       return res.status(400).json({ message: "Some data fields are missing!" });
     }
 
