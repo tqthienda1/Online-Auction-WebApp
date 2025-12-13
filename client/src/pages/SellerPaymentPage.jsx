@@ -4,12 +4,48 @@ import CancelOrder from '../components/order/CancelOrder';
 import Rating from '../components/order/Rating';
 import SellerProgress from '../components/order/SellerProgress';
 import ChatModal from '../components/order/ChatModal';
-import React, { useState } from 'react'
-
+import React, { useState, useEffect } from 'react'
+import { http as axios } from '../lib/utils'
+import {useParams} from 'react-router-dom'
 function SellerPaymentPage() {
+  const { productID } = useParams();
+  const [order, setOrder] = useState(null);
    const [currentStep, setCurrentStep] = useState(1);
    const [isCancelled, setIsCancelled] = useState(false);
    const [chatOpen, setChatOpen] = useState(false);
+  const mapStatusToStep = (status) => {
+      switch (status) {
+      case "CREATED":
+        return 1;
+      case "RECEIVEPAYMENT":
+        return 2;
+      case "UPDATESHIPPINGINVOICE":
+        return 3;
+      case "RATING":
+        return 4;
+      default:
+        return 1;
+    }
+  };
+
+  // function refetch order
+  const fetchOrder = async () => {
+    const res = await axios.get(`/orders/${productID}`);
+    setOrder(res.data);
+  };
+
+  // fetch order chạy 1 lần khi load trang
+  useEffect(() => {
+    fetchOrder();
+  }, [productID]);
+
+  // update currentStep khi order thay đổi
+  useEffect(() => {
+    if (order) {
+      setCurrentStep(mapStatusToStep(order.status));
+    }
+  }, [order]);
+
 
    if (isCancelled) {
       return (
@@ -37,11 +73,11 @@ function SellerPaymentPage() {
                    <p className="text-sm text-gray-600 mb-4">Manage the payment and shipping steps for your sold item.</p>
 
                    <div className="flex items-center gap-4">
-                       <img src={null} alt="product image" className="w-24 h-24 object-cover rounded" />
+                       <img src={order?.product?.image || null} alt="product" className="w-24 h-24 object-cover rounded" />
                        <div>
-                          <h2 className="font-medium">Product title</h2>
-                          <p className="text-sm text-gray-500">$57000 USD</p>
-                          <p className="text-sm text-gray-500">Buyer: Long Ngo</p>
+                          <h2 className="font-medium">{order?.product?.name}</h2>
+                          <p className="text-sm text-gray-500">${order?.product?.price}</p>
+                          <p className="text-sm text-gray-500">Buyer: {order?.buyer?.name}</p>
                           <p className="text-sm text-gray-500">Rating: 8/10</p>
                        </div>
                    </div>
@@ -60,19 +96,25 @@ function SellerPaymentPage() {
               {currentStep === 1 && (
                 <>
                 <CancelOrder onCancelled={() => setIsCancelled(true)} />
-                <PaymentReceivedConfirm onConfirmed={() => setCurrentStep(2)} />
+                <PaymentReceivedConfirm 
+                productID={productID}
+                onConfirmed={fetchOrder} />
                 </>
               )}
 
               {currentStep === 2 && (
               <>
                 <CancelOrder onCancelled={() => setIsCancelled(true)} />
-                <ShippingInvoice onUploaded={() => setCurrentStep(3)} />
+                <ShippingInvoice 
+                productID={productID}
+                onUploaded={fetchOrder} />
               </>
               )}
 
               {currentStep === 3 && (
-                <Rating type="buyer" />
+                <Rating type="buyer"
+                productID={productID}
+              onRated={fetchOrder}   />
               )}
            </div>
          </div>

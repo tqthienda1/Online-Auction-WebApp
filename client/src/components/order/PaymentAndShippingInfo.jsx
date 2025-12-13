@@ -1,15 +1,16 @@
 import React from 'react'
 import z from "zod"
+import axios from "axios"
 import { useForm } from "react-hook-form"
 import {useState, useEffect} from "react"
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z.object({
-    PaymentInvoice: z.instanceof(FileList).refine(files => files.length > 0, "Payment Invoice is required"),
-    ShippingAddress: z.string().nonempty("Shipping Address is required"),
+    paymentInvoice: z.instanceof(FileList).refine(files => files.length > 0, "Payment Invoice is required"),
+    shippingAddress: z.string().nonempty("Shipping Address is required"),
 })
 
-function PaymentAndShippingInfo({onUploaded}) {
+function PaymentAndShippingInfo({onUpdated, productID}) {
     const {register, handleSubmit, formState: {errors}} = useForm({
         resolver: zodResolver(schema),
     })
@@ -21,9 +22,21 @@ function PaymentAndShippingInfo({onUploaded}) {
     }
 
     const onSubmit = (data) => {
-        console.log("Payment and Shipping Data:", data);
-        if(typeof onUploaded === 'function') onUploaded()
-    }
+  const form = new FormData();
+  form.append("paymentInvoice", data.paymentInvoice[0]);
+  form.append("shippingAddress", data.shippingAddress);
+
+  console.log("Submitting to backend:", `/order/${productID}/buyerInfo`);
+
+  axios.put(`http://localhost:3000/orders/${productID}/buyerInfo`, form, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+})
+  .then(() => {
+    if (typeof onUpdated === 'function') onUpdated();
+  })
+  .catch(console.error);
+}
+
 
     return (
         <div className="mx-auto bg-white p-6 rounded-lg shadow-sm border border-gray-100">
@@ -31,16 +44,16 @@ function PaymentAndShippingInfo({onUploaded}) {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="PaymentInvoice">Payment Invoice</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="paymentInvoice">Payment Invoice</label>
 
-                    <label className="flex items-center gap-4 p-4 border-2 border-dashed rounded-lg cursor-pointer hover:border-[#FBBC04]" htmlFor="PaymentInvoice">
+                    <label className="flex items-center gap-4 p-4 border-2 border-dashed rounded-lg cursor-pointer hover:border-[#FBBC04]" htmlFor="paymentInvoice">
                         <div className="flex-1">
                             <div className="text-sm text-gray-600">Click to upload or drag and drop</div>
-                            <div className="text-xs text-gray-400">Accepted: PDF, JPG, PNG</div>
+                            <div className="text-xs text-gray-400">Accepted: JPG, PNG</div>
                         </div>
                     </label>
 
-                    <input id="PaymentInvoice" type="file" accept="application/pdf,image/*" className="hidden" {...register('PaymentInvoice', { onChange: onFiles })} />
+                    <input id="paymentInvoice" type="file" accept="application/pdf,image/*" className="hidden" {...register('paymentInvoice', { onChange: onFiles })} />
 
                     {selected.length > 0 && (
                         <ul className="mt-3 space-y-2">
@@ -56,19 +69,19 @@ function PaymentAndShippingInfo({onUploaded}) {
                         </ul>
                     )}
 
-                    {errors.PaymentInvoice && <p className="text-red-500 text-sm mt-2">{errors.PaymentInvoice.message}</p>}
+                    {errors.paymentInvoice && <p className="text-red-500 text-sm mt-2">{errors.paymentInvoice.message}</p>}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="ShippingAddress">Shipping Address</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="shippingAddress">Shipping Address</label>
                     <input
-                        id="ShippingAddress"
+                        id="shippingAddress"
                         type="text"
                         placeholder="Enter your shipping address"
-                        {...register('ShippingAddress')}
+                        {...register('shippingAddress')}
                         className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#FBBC04] focus:border-transparent"
                     />
-                    {errors.ShippingAddress && <p className="text-red-500 text-sm mt-2">{errors.ShippingAddress.message}</p>}
+                    {errors.shippingAddress && <p className="text-red-500 text-sm mt-2">{errors.shippingAddress.message}</p>}
                 </div>
 
                 <div className="flex justify-end">

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import z from 'zod'
+import { http as axios } from "../../lib/utils"
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -7,13 +8,20 @@ const schema = z.object({
     paymentReceived: z.boolean().refine(v => v === true, 'You must confirm receipt'),
 })
 
-function PaymentReceivedConfirm({ onConfirmed }) {
+function PaymentReceivedConfirm({ productID, onConfirmed }) {
     const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(schema) })
-    const [checked, setChecked] = useState(false)
+    const [loading, setLoading] = useState(false);
 
-    const onSubmit = (data) => {
-        console.log('payment confirmed', data)
-        if (typeof onConfirmed === 'function') onConfirmed()
+    const onSubmit = async () => {
+        try {
+            setLoading(true);
+            await axios.put(`/orders/${productID}/receivePayment`);
+            if (typeof onConfirmed === 'function') onConfirmed()
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -25,8 +33,13 @@ function PaymentReceivedConfirm({ onConfirmed }) {
 
                 <div className="flex items-center gap-3">
                     <label className="relative inline-flex items-center cursor-pointer">
-                        <input id="paymentReceived" type="checkbox" className="sr-only peer" {...register('paymentReceived', { onChange: (e) => setChecked(e.target.checked) })} />
-                        <div className={`w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-[#FBBC04] peer-checked:after:translate-x-5 after:content-[''] after:inline-block after:w-5 after:h-5 after:bg-white after:rounded-full after:shadow-sm transition-all`}></div>
+                        <input 
+                            id="paymentReceived" 
+                            type="checkbox" 
+                            className="sr-only peer" 
+                            {...register('paymentReceived')} 
+                        />
+                        <div className="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-[#FBBC04] peer-checked:after:translate-x-5 after:content-[''] after:inline-block after:w-5 after:h-5 after:bg-white after:rounded-full after:shadow-sm transition-all"></div>
                     </label>
                     <label htmlFor="paymentReceived" className="text-sm text-gray-800">I have received the payment</label>
                 </div>
@@ -34,7 +47,13 @@ function PaymentReceivedConfirm({ onConfirmed }) {
                 {errors.paymentReceived && <p className="text-red-500 text-sm">{errors.paymentReceived.message}</p>}
 
                 <div className="flex justify-end">
-                    <button type="submit" className="bg-[#FBBC04] text-white px-5 py-2 rounded-md">Confirm</button>
+                    <button 
+                        type="submit" 
+                        disabled={loading} 
+                        className="bg-[#FBBC04] text-white px-5 py-2 rounded-md"
+                    >
+                        {loading ? "Processing..." : "Confirm"}
+                    </button>
                 </div>
             </form>
         </div>

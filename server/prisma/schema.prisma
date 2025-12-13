@@ -28,6 +28,7 @@ enum OrderStatus {
   PROVIDEBUYERINFO
   RECEIVEPRODUCT
   CANCELORDER
+  RATING
 }
 model User {
   id          String    @id       @default(uuid())   @db.Uuid
