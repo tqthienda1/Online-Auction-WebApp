@@ -4,17 +4,6 @@ import { Link } from "react-router-dom";
 
 import logo from "../../public/image/logo.png";
 
-const mockUpData = {
-  categories: [
-    "Fashion",
-    "Art",
-    "Jewery&Watches",
-    "Furniture",
-    "Electronic",
-    "Vehicle",
-    "Other",
-  ],
-};
 
 const Header = () => {
   return (
