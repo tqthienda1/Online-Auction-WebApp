@@ -2,9 +2,9 @@ import * as authService from "../services/auth.service.js";
 
 export const signUp = async (req, res) => {
   try {
-    const { email, password, username, dob, address } = req.body;
+    const { supabaseId, username, dob, address } = req.body;
 
-    if (!email || !password || !username || !dob || !address) {
+    if (!supabaseId || !username || !dob || !address) {
       return res.status(400).json({
         message:
           "Some required information is missing. Please review and complete the form.",
@@ -12,8 +12,7 @@ export const signUp = async (req, res) => {
     }
 
     const result = await authService.signUp({
-      email,
-      password,
+      supabaseId,
       username,
       dob,
       address,
@@ -47,13 +46,13 @@ export const signIn = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
   try {
-    const { email, token } = req.body;
+    const { supabaseId } = req.body;
 
-    if (!email || !token) {
-      return res.status(400).json({ message: "Invalid verification link." });
+    if (!supabaseId) {
+      return res.status(400).json({ message: "Supabase Id does not exist" });
     }
 
-    const result = await authService.verifyEmail({ email, token });
+    const result = await authService.verifyEmail({ supabaseId });
     return res.status(200).json(result);
   } catch (err) {
     return res.status(err.status || 500).json({

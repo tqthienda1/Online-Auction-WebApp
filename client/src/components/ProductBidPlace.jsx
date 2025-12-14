@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { getTimeRemaining } from "../helper/getTimeRemaining";
 import InputPrice from "./InputPrice";
 import SellerInformation from "./SellerInformation";
-import { z } from "zod";
 import { http } from "../lib/utils.js";
 
 const ProductBidPlace = ({
@@ -12,17 +11,13 @@ const ProductBidPlace = ({
   buyNowPrice,
   seller,
   bidder,
+  onBidSuccess,
 }) => {
   const [timeLeft, setTimeLeft] = useState(getTimeRemaining(endingDate));
   const [bidValue, setBidValue] = useState("");
-  const [isError, setIsError] = useState(null);
+  const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
-  const [isSuccess, setIsSuccess] = useState(false);
-
-  const bidSchema = z
-    .number({ invalid_type_error: "Bid must be a number" })
-    .min(price || 0, `Bid must be at least ${price || 0} USD`);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -34,39 +29,36 @@ const ProductBidPlace = ({
 
   useEffect(() => {
     if (!bidValue) {
-      setIsError(null);
+      setError(null);
       return;
     }
 
-    const minPrice = Number(price) || 0;
-    const parsed = Number(bidValue);
+    const value = Number(bidValue);
 
-    const result = z
-      .number()
-      .min(minPrice, `Bid must be at least ${minPrice} USD`)
-      .safeParse(parsed);
-
-    setIsError(result.success ? null : result.error.issues[0].message);
+    if (Number.isNaN(value)) {
+      setError("Bid must be a number");
+    } else if (value < price) {
+      setError(`Bid must be at least ${price} USD`);
+    } else {
+      setError(null);
+    }
   }, [bidValue, price]);
 
   const handlePlaceBid = async () => {
-    if (isError || !bidValue) return;
+    if (error || !bidValue) return;
 
     try {
       setIsSubmitting(true);
-      setSubmitError(false);
 
       await http.post("/bids", {
         productId: productId,
         maxPrice: Number(bidValue),
       });
 
-      setIsSuccess(true);
       setBidValue("");
-
-      setTimeout(() => setIsSuccess(false), 2000);
+      onBidSuccess?.();
     } catch (err) {
-      setSubmitError(err.response?.data?.message || "Failed to place bid");
+      setError(err.response?.data?.message || "Failed to place bid");
     } finally {
       setIsSubmitting(false);
     }
@@ -126,8 +118,8 @@ const ProductBidPlace = ({
 
         <InputPrice value={bidValue} onChange={setBidValue} />
 
-        {isError && (
-          <p className="w-[90%] text-center text-sm text-red-500">{isError}</p>
+        {error && (
+          <p className="w-[90%] text-center text-sm text-red-500">{error}</p>
         )}
 
         <div className="flex w-[90%] text-end">
@@ -141,19 +133,15 @@ const ProductBidPlace = ({
         <div className="flex flex-col w-full justify-center items-center gap-2">
           <button
             type="button"
-            disabled={!!isError || bidValue === ""}
+            disabled={!!error || bidValue === ""}
             onClick={handlePlaceBid}
             className="w-[90%] h-10 bg-brand uppercase text-yellow-400 text-xl font-bold hover:bg-yellow-400 hover:text-brand transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting && (
-              <span className="animate-spin h-4 w-4 border-2 border-yellow-400 border-t-transparent rounded-full" />
+              <span className="inset-x-0 bottom-0 h-1 bg-yellow-400 animate-pulse" />
             )}
 
-            {isSuccess
-              ? "✓ Bid placed"
-              : isSubmitting
-              ? "Placing bid..."
-              : "Place Bid"}
+            {isSubmitting ? "Placing bid..." : "Place Bid"}
           </button>
 
           <button
