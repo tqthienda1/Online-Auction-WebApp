@@ -6,6 +6,7 @@ import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "../../public/image/logo.png";
+import { logIn } from "../services/auth.service.js";
 
 const LogInPage = () => {
   const schema = z.object({
@@ -24,8 +25,17 @@ const LogInPage = () => {
   });
   const [showPass, setShowPass] = useState(false);
 
-  const onSubmit = (data) => {
-    console.log("login data", data);
+  const onSubmit = async (data) => {
+    try {
+      await logIn({
+        email: data.identifier,
+        password: data.password,
+      });
+
+      navigate("/");
+    } catch (err) {
+      alert(err.message || "Log in failed");
+    }
   };
 
   return (
