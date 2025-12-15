@@ -7,7 +7,7 @@ const ProfileTab = ({ tab, setTab }) => {
   return (
     <div className="border-b-brand flex gap-5 items-center w-3/4">
       <button
-        className={`w-30 border px-3 py-1 font-semibold text-md rounded-lg flex items-center gap-1 justify-center ${
+        className={`w-30 cursor-pointer border px-3 py-1 font-semibold text-md rounded-lg flex items-center gap-1 justify-center ${
           tab === "love"
             ? "text-white bg-brand hover:bg-gray-500"
             : "text-brand hover:bg-gray-50"
@@ -18,7 +18,7 @@ const ProfileTab = ({ tab, setTab }) => {
         Love
       </button>
       <button
-        className={`w-30 border px-3 py-1 font-semibold text-md rounded-lg flex items-center gap-1 justify-center ${
+        className={`w-30 cursor-pointer border px-3 py-1 font-semibold text-md rounded-lg flex items-center gap-1 justify-center ${
           tab === "bidding"
             ? "text-white bg-brand hover:bg-gray-500"
             : "text-brand hover:bg-gray-50"
@@ -29,7 +29,7 @@ const ProfileTab = ({ tab, setTab }) => {
         Bidding
       </button>
       <button
-        className={`w-30 border px-3 py-1 font-semibold text-md rounded-lg flex items-center gap-1 justify-center ${
+        className={`w-30 cursor-pointer border px-3 py-1 font-semibold text-md rounded-lg flex items-center gap-1 justify-center ${
           tab === "won"
             ? "text-white bg-brand hover:bg-gray-500"
             : "text-brand hover:bg-gray-50"
