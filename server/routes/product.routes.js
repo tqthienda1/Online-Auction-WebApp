@@ -24,12 +24,18 @@ router.get("/", getProducts);
 router.get("/:id", getProductById);
 
 // // seller
-// router.post("/", authMiddleware, requireRole(["seller"]), addProduct);
+router.post(
+  "/",
+  authMiddleware,
+  requireRole(["SELLER"]),
+  upload.array("productImages"),
+  addProduct
+);
 router.put("/:id", authMiddleware, requireRole(["SELLER"]), updateProduct);
 router.delete("/:id", authMiddleware, requireRole(["SELLER"]), deleteProduct);
 
 // admin
 // router.delete("/", deleteProduct);
 
-router.post("/", mockUser, upload.array("productImages"), addProduct);
+//router.post("/", mockUser, upload.array("productImages"), addProduct);
 export default router;
