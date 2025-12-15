@@ -28,14 +28,14 @@ export const CategoryService = {
 
   async update(id, data) {
     return await prisma.category.update({
-      where: { id },
+      where: { id: id },
       data,
     });
   },
 
   async delete(id) {
     return await prisma.category.delete({
-      where: { id },
+      where: { id: id },
     });
   },
 
