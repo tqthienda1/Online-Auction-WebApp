@@ -81,21 +81,15 @@ const CategoryPage = () => {
     }
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>Error loading data: {error}</div>;
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
+  // if (error) {
+  //   return <div>Error loading data: {error}</div>;
+  // }
 
   return (
     <div>
-      {banner ? (
-        <CategoryBanner title={banner.title} imageUrl={banner.imageUrl} />
-      ) : (
-        <div>Cannot find banner.</div>
-      )}
-
       <main
         ref={mainContentRef}
         className="grid grid-cols-10 gap-8 px-5 py-10 mt-10"

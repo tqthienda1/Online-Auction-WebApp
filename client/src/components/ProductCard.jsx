@@ -21,7 +21,7 @@ const ProductCard = ({ product, showType }) => {
     : false;
 
   return (
-    <div className="relative flex flex-col justify-between border border-gray-200 rounded-lg shadow-sm bg-white p-4 transition-shadow hover:shadow-xl">
+    <div className="relative flex flex-col justify-between items-center border border-gray-200 rounded-lg shadow-sm bg-white p-4 transition-shadow hover:shadow-xl">
       {isRecentlyAdded && (
         <span className="absolute top-0 left-0 -mt-3 ml-3 bg-yellow-400 text-yellow-900 text-xs font-semibold px-3 py-1 rounded-full z-10">
           Recently added
@@ -30,7 +30,7 @@ const ProductCard = ({ product, showType }) => {
 
       {showType === 1 && (
         <>
-          <div className="w-[250px]">
+          <div className="w-[250px] cursor-pointer">
             <div className="aspect-video w-full mb-3 flex items-center justify-center ">
               <img
                 src={product.productAvt}
@@ -46,7 +46,7 @@ const ProductCard = ({ product, showType }) => {
               </span>
             </div>
 
-            <h3 className="text-center font-semibold text-gray-800 mb-1 truncate font-playfair">
+            <h3 className="text-center font-semibold text-gray-800 mb-1 truncate">
               {product.productName}
             </h3>
 
@@ -75,11 +75,11 @@ const ProductCard = ({ product, showType }) => {
           </div>
 
           <div className="flex items-center justify-center gap-3">
-            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md border-2 border-gray-300 text-brand font-semibold hover:bg-gray-100">
+            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md text-white cursor-pointer font-semibold hover:bg-gray-100">
               <RiAuctionLine className="w-5 h-5 mr-1" />
               Bid now
             </button>
-            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md border-2 border-gray-300 text-brand font-semibold bg-yellow-500 hover:bg-yellow-600">
+            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md text-white cursor-pointer font-semibold bg-yellow-500 hover:bg-yellow-600">
               <BsFillCartCheckFill className="w-5 h-5 mr-1" />
               Buy now
             </button>
@@ -88,7 +88,7 @@ const ProductCard = ({ product, showType }) => {
       )}
 
       {showType === 2 && (
-        <div className="w-[250px]">
+        <div className="w-[250px] cursor-pointer">
           <div className="flex flex-col aspect-video w-full items-center justify-center">
             <img
               src={product.productAvt}
@@ -96,12 +96,12 @@ const ProductCard = ({ product, showType }) => {
               className="max-h-40 max-w-full object-contain"
             />
 
-            <h3 className="text-center font-semibold text-gray-800 mb-1 truncate font-playfair mt-5">
+            <h3 className="text-center font-semibold text-gray-800 mb-1 truncate mt-5">
               {product.productName}
             </h3>
 
             <div className=" space-y-1 mb-4 w-full">
-              <p className="flex flex-col justify-center items-center">
+              <p className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Current price:</span>
                 <span className="text-lg font-bold text-yellow-400">
                   {product.currentPrice.toLocaleString()}₫
@@ -113,7 +113,7 @@ const ProductCard = ({ product, showType }) => {
                 <span>{new Date(product.endTime).toLocaleString()}</span>
               </p>
             </div>
-            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md border-2 border-gray-300 text-brand font-semibold bg-yellow-500 hover:bg-yellow-600">
+            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md cursor-pointer text-white font-semibold bg-yellow-500 hover:bg-yellow-600">
               Bid now
             </button>
           </div>
@@ -121,7 +121,7 @@ const ProductCard = ({ product, showType }) => {
       )}
 
       {showType === 3 && (
-        <div className="w-[250px]">
+        <div className="w-[250px] cursor-pointer">
           <div className="flex flex-col aspect-video w-full items-center justify-center">
             <img
               src={product.productAvt}
@@ -129,19 +129,19 @@ const ProductCard = ({ product, showType }) => {
               className="max-h-40 max-w-full object-contain"
             />
 
-            <h3 className="text-center font-semibold text-gray-800 mb-1 truncate font-playfair mt-5">
+            <h3 className="text-center font-semibold text-gray-800 mb-1 truncate mt-5">
               {product.productName}
             </h3>
 
             <div className=" space-y-1 mb-4 w-full">
-              <p className="flex flex-col">
+              <p className="flex justify-between">
                 <span className="text-sm text-gray-600">Current price:</span>
                 <span className="text-lg font-bold text-yellow-400 flex items-center justify-center">
                   {product.currentPrice.toLocaleString()}₫
                 </span>
               </p>
 
-              <p className="flex flex-col">
+              <p className="flex justify-between">
                 <span className="text-sm text-gray-600">Highest price:</span>
                 <span className="text-lg font-bold text-yellow-400 flex items-center justify-center">
                   {product.currentPrice.toLocaleString()}₫
@@ -153,7 +153,7 @@ const ProductCard = ({ product, showType }) => {
                 <span>{new Date(product.endTime).toLocaleString()}</span>
               </p>
             </div>
-            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md border-2 border-gray-300 text-brand font-semibold bg-yellow-500 hover:bg-yellow-600">
+            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md cursor-pointer text-white font-semibold bg-yellow-500 hover:bg-yellow-600">
               Raise the bid
             </button>
           </div>
@@ -161,7 +161,7 @@ const ProductCard = ({ product, showType }) => {
       )}
 
       {showType === 4 && (
-        <div className="w-[250px]">
+        <div className="w-[250px] cursor-pointer">
           <div className="flex flex-col aspect-video w-full items-center justify-center">
             <img
               src={product.productAvt}
@@ -169,12 +169,12 @@ const ProductCard = ({ product, showType }) => {
               className="max-h-40 max-w-full object-contain"
             />
 
-            <h3 className="text-center font-semibold text-gray-800 mb-1 truncate font-playfair mt-5">
+            <h3 className="text-center font-semibold text-gray-800 mb-1 truncate mt-5">
               {product.productName}
             </h3>
 
             <div className=" space-y-1 mb-4 w-full">
-              <p className="flex flex-col">
+              <p className="flex justify-between">
                 <span className="text-sm text-gray-600">Won price:</span>
                 <span className="text-lg font-bold text-yellow-400 flex items-center justify-center">
                   {product.currentPrice.toLocaleString()}₫
@@ -193,7 +193,7 @@ const ProductCard = ({ product, showType }) => {
                 <span>{new Date(product.endTime).toLocaleString()}</span>
               </p>
             </div>
-            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md border-2 border-gray-300 text-brand font-semibold bg-yellow-500 hover:bg-yellow-600">
+            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md cursor-pointer text-white font-semibold bg-yellow-500 hover:bg-yellow-600">
               Rate the seller
             </button>
           </div>
