@@ -158,7 +158,7 @@ const AddProductsPage = () => {
     dataForm.append("startingPrice", rawData.startingPrice);
     dataForm.append("buyNowPrice", rawData.buyNowPrice);
     dataForm.append("category", rawData.category);
-    dataForm.append("subCategory", "");
+    dataForm.append("subCategory", rawData.subCategory);
     dataForm.append("startDate", rawData.startDate);
     dataForm.append("endDate", rawData.endDate);
 
@@ -179,6 +179,7 @@ const AddProductsPage = () => {
   const onSubmit = (data) => {
     setShowConfirm(true);
     setData(data);
+    console.log(data);
   };
 
   return (
@@ -280,7 +281,7 @@ const AddProductsPage = () => {
                     </span>
                     <input
                       type="text"
-                      value=""
+                      // value=""
                       {...register("startingPrice", { valueAsNumber: true })}
                       className="w-full border border-gray-300 rounded-2xl px-10 py-3 text-sm focus:outline-none focus:border-yellow-400"
                     />
@@ -302,7 +303,7 @@ const AddProductsPage = () => {
                     </span>
                     <input
                       type="text"
-                      value=""
+                      // value=""
                       {...register("bidStep", { valueAsNumber: true })}
                       className="w-full border border-gray-300 rounded-2xl px-10 py-3 text-sm focus:outline-none focus:border-yellow-400"
                     />
