@@ -6,7 +6,7 @@ import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "../../public/image/logo.png";
-import { logIn } from "../services/auth.service.js";
+import { logIn, signInWithGoogle } from "../services/auth.service.js";
 
 const LogInPage = () => {
   const schema = z.object({
@@ -35,6 +35,14 @@ const LogInPage = () => {
       navigate("/");
     } catch (err) {
       alert(err.message || "Log in failed");
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      alert(err.message || "Google sign up failed");
     }
   };
 
@@ -116,7 +124,10 @@ const LogInPage = () => {
         </div>
 
         <div className="mt-8 space-y-4">
-          <button className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3 cursor-pointer">
+          <button
+            className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3 cursor-pointer"
+            onClick={handleGoogleSignIn}
+          >
             <FaGoogle className="text-red-500" />
             <span>Log in with Google</span>
           </button>

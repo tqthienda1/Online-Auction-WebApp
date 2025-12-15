@@ -4,10 +4,9 @@ export const signUp = async (req, res) => {
   try {
     const { supabaseId, username, dob, address } = req.body;
 
-    if (!supabaseId || !username || !dob || !address) {
+    if (!supabaseId) {
       return res.status(400).json({
-        message:
-          "Some required information is missing. Please review and complete the form.",
+        message: "Some required information is missing.",
       });
     }
 
@@ -37,6 +36,24 @@ export const signIn = async (req, res) => {
     }
     const result = await authService.signIn({ email, password });
     return res.status(200).json(result);
+  } catch (err) {
+    return res.status(err.status || 500).json({
+      message: err.message || "Internal server error",
+    });
+  }
+};
+
+export const signInWithGoogle = async (req, res) => {
+  try {
+    const { supabaseId, email } = req.body;
+
+    if (!supabaseId || !email) {
+      return res.status(400).json({
+        message: "Some required information is missing.",
+      });
+    }
+
+    const result = await authService.signInWithGoogle(supabaseId, email);
   } catch (err) {
     return res.status(err.status || 500).json({
       message: err.message || "Internal server error",

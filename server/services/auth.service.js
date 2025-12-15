@@ -38,6 +38,28 @@ export const signIn = async ({ email, password }) => {
   };
 };
 
+export const signInWithGoogle = async ({ supabaseId, email }) => {
+  const existingUser = await prisma.user.findUnique({
+    where: { supabaseId },
+  });
+
+  if (existingUser) {
+    return existingUser;
+  }
+
+  const newUser = await prisma.user.create({
+    data: {
+      supabaseId,
+      username: email,
+      role: "BIDDER",
+      ratingPos: 0,
+      ratingNeg: 0,
+    },
+  });
+
+  return newUser;
+};
+
 export const verifyEmail = async ({ supabaseId }) => {
   await prisma.user.update({
     where: { supabaseId },
