@@ -26,7 +26,12 @@ router.get("/:id", getProductById);
 // // seller
 // router.post("/", authMiddleware, requireRole(["seller"]), addProduct);
 router.put("/:id", authMiddleware, requireRole(["SELLER"]), updateProduct);
-router.delete("/:id", authMiddleware, requireRole(["SELLER"]), deleteProduct);
+router.delete(
+  "/:id",
+  // authMiddleware,
+  // requireRole(["SELLER, ADMIN"]),
+  deleteProduct
+);
 
 // admin
 // router.delete("/", deleteProduct);
