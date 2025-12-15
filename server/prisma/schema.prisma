@@ -42,16 +42,16 @@ model User {
   emailVerified Boolean   @default(false)
 
 
-  givenRatings       Rating[]      @relation("GivenRatings")
-  receivedRatings    Rating[]      @relation("ReceivedRatings")
-  sellingProduct     Product[]     @relation("ProductSeller")
-  highestBidProducts Product[]     @relation("HighestBidder")
-  watchList          WatchList[]   @relation("UserWatchList")
-  comments           Comment[]     @relation("UserComment")
-  upgradeRequest     UpgradeRequest? @relation("UserUpgradeRequest")
-  boughtOrders       Order[]       @relation("Buyer")
-  soldOrders         Order[]       @relation("Seller")
-  bids               Bid[]         @relation("Bidder")
+  givenRatings       Rating[]         @relation("GivenRatings")
+  receivedRatings    Rating[]         @relation("ReceivedRatings")
+  sellingProduct     Product[]        @relation("ProductSeller")
+  highestBidProducts Product[]        @relation("HighestBidder")
+  watchList          WatchList[]      @relation("UserWatchList")
+  comments           Comment[]        @relation("UserComment")
+  upgradeRequest     UpgradeRequest[] @relation("UserUpgradeRequest")
+  boughtOrders       Order[]          @relation("Buyer")
+  soldOrders         Order[]          @relation("Seller")
+  bids               Bid[]            @relation("Bidder")
 }
 
 model Product {
@@ -147,11 +147,11 @@ model Comment {
 }
 
 model UpgradeRequest {
-  id String @id @default(uuid()) 
-  userID String @unique @db.Uuid
-  status UpgradeStatus
-  createdAt DateTime
-  decidedTime DateTime?
+  id            String          @id                 @default(uuid()) 
+  userID        String          @db.Uuid
+  status        UpgradeStatus   @default(PENDING)
+  createdAt     DateTime        @default(now())
+  decidedTime   DateTime?
 
   user User @relation("UserUpgradeRequest", fields: [userID], references: [id], onDelete: Cascade)
 }
