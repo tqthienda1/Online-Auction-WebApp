@@ -103,6 +103,7 @@ export const getProductById = async (productId, db = prisma) => {
       productName: true,
       productAvt: true,
       currentPrice: true,
+      startingPrice: true,
       buyNowPrice: true,
       endTime: true,
     },

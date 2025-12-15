@@ -23,7 +23,7 @@ const mockUser = (req, res, next) => {
 router.get("/", getProducts);
 router.get("/:id", getProductById);
 
-// // seller
+// seller
 router.post(
   "/",
   authMiddleware,

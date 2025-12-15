@@ -98,19 +98,16 @@ export const signInWithGoogle = async () => {
     throw { status: 400, message: error.message };
   }
 
-  // try {
-  //   await http.post("/auth/signin-google", {
-  //     supabaseId: data.user.id,
-  //     email: data.user.email,
-  //   });
-  // } catch (err) {
-  //   throw {
-  //     status: err.response?.status || 500,
-  //     message:
-  //       err.response?.data?.message ||
-  //       "Sign in with Google in supabase OAuth successed but failed in db",
-  //   };
-  // }
-
   return data;
+};
+
+export const logOut = async () => {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    throw {
+      status: 400,
+      message: error.message,
+    };
+  }
 };

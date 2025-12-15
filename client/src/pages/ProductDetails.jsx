@@ -18,7 +18,7 @@ const ProductDetails = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(null);
-  const [product, setProduct] = useState([]);
+  const [product, setProduct] = useState();
   const [curFrame, setCurFrame] = useState("description");
   const [question, setQuestion] = useState("");
 

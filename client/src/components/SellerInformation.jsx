@@ -1,8 +1,8 @@
 const SellerInformation = ({ seller, bidder }) => {
   return (
     <div className="flex flex-col bg-neutral-300 p-6  w-[90%] shadow-md mt-5">
-      <div className="flex justify-between items-center border-b border-white pb-4">
-        <div className="flex flex-col">
+      <div className="flex justify-between items-center border-b border-white pb-4 ">
+        <div className="flex flex-col max-w-[60%] overflow-hidden">
           <h3 className="text-lg font-semibold text-gray-800">Seller</h3>
           <h2 className="text-3xl font-playfair font-bold mt-1">
             {seller.username}
@@ -18,7 +18,6 @@ const SellerInformation = ({ seller, bidder }) => {
           </button>
         </div>
 
-        {/* Avatar placeholder */}
         <div className="w-28 h-28 bg-white rounded-full border border-gray-300"></div>
       </div>
       {bidder && (
@@ -38,7 +37,6 @@ const SellerInformation = ({ seller, bidder }) => {
             </p>
           </div>
 
-          {/* Avatar placeholder */}
           <div className="w-28 h-28 bg-white rounded-full border border-gray-300"></div>
         </div>
       )}
