@@ -6,7 +6,7 @@ import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "../../public/image/logo.png";
-import { signUp } from "../services/auth.service.js";
+import { signInWithGoogle, signUp } from "../services/auth.service.js";
 
 const schema = z
   .object({
@@ -35,7 +35,6 @@ const SignUpPage = () => {
     resolver: zodResolver(schema),
     mode: "onBlur",
   });
-  const password = watch("Password");
 
   const navigate = useNavigate();
 
@@ -58,6 +57,14 @@ const SignUpPage = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      alert(err.message || "Google sign up failed");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-6 pb-6">
       <div className="max-w-xl w-full">
@@ -70,6 +77,10 @@ const SignUpPage = () => {
         </div>
 
         <hr className="my-8 border-gray-200" />
+
+        <h2 className="text-center font-playfair text-3xl font-semibold text-gray-800 mb-8">
+          Sign up
+        </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
@@ -119,13 +130,7 @@ const SignUpPage = () => {
             <input
               type={showPass ? "text" : "password"}
               id="confirmPassword"
-              {...register(
-                "confirmPassword"
-                //     , {
-                //     validate: value =>
-                //     value === password || "Passwords do not match"
-                // }
-              )}
+              {...register("confirmPassword")}
               placeholder="Confirm password"
               className="w-full border-b border-gray-300 focus:outline-none py-3 placeholder-gray-400"
             />
@@ -203,7 +208,10 @@ const SignUpPage = () => {
           </div>
         </form>
         <div className="mt-8 space-y-4">
-          <button className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3 cursor-pointer">
+          <button
+            className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3 cursor-pointer"
+            onClick={handleGoogleSignIn}
+          >
             <FaGoogle className="text-red-500" />
             <span>Sign up with Google</span>
           </button>
