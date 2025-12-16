@@ -109,8 +109,8 @@ const AddProductsPage = () => {
     setFiles((prev) => prev.filter((item, index) => index !== idx));
   };
 
-  const handleSelectCategory = async (parentId) => {
-    const category = categories.find((item) => item.id === parentId);
+  const handleSelectCategory = async (parentName) => {
+    const category = categories.find((item) => item.name === parentName);
     const newSubCategories = category.categoryChild;
 
     setSubCategories(newSubCategories);
@@ -231,7 +231,7 @@ const AddProductsPage = () => {
                     Add Category
                   </option>
                   {categories.map((item, index) => (
-                    <option key={index} value={item.id}>
+                    <option key={index} value={item.name}>
                       {item.name}
                     </option>
                   ))}
@@ -258,7 +258,7 @@ const AddProductsPage = () => {
                     Add Sub Category
                   </option>
                   {subCategories.map((item, index) => (
-                    <option key={index} value={item.id}>
+                    <option key={index} value={item.name}>
                       {item.name}
                     </option>
                   ))}
