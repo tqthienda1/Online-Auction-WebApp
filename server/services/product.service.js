@@ -33,9 +33,18 @@ export const getProducts = async ({
     sold: sold !== undefined ? sold : undefined,
   };
 
-  const orderBy = {
-    [sortBy]: order,
-  };
+  let orderBy;
+  if (sortBy === "totalBid") {
+    orderBy = {
+      bids: {
+        _count: order === "asc" ? "asc" : "desc",
+      },
+    };
+  } else {
+    orderBy = {
+      [sortBy]: order === "asc" ? "asc" : "desc",
+    };
+  }
 
   const skip = (page - 1) * limit;
   const take = limit;
