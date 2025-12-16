@@ -49,7 +49,7 @@ const ProductCoverflow = ({ products }) => {
       { label: "Buy now", key: product.buyNowPrice },
       { label: "Date added", key: product.startTime },
       { label: "Time ends", key: product.endTime },
-      { label: "Total bids", key: product.totalBids },
+      { label: "Total bids", key: product.totalBid },
     ]);
 
     //wait changing slide animation
@@ -105,7 +105,7 @@ const ProductCoverflow = ({ products }) => {
             { label: "Buy now", key: product.buyNowPrice },
             { label: "Date added", key: product.startTime },
             { label: "Time ends", key: product.endTime },
-            { label: "Total bids", key: product.totalBids },
+            { label: "Total bids", key: product.totalBid },
           ]);
 
           setSlideWidth(activeSlide.offsetWidth);
