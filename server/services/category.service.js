@@ -52,18 +52,31 @@ export const CategoryService = {
   },
 
   async getTree() {
-    return await prisma.category.findMany({
+    const categories = await prisma.category.findMany({
       where: { parentID: null },
-      include: { categoryChild: true },
-    });
-  },
-
-  async getCategoryWithProducts(id) {
-    return await prisma.category.findUnique({
-      where: { id },
       include: {
-        product: true,
+        _count: {
+          select: { product: true },
+        },
+        categoryChild: {
+          include: {
+            _count: {
+              select: { product: true },
+            },
+          },
+        },
       },
     });
+
+    return categories.map((c) => ({
+      id: c.id,
+      name: c.name,
+      total: c._count.product,
+      categoryChild: c.categoryChild.map((child) => ({
+        id: child.id,
+        name: child.name,
+        total: child._count.product,
+      })),
+    }));
   },
 };
