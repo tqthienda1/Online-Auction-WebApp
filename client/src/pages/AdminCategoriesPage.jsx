@@ -22,7 +22,7 @@ const AdminCategoriesPage = () => {
         const data = await http.get("categories/tree", {
           signal: controller.signal,
         });
-
+        console.log(data.data);
         setCategories(data.data);
       } catch (error) {
         console.error(error);
@@ -37,7 +37,7 @@ const AdminCategoriesPage = () => {
 
   const categoryColumns = [
     { header: "Category Name", accessor: "name" },
-    { header: "Quantity", accessor: "productCount" },
+    { header: "Quantity", accessor: "total" },
     { header: "Action", accessor: "actions" },
   ];
 
