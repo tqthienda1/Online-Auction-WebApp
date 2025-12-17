@@ -51,6 +51,7 @@ const AdminProductsPage = () => {
         setIsLoading(true);
 
         const data = await http.get("/products", { signal: controller.signal });
+        console.log(data.data);
 
         setProducts(data.data.data);
       } catch (error) {

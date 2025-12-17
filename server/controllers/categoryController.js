@@ -76,43 +76,4 @@ export const CategoryController = {
 
     return res.status(200).json(data, "Fetched category tree");
   },
-
-  async getProductsByCategory(req, res) {
-    try {
-      const { id } = req.params;
-
-      const page = parseInt(req.query.page) || 1;
-      const limit = 6;
-      const skip = (page - 1) * limit;
-
-      const minPrice = parseFloat(req.query.minPrice) || 0;
-      const maxPrice = parseFloat(req.query.maxPrice) || 50000000;
-
-      const category = await CategoryService.getById(id);
-      if (!category) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Category không tồn tại." });
-      }
-
-      const { products, total } = await ProductService.getByCategory(id, {
-        skip,
-        limit,
-        minPrice,
-        maxPrice,
-      });
-
-      return res.json({
-        success: true,
-        data: {
-          page,
-          totalPages: Math.ceil(total / limit),
-          products,
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ success: false, message: "Lỗi server." });
-    }
-  },
 };
