@@ -12,7 +12,6 @@ router.get("/", CategoryController.getAll);
 router.get("/tree", CategoryController.getTree);
 router.get("/parents", CategoryController.getParentCategories);
 router.get("/:id/children", CategoryController.getChildren);
-router.get("/:id/products", CategoryController.getProductsByCategory);
 router.get("/:id", CategoryController.getById);
 
 router.post("/", CategoryController.create);
