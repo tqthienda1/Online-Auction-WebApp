@@ -15,6 +15,7 @@ import commentRoutes from "./routes/comment.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import upgradeRoutes from "./routes/upgrade.routes.js";
+import ratingRoutes from "./routes/rating.routes.js";
 // import orderRoutes from "./routes/order.routes.js";
 // import ratingRoutes from "./routes/rating.routes.js";
 // import systemRoutes from "./routes/system.routes.js";
@@ -46,7 +47,7 @@ app.use("/bids", bidRoutes);
 app.use("/comments", commentRoutes);
 app.use("/upgrade", upgradeRoutes);
 app.use("/orders", orderRoutes);
-// app.use("/rating", ratingRoutes);
+app.use("/rating", ratingRoutes);
 // app.use("/system", systemRoutes);
 app.use("/admin", adminRoutes);
 
