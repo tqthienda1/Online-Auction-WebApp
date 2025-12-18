@@ -7,7 +7,7 @@ export const submitRating = async ({ raterID, rateeID, productID, value, comment
 
 	const isPos = value === 1;
 
-	const existing = await prisma.rating.findUnique({ where: { productID } });
+	const existing = await prisma.rating.findUnique({ where: { productID_raterID: { productID, raterID } } });
 
 	const adjustRatee = async (deltaPos = 0, deltaNeg = 0) => {
 		await prisma.user.update({
@@ -32,17 +32,13 @@ export const submitRating = async ({ raterID, rateeID, productID, value, comment
 		return { message: 'Rating created', isPos };
 	}
 
-	if (existing.raterID !== raterID) {
-		throw { status: 400, message: 'Rating for this product already exists' };
-	}
-
 	if (existing.isPos === isPos) {
-		await prisma.rating.delete({ where: { productID } });
+		await prisma.rating.delete({ where: { productID_raterID: { productID, raterID } } });
 		await adjustRatee(isPos ? -1 : 0, isPos ? 0 : -1);
 		return { message: 'Rating removed (toggled off)', removed: true };
 	}
 
-	await prisma.rating.update({ where: { productID }, data: { isPos, comment } });
+	await prisma.rating.update({ where: { productID_raterID: { productID, raterID } }, data: { isPos, comment } });
 
 	if (isPos) {
 		await adjustRatee(1, -1);
