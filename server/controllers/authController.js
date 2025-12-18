@@ -2,18 +2,16 @@ import * as authService from "../services/auth.service.js";
 
 export const signUp = async (req, res) => {
   try {
-    const { email, password, username, dob, address } = req.body;
+    const { supabaseId, username, dob, address } = req.body;
 
-    if (!email || !password || !username || !dob || !address) {
+    if (!supabaseId) {
       return res.status(400).json({
-        message:
-          "Some required information is missing. Please review and complete the form.",
+        message: "Some required information is missing.",
       });
     }
 
     const result = await authService.signUp({
-      email,
-      password,
+      supabaseId,
       username,
       dob,
       address,
@@ -45,15 +43,33 @@ export const signIn = async (req, res) => {
   }
 };
 
-export const verifyEmail = async (req, res) => {
+export const signInWithGoogle = async (req, res) => {
   try {
-    const { email, token } = req.body;
+    const { supabaseId, email } = req.body;
 
-    if (!email || !token) {
-      return res.status(400).json({ message: "Invalid verification link." });
+    if (!supabaseId || !email) {
+      return res.status(400).json({
+        message: "Some required information is missing.",
+      });
     }
 
-    const result = await authService.verifyEmail({ email, token });
+    const result = await authService.signInWithGoogle(supabaseId, email);
+  } catch (err) {
+    return res.status(err.status || 500).json({
+      message: err.message || "Internal server error",
+    });
+  }
+};
+
+export const verifyEmail = async (req, res) => {
+  try {
+    const { supabaseId } = req.body;
+
+    if (!supabaseId) {
+      return res.status(400).json({ message: "Supabase Id does not exist" });
+    }
+
+    const result = await authService.verifyEmail({ supabaseId });
     return res.status(200).json(result);
   } catch (err) {
     return res.status(err.status || 500).json({

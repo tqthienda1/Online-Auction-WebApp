@@ -19,12 +19,21 @@ export const authMiddleware = async (req, res, next) => {
 
     const supabaseUser = data.user;
 
-    const dbUser = await prisma.user.findUnique({
+    let dbUser = await prisma.user.findUnique({
       where: { supabaseId: supabaseUser.id },
     });
 
     if (!dbUser) {
-      return res.status(401).json({ message: "User not found in database." });
+      dbUser = await prisma.user.create({
+        data: {
+          supabaseId: supabaseUser.id,
+          username: supabaseUser.email,
+          role: "BIDDER",
+          ratingPos: 0,
+          ratingNeg: 0,
+          emailVerified: true,
+        },
+      });
     }
 
     req.user = {

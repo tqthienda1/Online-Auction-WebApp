@@ -1,70 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
 import AdminHeader from "@/components/AdminHeader";
 import AdminBody from "@/components/AdminBody";
 import AdminForm from "@/components/AdminForm";
 import AdminSearch from "@/components/AdminSearch";
+import { http } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
 
 import { useState } from "react";
 
 const AdminProductsPage = () => {
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "Laptop Dell XPS 15",
-      category: "Điện Tử",
-      startingPrice: 35000000,
-      status: "active",
-      createdAt: "2025-01-20",
-    },
-    {
-      id: 2,
-      name: "iPhone 15 Pro",
-      category: "Điện Tử",
-      startingPrice: 28000000,
-      status: "active",
-      createdAt: "2025-01-19",
-    },
-    {
-      id: 3,
-      name: "Sony WH-1000XM5",
-      category: "Điện Tử",
-      startingPrice: 10000000,
-      status: "ended",
-      createdAt: "2025-01-18",
-    },
-  ]);
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const productColumns = [
-    { header: "Product Name", accessor: "name" },
+    { header: "Product Name", accessor: "productName" },
     { header: "Category", accessor: "category" },
     { header: "Starting Price", accessor: "startingPrice" },
-    { header: "Date Created", accessor: "createdAt" },
+    { header: "Current Price", accessor: "currentPrice" },
     { header: "Action", accessor: "actions" },
   ];
-
-  const [categories, setCategories] = useState([
-    {
-      id: 1,
-      name: "Điện Tử",
-      description: "Các sản phẩm điện tử",
-      productCount: 245,
-      createdAt: "2025-01-15",
-    },
-    {
-      id: 2,
-      name: "Quần Áo",
-      description: "Quần áo nam nữ",
-      productCount: 189,
-      createdAt: "2025-01-16",
-    },
-    {
-      id: 3,
-      name: "Sách",
-      description: "Sách và tài liệu",
-      productCount: 56,
-      createdAt: "2025-01-18",
-    },
-  ]);
 
   const forms = [
     {
@@ -88,36 +43,78 @@ const AdminProductsPage = () => {
     }
   };
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const getProductsData = async () => {
+      try {
+        setIsLoading(true);
+
+        const data = await http.get("/products", { signal: controller.signal });
+        console.log(data.data);
+
+        setProducts(data.data.data);
+      } catch (error) {
+        console.error(error);
+        setError(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getProductsData();
+  }, []);
+
   const [query, setQuery] = useState("");
-  const filteredProducts = products.filter((p) =>
-    p.name.toLowerCase().includes(query.toLowerCase())
-  );
+  const filteredProducts =
+    products?.filter((p) =>
+      p.productName.toLowerCase().includes(query.toLowerCase())
+    ) || [];
+
+  const handleDeleteProduct = async (id) => {
+    const controller = new AbortController();
+
+    console.log(id);
+
+    try {
+      setIsLoading(true);
+      await http.delete(`/products/${id}`, { signal: controller.signal });
+
+      const tempProducts = products.filter((p) => p.id !== id);
+
+      console.log(tempProducts);
+
+      setProducts(tempProducts);
+    } catch (error) {
+      console.error(error);
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="space-y-6 p-6">
-      <AdminHeader
-        title="Products"
-        description="Manage All Products"
-        onAdd={() => setOpenForm("Add")}
-      />
-      <AdminSearch query={query} setQuery={setQuery} />
-      <AdminBody
-        columns={productColumns}
-        data={filteredProducts}
-        onEdit={() => setOpenForm("Edit")}
-        showAction="1"
-      />
-
-      {openForm && (
-        <AdminForm
-          categories={categories}
-          openForm={openForm}
-          forms={forms}
-          onClose={() => setOpenForm(null)}
-          onSubmit={onSubmit}
-        />
+    <>
+      {isLoading && (
+        <div className="flex flex-col justify-center p-4 md:p-5 text-center h-60">
+          <Spinner className="size-8 w-full text-yellow-500" />
+          <h3 className="font-semibold my-6 text-body">Loading</h3>
+        </div>
       )}
-    </div>
+
+      {!isLoading && !error && (
+        <div className="space-y-6 p-6">
+          <AdminHeader title="Products" description="Manage All Products" />
+          <AdminSearch query={query} setQuery={setQuery} />
+          <AdminBody
+            columns={productColumns}
+            data={filteredProducts}
+            onDelete={handleDeleteProduct}
+            showType="products"
+          />
+        </div>
+      )}
+    </>
   );
 };
 

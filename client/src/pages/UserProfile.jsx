@@ -126,7 +126,7 @@ const UserProfile = () => {
       <ProfileInfo />
       <ProfileReviews />
       <ProfileTab tab={tab} setTab={setTab} />
-      <div className="my-10">
+      <div className="my-10 w-3/4 ">
         <ProductList
           showType={tab === "love" ? 2 : tab === "bidding" ? 3 : 4}
           products={

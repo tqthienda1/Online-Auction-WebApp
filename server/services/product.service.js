@@ -33,9 +33,18 @@ export const getProducts = async ({
     sold: sold !== undefined ? sold : undefined,
   };
 
-  const orderBy = {
-    [sortBy]: order,
-  };
+  let orderBy;
+  if (sortBy === "totalBid") {
+    orderBy = {
+      bids: {
+        _count: order === "asc" ? "asc" : "desc",
+      },
+    };
+  } else {
+    orderBy = {
+      [sortBy]: order === "asc" ? "asc" : "desc",
+    };
+  }
 
   const skip = (page - 1) * limit;
   const take = limit;
@@ -50,13 +59,21 @@ export const getProducts = async ({
         _count: {
           select: { bids: true },
         },
+        category: {
+          select: { name: true },
+        },
       },
     }),
     prisma.product.count({ where }),
   ]);
 
+  const mappedProducts = products.map((p) => ({
+    ...p,
+    category: p.category?.name ?? null,
+  }));
+
   return {
-    products,
+    products: mappedProducts,
     total,
   };
 };
@@ -103,6 +120,7 @@ export const getProductById = async (productId, db = prisma) => {
       productName: true,
       productAvt: true,
       currentPrice: true,
+      startingPrice: true,
       buyNowPrice: true,
       endTime: true,
     },

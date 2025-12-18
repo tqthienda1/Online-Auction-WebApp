@@ -1,31 +1,75 @@
 import SearchBar from "./SearchBar";
 import CategoriesBar from "./CategoriesBar";
 import { Link } from "react-router-dom";
-
+import { CiUser } from "react-icons/ci";
 import logo from "../../public/image/logo.png";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { logOut } from "@/services/auth.service";
 
 
 const Header = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logOut();
+    } catch (err) {
+      alert(err.message || "Log in failed");
+    }
+  };
   return (
     <header>
-      <div className="flex w-full py-5 justify-around">
-        <Link to="/" className="h-10 flex items-center">
+      <div className="flex w-full h-24 py-5 justify-around">
+        <Link to="/" className="h-14 flex items-center">
           <img src={logo} alt="LOGO" className="h-full object-contain" />
         </Link>
         <SearchBar className="w-xl" />
         <div className="flex gap-1">
-          <Link
-            to="/login"
-            className="flex items-center border border-brand font-semibold rounded-3xl py-3 px-9 text-brand"
-          >
-            Login
-          </Link>
-          <Link
-            to="/signup"
-            className="flex items-center bg-brand font-semibold rounded-3xl py-3 px-9 text-white"
-          >
-            Sign Up
-          </Link>
+          {!user ? (
+            <>
+              <Link
+                to="/login"
+                className="flex items-center border border-brand font-semibold rounded-3xl py-3 px-9 text-brand"
+              >
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                className="flex items-center bg-brand font-semibold rounded-3xl py-3 px-9 text-white"
+              >
+                Sign Up
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/user_profile" className="flex items-center py-3 px-9 ">
+                <CiUser size={36} className="cursor-pointer hover:text-brand" />
+              </Link>
+
+              <Link
+                to="/"
+                onClick={handleLogout}
+                className="flex items-center bg-brand font-semibold rounded-3xl py-3 px-9 text-white"
+              >
+                Logout
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>

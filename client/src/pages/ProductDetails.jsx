@@ -2,7 +2,7 @@ import ProductCarousel from "../components/ProductCarousel.jsx";
 import ProductTitle from "../components/ProductTitle.jsx";
 import DetailNavBar from "../components/DetailNavBar.jsx";
 import ProductDescription from "../components/ProductDescription.jsx";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import ProductBidPlace from "../components/ProductBidPlace.jsx";
 import BidHistory from "../components/BidHistory.jsx";
 import SimilarProducts from "../components/SimilarProducts.jsx";
@@ -15,111 +15,94 @@ import { useParams } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner.jsx";
 
 const ProductDetails = () => {
-  // Nho set isLoading ve true
   const { id } = useParams();
-
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(null);
-
-  const [product, setProduct] = useState([]);
+  const [product, setProduct] = useState();
   const [curFrame, setCurFrame] = useState("description");
+  const [question, setQuestion] = useState("");
+
+  const fetchProduct = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const res = await http.get(`/products/${id}`);
+
+      setProduct(res.data.data);
+    } catch (err) {
+      setIsError("Failed to load product.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id]);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const loadProduct = async (productId) => {
-      try {
-        setIsLoading(true);
-        setIsError(null);
-
-        const res = await http.get(`/products/${id}`);
-        if (isMounted) {
-          setProduct(res.data.data);
-        }
-      } catch (error) {
-        console.error("Error loading product");
-        if (isMounted)
-          setIsError(
-            error.response?.data?.message || "Unable to load products"
-          );
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-
-    loadProduct();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    fetchProduct();
+  }, [fetchProduct]);
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
   }, []);
 
-  const handleFrameChange = (frame) => {
-    setCurFrame(frame);
-  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <Spinner className="size-8 text-yellow-500" />
+        <p className="mt-4 font-medium">Loading product...</p>
+      </div>
+    );
+  }
 
-  const [question, setQuestion] = useState("");
+  if (isError) {
+    return <div className="text-center text-red-500">{isError}</div>;
+  }
+
+  if (!product) return null;
+
   return (
-    <>
-      {isLoading && (
-        <div className="flex flex-col justify-center p-4 md:p-5 text-center h-full">
-          <Spinner className="size-8 w-full text-yellow-500" />
-          <h3 className="font-semibold my-6 text-body">Loading</h3>
+    <div className="overflow-hidden" data-aos="fade-up">
+      <div className="p-10" data-aos="fade-down">
+        <ProductCarousel images={product.productImages} />
+      </div>
+      <ProductTitle nameMain={product.productName} isSold={product.sold} />
+
+      <div className="flex" data-aos="fade-up">
+        <div className="flex flex-col w-3/4 ">
+          <DetailNavBar
+            frame={curFrame}
+            onFrameChange={setCurFrame}
+          ></DetailNavBar>
+          {curFrame === "description" && (
+            <ProductDescription descriptions={product.productDescriptions} />
+          )}
+
+          {curFrame === "bidhistory" && (
+            <BidHistory BidHistory={product.bids} />
+          )}
         </div>
-      )}
-      {isError && <div>{isError}</div>}
-      {!isLoading && !isError && (
-        <div className="overflow-hidden" data-aos="fade-up">
-          <div className="p-10" data-aos="fade-down">
-            <ProductCarousel images={product.productImages} />
-          </div>
-          <ProductTitle nameMain={product.productName} isSold={product.sold} />
+        <ProductBidPlace
+          productId={product.id}
+          endingDate={product.endTime}
+          price={product.currentPrice || product.startingPrice}
+          buyNowPrice={product.buyNowPrice}
+          seller={product.seller}
+          bidder={product.highestBidder}
+          onBidSuccess={fetchProduct}
+        />
+      </div>
+      <div data-aos="zoom-in">
+        <CommentSection type="ask" comments={product.comments} />
+        <QuestionBox />
+      </div>
 
-          <div className="flex" data-aos="fade-up">
-            <div className="flex flex-col w-3/4 ">
-              <DetailNavBar
-                frame={curFrame}
-                onFrameChange={handleFrameChange}
-              ></DetailNavBar>
-              {curFrame === "description" && (
-                <ProductDescription
-                  descriptions={product.productDescriptions}
-                />
-              )}
+      <div
+        className="flex justify-center items-center mt-20"
+        data-aos="zoom-in"
+      >
+        <SimilarProducts products={product.relatedProducts} />
+      </div>
 
-              {curFrame === "bidhistory" && (
-                <BidHistory BidHistory={product.bids} />
-              )}
-            </div>
-            <ProductBidPlace
-              productId={product.id}
-              endingDate={product.endTime}
-              price={product.currentPrice}
-              buyNowPrice={product.buyNowPrice}
-              seller={product.seller}
-              bidder={product.highestBidder}
-            />
-          </div>
-          <div data-aos="zoom-in">
-            <CommentSection type="ask" comments={product.comments} />
-            <QuestionBox />
-          </div>
-
-          <div
-            className="flex justify-center items-center mt-20"
-            data-aos="zoom-in"
-          >
-            <SimilarProducts products={product.relatedProducts} />
-          </div>
-
-          <div className="h-42 w-12"></div>
-        </div>
-      )}
-    </>
+      <div className="h-42 w-12"></div>
+    </div>
   );
 };
 

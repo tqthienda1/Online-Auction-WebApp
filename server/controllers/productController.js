@@ -5,6 +5,7 @@ import { uploadFilesToSupabase } from "../services/supabase.service.js";
 import * as productService from "../services/product.service.js";
 
 export const addProduct = async (req, res) => {
+  console.log(req.body);
   try {
     const userId = req.user.id;
     const files = req.files;
@@ -47,7 +48,8 @@ export const getProducts = async (req, res) => {
 
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
-    const soldValue = sold === "true" ? true : false;
+    const soldValue =
+      sold === "true" ? true : sold === "false" ? false : undefined;
 
     const { products, total } = await productService.getProducts({
       page: pageNum,

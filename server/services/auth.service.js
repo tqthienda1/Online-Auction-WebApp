@@ -1,22 +1,10 @@
 import prisma from "../prismaClient.js";
 import { supabase } from "../libs/client.js";
 
-export const signUp = async ({ email, password, username, dob, address }) => {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: "http://localhost:5173",
-    },
-  });
-
-  if (error) {
-    throw { status: 400, message: error.message };
-  }
-
+export const signUp = async ({ supabaseId, username, dob, address }) => {
   await prisma.user.create({
     data: {
-      supabaseId: data.user.id,
+      supabaseId,
       username,
       dob,
       address,
@@ -50,25 +38,33 @@ export const signIn = async ({ email, password }) => {
   };
 };
 
-export const verifyEmail = async ({ email, token }) => {
-  const { data, error } = await supabase.auth.verifyOtp({
-    email,
-    token,
-    type: "email",
+export const signInWithGoogle = async ({ supabaseId, email }) => {
+  const existingUser = await prisma.user.findUnique({
+    where: { supabaseId },
   });
 
-  if (error) {
-    throw { status: 400, message: error.message };
+  if (existingUser) {
+    return existingUser;
   }
 
-  await prisma.user.update({
-    where: { supabaseId: data.user.id },
-    data: { emailVerified: true },
+  const newUser = await prisma.user.create({
+    data: {
+      supabaseId,
+      username: email,
+      role: "BIDDER",
+      ratingPos: 0,
+      ratingNeg: 0,
+    },
   });
 
-  return {
-    redirectUrl: "http://localhost:5173",
-  };
+  return newUser;
+};
+
+export const verifyEmail = async ({ supabaseId }) => {
+  await prisma.user.update({
+    where: { supabaseId },
+    data: { emailVerified: true },
+  });
 };
 
 export const changePassword = async ({ email, oldPassword, newPassword }) => {

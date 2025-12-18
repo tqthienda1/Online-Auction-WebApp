@@ -3,7 +3,7 @@ import { formattedDate } from "../helper/formatDate";
 
 const BidHistory = ({ BidHistory }) => {
   return (
-    <div className="flex mt-10 justify-center items-center">
+    <div className="flex mt-10 justify-center items-center max-h-[800px] overflow-y-auto">
       <div className="flex flex-col w-[90%] ">
         {BidHistory.map((b, index) => (
           <div

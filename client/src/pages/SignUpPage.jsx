@@ -6,14 +6,15 @@ import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "../../public/image/logo.png";
+import { signInWithGoogle, signUp } from "../services/auth.service.js";
 
 const schema = z
   .object({
     username: z.string().nonempty("Username is required"),
     password: z.string().nonempty("Password is required"),
     confirmPassword: z.string().nonempty("Please confirm your password"),
-    fullname: z.string().nonempty("Full name is required"),
     address: z.string().nonempty("Address is required"),
+    dob: z.string().nonempty("Date of birth is required"),
     email: z
       .string()
       .nonempty("Email is required")
@@ -23,6 +24,7 @@ const schema = z
     message: "Password do not match",
     path: ["confirmPassword"],
   });
+
 const SignUpPage = () => {
   const {
     register,
@@ -33,20 +35,36 @@ const SignUpPage = () => {
     resolver: zodResolver(schema),
     mode: "onBlur",
   });
-  const password = watch("Password");
 
   const navigate = useNavigate();
 
   const [showPass, setShowPass] = useState(false);
 
-  const [recaptchaToken, setRecaptchaToken] = useState(null);
-  const onSubmit = (data) => {
-    if (!recaptchaToken) {
-      alert("Please verify you are not a robot!");
-      return;
+  // const [recaptchaToken, setRecaptchaToken] = useState(null);
+
+  const onSubmit = async (data) => {
+    // if (!recaptchaToken) {
+    //   alert("Please verify you are not a robot!");
+    //   return;
+    // }
+    try {
+      await signUp(data);
+
+      alert("Please check your email to verify your account.");
+      navigate(`/verify-email?email=${data.email}`);
+    } catch (err) {
+      alert(err.message || "Sign up failed");
     }
-    console.log("sign up data", data);
   };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      alert(err.message || "Google sign up failed");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-6 pb-6">
       <div className="max-w-xl w-full">
@@ -59,6 +77,10 @@ const SignUpPage = () => {
         </div>
 
         <hr className="my-8 border-gray-200" />
+
+        <h2 className="text-center font-playfair text-3xl font-semibold text-gray-800 mb-8">
+          Sign up
+        </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
@@ -108,13 +130,7 @@ const SignUpPage = () => {
             <input
               type={showPass ? "text" : "password"}
               id="confirmPassword"
-              {...register(
-                "confirmPassword"
-                //     , {
-                //     validate: value =>
-                //     value === password || "Passwords do not match"
-                // }
-              )}
+              {...register("confirmPassword")}
               placeholder="Confirm password"
               className="w-full border-b border-gray-300 focus:outline-none py-3 placeholder-gray-400"
             />
@@ -128,22 +144,6 @@ const SignUpPage = () => {
             </button>
             <span className="text-red-600 text-sm mt-1 block">
               {errors.confirmPassword ? errors.confirmPassword.message : ""}
-            </span>
-          </div>
-
-          <div>
-            <label htmlFor="fullname" className="sr-only">
-              Full name
-            </label>
-            <input
-              type="text"
-              id="fullname"
-              {...register("fullname")}
-              placeholder="Full name"
-              className="w-full border-b border-gray-300 focus:outline-none py-3 placeholder-gray-400"
-            />
-            <span className="text-red-600 text-sm mt-1 block">
-              {errors.fullname ? errors.fullname.message : ""}
             </span>
           </div>
 
@@ -164,6 +164,21 @@ const SignUpPage = () => {
           </div>
 
           <div>
+            <label htmlFor="dob" className="sr-only">
+              Date of birth
+            </label>
+            <input
+              type="date"
+              id="dob"
+              {...register("dob")}
+              className="w-full border-b border-gray-300 focus:outline-none py-3 placeholder-gray-400"
+            />
+            <span className="text-red-600 text-sm mt-1 block">
+              {errors.dob ? errors.dob.message : ""}
+            </span>
+          </div>
+
+          <div>
             <label htmlFor="address" className="sr-only">
               Address
             </label>
@@ -179,12 +194,12 @@ const SignUpPage = () => {
             </span>
           </div>
 
-          <div className="my-4">
+          {/* <div className="my-4">
             <ReCAPTCHA
               sitekey="6LeOcgosAAAAAJ2VsOk4pIajYhDRpr7eIxSqBpxG"
               onChange={(token) => setRecaptchaToken(token)}
             />
-          </div>
+          </div> */}
 
           <div>
             <button className="w-full bg-black text-white py-3 rounded-md hover:opacity-60 cursor-pointer">
@@ -193,7 +208,10 @@ const SignUpPage = () => {
           </div>
         </form>
         <div className="mt-8 space-y-4">
-          <button className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3 cursor-pointer">
+          <button
+            className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3 cursor-pointer"
+            onClick={handleGoogleSignIn}
+          >
             <FaGoogle className="text-red-500" />
             <span>Sign up with Google</span>
           </button>

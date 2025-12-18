@@ -23,13 +23,24 @@ const mockUser = (req, res, next) => {
 router.get("/", getProducts);
 router.get("/:id", getProductById);
 
-// // seller
-// router.post("/", authMiddleware, requireRole(["seller"]), addProduct);
+// seller
+router.post(
+  "/",
+  authMiddleware,
+  requireRole(["SELLER"]),
+  upload.array("productImages"),
+  addProduct
+);
 router.put("/:id", authMiddleware, requireRole(["SELLER"]), updateProduct);
-router.delete("/:id", authMiddleware, requireRole(["SELLER"]), deleteProduct);
+router.delete(
+  "/:id",
+  // authMiddleware,
+  // requireRole(["SELLER, ADMIN"]),
+  deleteProduct
+);
 
 // admin
 // router.delete("/", deleteProduct);
 
-router.post("/", mockUser, upload.array("productImages"), addProduct);
+//router.post("/", mockUser, upload.array("productImages"), addProduct);
 export default router;
