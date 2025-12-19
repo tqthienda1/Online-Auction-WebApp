@@ -29,6 +29,8 @@ model User {
   givenRatings       Rating[]         @relation("GivenRatings")
   upgradeRequest     UpgradeRequest[] @relation("UserUpgradeRequest")
   watchList          WatchList[]      @relation("UserWatchList")
+  sentMessages       Message[]        @relation("MessageSender")
+  receivedMessages   Message[]        @relation("MessageReceiver")
 }
 
 model Product {
@@ -58,6 +60,7 @@ model Product {
   productImages       ProductImage[]       @relation("ProductImages")
   rating              Rating[]
   inWatchList         WatchList[]          @relation("ProductWatchList")
+  messages            Message[]            @relation("ProductMessages")
 }
 
 model ProductDescription {
@@ -166,10 +169,11 @@ model Message {
   content    String
   createdAt  DateTime @default(now())
 
-  product  Product @relation(fields: [productID], references: [id], onDelete: Cascade)
+  product  Product @relation("ProductMessages", fields: [productID], references: [id], onDelete: Cascade)
   sender   User    @relation("MessageSender", fields: [senderID], references: [id], onDelete: Cascade)
   receiver User    @relation("MessageReceiver", fields: [receiverID], references: [id], onDelete: Cascade)
 }
+
 
 model BidHistory {
   id        String   @id
