@@ -158,6 +158,19 @@ model SystemParameter {
   recentlyProductTime DateTime
 }
 
+model Message {
+  id         String   @id @default(uuid())
+  productID  String
+  senderID   String   @db.Uuid
+  receiverID String   @db.Uuid
+  content    String
+  createdAt  DateTime @default(now())
+
+  product  Product @relation(fields: [productID], references: [id], onDelete: Cascade)
+  sender   User    @relation("MessageSender", fields: [senderID], references: [id], onDelete: Cascade)
+  receiver User    @relation("MessageReceiver", fields: [receiverID], references: [id], onDelete: Cascade)
+}
+
 model BidHistory {
   id        String   @id
   productID String
