@@ -4,7 +4,7 @@ import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-// POST /rating/products/:productID/rate
-router.post("/products/:productID/rate", authMiddleware, createOrToggleRating);
+// POST /rating/:productID/rate
+router.post("/:productID/rate", authMiddleware, createOrToggleRating);
 
 export default router;
