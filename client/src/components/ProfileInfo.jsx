@@ -3,8 +3,7 @@ import { LuUser } from "react-icons/lu";
 import { useState } from "react";
 import Modal from "./Modal";
 
-const ProfileInfo = () => {
-  const [username, setUsername] = useState("user");
+const ProfileInfo = ({ info, setInfo }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("");
 
@@ -22,8 +21,10 @@ const ProfileInfo = () => {
       <div className="flex items-center justify-center gap-5">
         <LuUser className="bg-brand text-white rounded-full text-7xl p-3" />
         <div>
-          <h1 className="font-bold text-2xl font-playfair">{username}</h1>
-          <h3 className="text-gray-400 text-md">email@gmail.com</h3>
+          <h1 className="font-bold text-2xl font-playfair">{info.username}</h1>
+          <h3 className="text-gray-400 text-md">
+            {info.address || "Address is empty"}
+          </h3>
         </div>
       </div>
       <div className="flex gap-5">
@@ -49,7 +50,8 @@ const ProfileInfo = () => {
 
       {showModal && (
         <Modal
-          username={username}
+          info={info}
+          setInfo={setInfo}
           type={modalType}
           onClose={handleCloseModal}
         />
