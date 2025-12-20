@@ -5,6 +5,7 @@ import AdminForm from "@/components/AdminForm";
 import AdminSearch from "@/components/AdminSearch";
 import { http } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
+import AdminPagination from "@/components/AdminPagination";
 
 import { useState } from "react";
 
@@ -12,6 +13,9 @@ const AdminProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
   const productColumns = [
     { header: "Product Name", accessor: "productName" },
@@ -50,10 +54,12 @@ const AdminProductsPage = () => {
       try {
         setIsLoading(true);
 
-        const data = await http.get("/products", { signal: controller.signal });
-        console.log(data.data);
+        const data = await http.get(`/products?page=${page}&limit=${limit}`, {
+          signal: controller.signal,
+        });
 
         setProducts(data.data.data);
+        setTotalPages(data.data.totalPages);
       } catch (error) {
         console.error(error);
         setError(error);
@@ -111,6 +117,11 @@ const AdminProductsPage = () => {
             data={filteredProducts}
             onDelete={handleDeleteProduct}
             showType="products"
+          />
+          <AdminPagination
+            page={page}
+            onPageChange={setPage}
+            totalPages={totalPages}
           />
         </div>
       )}
