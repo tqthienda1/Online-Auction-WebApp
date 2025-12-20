@@ -1,4 +1,5 @@
 import { CategoryService } from "../services/category.service.js";
+import { UserService } from "../services/user.service.js";
 // import { ProductService } from "../services/product.service.js";
 
 export const CategoryController = {
@@ -75,5 +76,21 @@ export const CategoryController = {
       return res.status(404).json("No category tree available");
 
     return res.status(200).json(data, "Fetched category tree");
+  },
+
+  async getCategories(req, res) {
+    try {
+      const page = parseInt(req.query.page);
+      const limit = parseInt(req.query.limit);
+      const data = await CategoryService.getCategories(page, limit);
+      return res
+        .status(200)
+        .json({ data: data, message: "Fetched categories successfully" });
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to fetch categories" });
+    }
   },
 };

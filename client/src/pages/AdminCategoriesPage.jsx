@@ -5,6 +5,7 @@ import AdminBody from "@/components/AdminBody";
 import AdminForm from "@/components/AdminForm";
 import { Spinner } from "@/components/ui/spinner";
 import { http } from "@/lib/utils";
+import AdminPagination from "@/components/AdminPagination";
 
 const AdminCategoriesPage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -12,6 +13,9 @@ const AdminCategoriesPage = () => {
   const [categories, setCategories] = useState([]);
   const [parent, setParent] = useState(null);
   const [editingCategory, setEditingCategory] = useState(null);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -19,11 +23,14 @@ const AdminCategoriesPage = () => {
       try {
         setIsLoading(true);
 
-        const data = await http.get("categories/tree", {
-          signal: controller.signal,
-        });
-        console.log(data.data);
-        setCategories(data.data);
+        const data = await http.get(
+          `categories/categories?page=${page}&limit=${limit}`,
+          {
+            signal: controller.signal,
+          }
+        );
+        setCategories(data.data.data.data);
+        setTotalPages(data.data.data.totalPages);
       } catch (error) {
         console.error(error);
         setError(error);
@@ -196,6 +203,11 @@ const AdminCategoriesPage = () => {
             onAddChild={() => setOpenForm("Add Sub Category")}
             setParent={setParent}
             onDelete={handleDeleteCategory}
+          />
+          <AdminPagination
+            page={page}
+            onPageChange={setPage}
+            totalPages={totalPages}
           />
 
           {openForm && (
