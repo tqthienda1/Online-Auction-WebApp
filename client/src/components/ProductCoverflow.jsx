@@ -43,7 +43,7 @@ const ProductCoverflow = ({ products }) => {
     const product = products[swiperRef.current.activeIndex];
 
     setProductInfo([
-      { label: "Name", key: product.name },
+      { label: "Name", key: product.productName },
       { label: "Current price", key: product.currentPrice },
       { label: "Highest bidder", key: product.highestBidder },
       { label: "Buy now", key: product.buyNowPrice },
@@ -99,7 +99,7 @@ const ProductCoverflow = ({ products }) => {
           const product = products[swiper.activeIndex];
 
           setProductInfo([
-            { label: "Name", key: product.name },
+            { label: "Name", key: product.productName },
             { label: "Current price", key: product.currentPrice },
             { label: "Highest bidder", key: product.highestBidder },
             { label: "Buy now", key: product.buyNowPrice },
@@ -164,7 +164,7 @@ const ProductCoverflow = ({ products }) => {
         style={{ width: slideWidth }}
       >
         <div className="h-full w-full flex flex-col justify-between text-brand p-7">
-          <h1 className="w-full text-center text-3xl font-bold font-playfair">
+          <h1 className="w-full text-center text-4xl font-bold font-playfair my-5">
             {productInfo.length > 0 ? productInfo[0].key : ""}
           </h1>
 
