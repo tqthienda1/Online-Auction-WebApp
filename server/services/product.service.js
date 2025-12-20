@@ -213,6 +213,7 @@ export const addProduct = async (userId, body, files) => {
       category: {
         connect: { name: finalCategoryName },
       },
+      currentPrice: Number(startingPrice),
       startingPrice: Number(startingPrice),
       bidStep: Number(bidStep),
       buyNowPrice: buyNowPrice ? Number(buyNowPrice) : null,

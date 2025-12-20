@@ -2,11 +2,11 @@ import Header from "../components/Header";
 
 const MainLayout = ({ children }) => {
   return (
-    <div>
+    <div className="h-screen flex flex-col">
       <div className="border-b border-brand">
         <Header />
       </div>
-      <main>{children}</main>
+      <main className="flex-1">{children}</main>
     </div>
   );
 };

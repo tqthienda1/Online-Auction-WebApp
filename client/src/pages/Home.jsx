@@ -7,76 +7,12 @@ import { useEffect, useState } from "react";
 import { http } from "@/lib/utils";
 import { formattedDate } from "@/helper/formatDate";
 
-const mockUpData = {
-  products: [
-    {
-      image: "/image/vangogh.jpg",
-      name: "Vangogh",
-      currentPrice: 30000,
-      highestBidder: "thiendepzai",
-      buyNowPrice: 50000,
-      startDate: "13/07/2025",
-      endDate: "30/10/2025",
-      totalBids: 10,
-    },
-    {
-      image: "/image/buddha.jpg",
-      name: "Buddha",
-      currentPrice: 30000,
-      highestBidder: "thiendepzai",
-      buyNowPrice: 50000,
-      startDate: "13/07/2025",
-      endDate: "30/10/2025",
-      totalBids: 10,
-    },
-    {
-      image: "/image/complex.jpg",
-      name: "Complex",
-      currentPrice: 30000,
-      highestBidder: "thiendepzai",
-      buyNowPrice: 50000,
-      startDate: "13/07/2025",
-      endDate: "30/10/2025",
-      totalBids: 10,
-    },
-    {
-      image: "/image/food.jpg",
-      name: "Food",
-      currentPrice: 30000,
-      highestBidder: "thiendepzai",
-      buyNowPrice: 50000,
-      startDate: "13/07/2025",
-      endDate: "30/10/2025",
-      totalBids: 10,
-    },
-    {
-      image: "/image/art.jpg",
-      name: "Art",
-      currentPrice: 30000,
-      highestBidder: "thiendepzai",
-      buyNowPrice: 50000,
-      startDate: "13/07/2025",
-      endDate: "30/10/2025",
-      totalBids: 10,
-    },
-  ],
-  product: {
-    image: "/image/dining_room.jpg",
-    name: "E-10: English Dining Room of the Georgian Period, 1770-90",
-    currentPrice: 30000,
-    highestBidder: "thiendepzai",
-    buyNowPrice: 50000,
-    startDate: "13/07/2025",
-    endDate: "30/10/2025",
-    totalBids: 10,
-  },
-};
-
 const Home = () => {
   const [loading, setLoading] = useState(true);
 
   const [endingSoonProducts, setEndingSoonProducts] = useState([]);
 
+  const [mostBiddenProducts, setMostBiddenProducts] = useState([]);
   useEffect(() => {
     let isMounted = true;
 
@@ -85,23 +21,41 @@ const Home = () => {
         if (isMounted) {
           setLoading(true);
         }
-        const res = await http.get("/products", {
-          params: {
-            sortBy: "endTime",
-            limit: 5,
-          },
-        });
+        const res = await Promise.all([
+          http.get("/products", {
+            params: {
+              sortBy: "endTime",
+              limit: 5,
+            },
+          }),
+          http.get("/products", {
+            params: {
+              sortBy: "totalBid",
+              limit: 5,
+              order: "desc",
+            },
+          }),
+          http.get(""),
+        ]);
 
-        const data = res.data.data;
-        console.log(data);
+        const endingSoonData = res[0].data.data;
+        const mostBiddenData = res[1].data.data;
 
-        data.forEach((item) => {
+        endingSoonData.forEach((item) => {
           item.startTime = formattedDate(item.startTime);
           item.endTime = formattedDate(item.endTime);
         });
 
+        mostBiddenData.forEach((item) => {
+          item.startTime = formattedDate(item.startTime);
+          item.endTime = formattedDate(item.endTime);
+        });
+
+        console.log(endingSoonData);
+
         if (isMounted) {
-          setEndingSoonProducts(data);
+          setEndingSoonProducts(endingSoonData);
+          setMostBiddenProducts(mostBiddenData);
         }
       } catch (error) {
         console.error("Load ending soon products failed: ", error.message);
@@ -123,12 +77,12 @@ const Home = () => {
 
           <HomeProductCarousel
             heading="Most Bidden Items"
-            product={mockUpData.product}
+            product={mostBiddenProducts}
           />
-          <HomeProductCarousel
+          {/* <HomeProductCarousel
             heading="Highest - price Items"
             product={mockUpData.product}
-          />
+          /> */}
         </>
       )}
       {loading && (

@@ -7,17 +7,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { logOut } from "@/services/auth.service";
 
-const mockUpData = {
-  categories: [
-    "Fashion",
-    "Art",
-    "Jewery&Watches",
-    "Furniture",
-    "Electronic",
-    "Vehicle",
-    "Other",
-  ],
-};
 
 const Header = () => {
   const [user, setUser] = useState(null);
