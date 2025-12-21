@@ -51,19 +51,76 @@ export const CategoryService = {
     });
   },
 
-  async getTree() {
-    return await prisma.category.findMany({
-      where: { parentID: null },
-      include: { categoryChild: true },
-    });
+  async getCategories({ page = 1, limit = 10 }) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      prisma.category.findMany({
+        where: { parentID: null },
+        include: {
+          _count: {
+            select: { product: true },
+          },
+          categoryChild: {
+            include: {
+              _count: {
+                select: { product: true },
+              },
+            },
+          },
+        },
+        skip,
+        take: limit,
+        orderBy: { name: "desc" },
+      }),
+      prisma.category.count({ where: { parentID: null } }),
+    ]);
+
+    const formattedData = data.map((c) => ({
+      id: c.id,
+      name: c.name,
+      total: c._count.product,
+      categoryChild: c.categoryChild.map((child) => ({
+        id: child.id,
+        name: child.name,
+        total: child._count.product,
+      })),
+    }));
+
+    return {
+      data: formattedData,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    };
   },
 
-  async getCategoryWithProducts(id) {
-    return await prisma.category.findUnique({
-      where: { id },
+  async getTree() {
+    const categories = await prisma.category.findMany({
+      where: { parentID: null },
       include: {
-        product: true,
+        _count: {
+          select: { product: true },
+        },
+        categoryChild: {
+          include: {
+            _count: {
+              select: { product: true },
+            },
+          },
+        },
       },
     });
+
+    return categories.map((c) => ({
+      id: c.id,
+      name: c.name,
+      total: c._count.product,
+      categoryChild: c.categoryChild.map((child) => ({
+        id: child.id,
+        name: child.name,
+        total: child._count.product,
+      })),
+    }));
   },
 };

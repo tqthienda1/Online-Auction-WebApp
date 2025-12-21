@@ -38,8 +38,8 @@ router.post(
 router.put("/:id", authMiddleware, requireRole(["SELLER"]), updateProduct);
 router.delete(
   "/:id",
-  // authMiddleware,
-  // requireRole(["SELLER, ADMIN"]),
+  authMiddleware,
+  requireRole(["SELLER, ADMIN"]),
   deleteProduct
 );
 

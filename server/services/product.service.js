@@ -59,13 +59,21 @@ export const getProducts = async ({
         _count: {
           select: { bids: true },
         },
+        category: {
+          select: { name: true },
+        },
       },
     }),
     prisma.product.count({ where }),
   ]);
 
+  const mappedProducts = products.map((p) => ({
+    ...p,
+    category: p.category?.name ?? null,
+  }));
+
   return {
-    products,
+    products: mappedProducts,
     total,
   };
 };
@@ -205,6 +213,7 @@ export const addProduct = async (userId, body, files) => {
       category: {
         connect: { name: finalCategoryName },
       },
+      currentPrice: Number(startingPrice),
       startingPrice: Number(startingPrice),
       bidStep: Number(bidStep),
       buyNowPrice: buyNowPrice ? Number(buyNowPrice) : null,

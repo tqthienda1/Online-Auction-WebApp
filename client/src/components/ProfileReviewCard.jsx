@@ -3,7 +3,6 @@ import { BiMessageRounded } from "react-icons/bi";
 import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
 
 const ProfileReviewCard = ({ review }) => {
-  console.log(review);
   return (
     <div className="flex flex-col gap-5 border border-gray-100 rounded-lg p-5 shadow-sm">
       <div className="flex items-center gap-2">
