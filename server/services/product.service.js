@@ -22,7 +22,7 @@ export const getProducts = async ({
 
     sellerId: sellerId || undefined,
 
-    price:
+    currentPrice:
       minPrice || maxPrice
         ? {
             gte: minPrice ? Number(minPrice) : undefined,
@@ -90,14 +90,14 @@ export const getProductById = async (productId, db = prisma) => {
       },
       seller: true,
       category: true,
-      bids: {
-        orderBy: { createdAt: "desc" },
-        include: {
-          bidder: {
-            select: { id: true, username: true },
-          },
-        },
-      },
+      // bids: {
+      //   orderBy: { createdAt: "desc" },
+      //   include: {
+      //     bidder: {
+      //       select: { id: true, username: true },
+      //     },
+      //   },
+      // },
       comments: {
         orderBy: { createdAt: "desc" },
       },
@@ -299,4 +299,36 @@ export const deleteProduct = async (userId, productId) => {
   });
 
   return { success: true };
+};
+
+export const getBidHistory = async (productId) => {
+  return prisma.bidHistory.findMany({
+    where: { productID: productId },
+    orderBy: { createdAt: "desc" },
+    include: {
+      bidder: {
+        select: {
+          id: true,
+          username: true,
+        },
+      },
+    },
+  });
+};
+
+export const getAuction = async (productId) => {
+  return prisma.product.findUnique({
+    where: { id: productId },
+    select: {
+      currentPrice: true,
+      highestBidder: {
+        select: {
+          id: true,
+          username: true,
+          ratingPos: true,
+          ratingNeg: true,
+        },
+      },
+    },
+  });
 };

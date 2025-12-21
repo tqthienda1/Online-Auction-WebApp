@@ -31,6 +31,8 @@ model User {
   watchList          WatchList[]      @relation("UserWatchList")
   sentMessages       Message[]        @relation("MessageSender")
   receivedMessages   Message[]        @relation("MessageReceiver")
+  bids               Bid[]            @relation("Bidder")
+  bidHistories       BidHistory[]
 }
 
 model Product {
@@ -96,6 +98,18 @@ model Bid {
   createdAt DateTime @default(now())
   bidder    User     @relation("Bidder", fields: [bidderID], references: [id])
   product   Product  @relation("BidProduct", fields: [productID], references: [id])
+}
+
+model BidHistory {
+  id          String    @id             @default(uuid())
+  productID   String    
+  bidderID    String    @db.Uuid
+  price       Int
+  createdAt   DateTime  @default(now())
+
+  product Product @relation(fields: [productID], references: [id], onDelete: Cascade)
+  bidder User @relation(fields: [bidderID], references: [id], onDelete: Cascade)
+
 }
 
 model WatchList {

@@ -161,3 +161,41 @@ export const deleteProduct = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const getProductBidHistory = async (req, res) => {
+  try {
+    const productId = req.params.id;
+
+    const bidHistory = await productService.getBidHistory(productId);
+
+    return res.status(200).json({
+      success: true,
+      bidHistories: bidHistory,
+    });
+  } catch (err) {
+    console.log("Get bid history failed", err.message);
+    return res
+      .status(err.status || 500)
+      .json({ message: err.message || "Internal server error" });
+  }
+};
+
+export const getProductAuction = async (req, res) => {
+  try {
+    const productId = req.params.id;
+
+    const { currentPrice, highestBidder } = await productService.getAuction(
+      productId
+    );
+
+    return res.status(200).json({
+      currentPrice,
+      highestBidder,
+    });
+  } catch (err) {
+    console.log("Get product auction failed", err.message);
+    return res
+      .status(err.status || 500)
+      .json({ message: err.message || "Internal server error" });
+  }
+};
