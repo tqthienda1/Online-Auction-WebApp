@@ -29,12 +29,12 @@ const AdminUsersPage = () => {
           http.get(`/users?page=${page}&limit=${limit}`, {
             signal: controller.signal,
           }),
-          // http.get("/upgrade", { signal: controller.signal }),
+          http.get("/upgrade", { signal: controller.signal }),
         ]);
-        // console.log(requestsData.data);
+        console.log(requestsData.data);
         setUsers(usersData.data.data.data);
         setTotalPages(usersData.data.data.totalPages);
-        // setRequests(requestsData);
+        setRequests(requestsData);
       } catch (error) {
         console.error(error);
         setError(error);
