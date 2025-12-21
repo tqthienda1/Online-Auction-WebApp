@@ -11,13 +11,15 @@ import {
   signInWithGoogle,
 } from "../controllers/authController.js";
 
+import { authMiddleware } from "../middlewares/authMiddleware.js";
+
 const router = express.Router();
 
 router.post("/signup", signUp);
 router.post("/signin", signIn);
 router.post("/signin-google", signInWithGoogle);
 router.post("/verify", verifyEmail);
-router.patch("/change-password", changePassword);
+router.patch("/change-password", authMiddleware, changePassword);
 router.post("/signout", signOut);
 router.post("/request-otp", requestOtp);
 router.post("/verify-recovery-otp", verifyOtp);

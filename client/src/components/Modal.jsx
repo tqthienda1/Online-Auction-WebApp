@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { http } from "@/lib/utils";
 import { Spinner } from "./ui/spinner";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
+import { IoIosCloseCircleOutline } from "react-icons/io";
 
 const Modal = ({ info, setInfo, type, onClose }) => {
   const changeInfoSchema = z.object({
@@ -49,15 +50,17 @@ const Modal = ({ info, setInfo, type, onClose }) => {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleShowPass = () => {
     setShowPass((prev) => !prev);
   };
 
   const onSubmit = async (data) => {
-    try {
-      let res;
+    let res;
 
+    try {
       switch (type) {
         case "changeInfo":
           if (loading) {
@@ -74,13 +77,14 @@ const Modal = ({ info, setInfo, type, onClose }) => {
             return;
           }
           setLoading(true);
+          console.log(data);
           res = await http.patch("/auth/change-password", data);
-          console.log(res);
-
           break;
       }
     } catch (error) {
-      console.log(error.message);
+      console.error(error.message);
+      setError(true);
+      setErrorMessage("Current password is incorrect !");
     } finally {
       setLoading(false);
       setSuccess(true);
@@ -98,7 +102,7 @@ const Modal = ({ info, setInfo, type, onClose }) => {
         <div className="relative rounded-xl bg-white border border-default rounded-base shadow-sm p-4 md:p-6">
           {/* Modal header */}
 
-          {!loading && !success && (
+          {!loading && !success && !error && (
             <>
               <div className="flex items-center justify-between border-b border-default pb-4 md:pb-5">
                 <h3 className="text-lg font-semibold text-heading font-playfair">
@@ -280,14 +284,14 @@ const Modal = ({ info, setInfo, type, onClose }) => {
             </>
           )}
 
-          {loading && !success && (
+          {loading && !success && !error && (
             <div className="flex flex-col justify-center p-4 md:p-5 text-center h-full">
               <Spinner className="size-8 w-full text-yellow-500" />
               <h3 className="font-semibold my-6 text-body">Loading</h3>
             </div>
           )}
 
-          {!loading && success && (
+          {!loading && success && !error && (
             <div className="flex flex-col justify-center md:p-5 text-center h-60">
               <div className="flex items-center justify-between  border-default pb-4 md:pb-5">
                 <button
@@ -318,8 +322,44 @@ const Modal = ({ info, setInfo, type, onClose }) => {
               </div>
               <IoCheckmarkCircleOutline className="w-full text-7xl text-yellow-500" />
               <h3 className="my-6 text-body font-semibold">
-                Change information successfully
+                {type === "changeInfo" && "Change information successfully"}
+                {type === "changePass" && "Change password successfully"}
+                {type === "upgrade" && "Upgrade to seller sucessfully"}
               </h3>
+            </div>
+          )}
+
+          {!loading && success && error && (
+            <div className="flex flex-col justify-center md:p-5 text-center h-60">
+              <div className="flex items-center justify-between  border-default pb-4 md:pb-5">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="text-body cursor-pointer bg-transparent hover:bg-neutral-tertiary hover:text-heading rounded-base text-sm w-9 h-9 ms-auto inline-flex justify-center items-center"
+                  data-modal-hide="crud-modal"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width={24}
+                    height={24}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18 17.94 6M18 18 6.06 6"
+                    />
+                  </svg>
+                  <span className="sr-only">Close modal</span>
+                </button>
+              </div>
+              <IoIosCloseCircleOutline className="w-full text-7xl text-yellow-500" />
+              <h3 className="my-6 text-body font-semibold">{errorMessage}</h3>
             </div>
           )}
         </div>
