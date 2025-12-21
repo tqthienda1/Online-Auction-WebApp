@@ -52,6 +52,7 @@ model User {
   boughtOrders       Order[]          @relation("Buyer")
   soldOrders         Order[]          @relation("Seller")
   bids               Bid[]            @relation("Bidder")
+  bidHistories       BidHistory[]
 }
 
 model Product {
@@ -74,6 +75,7 @@ model Product {
   seller User @relation("ProductSeller",fields: [sellerID], references: [id], onDelete: Cascade)
   highestBidder User? @relation("HighestBidder", fields: [highestBidderID], references: [id], onDelete: Cascade)
   category Category @relation("ProductCategory", fields: [categoryID], references: [id], onDelete: Restrict)
+  bidHistories BidHistory[] 
   productDescriptions ProductDescription[] @relation("ProductDescription")
   productImages ProductImage[] @relation("ProductImages")
   bids Bid[] @relation("BidProduct")
@@ -120,6 +122,18 @@ model Bid {
 
   product Product @relation("BidProduct", fields: [productID], references: [id], onDelete: Restrict)
   bidder User @relation("Bidder", fields: [bidderID], references: [id], onDelete: Restrict)
+}
+
+model BidHistory {
+  id          String    @id             @default(uuid())
+  productID   String    
+  bidderID    String    @db.Uuid
+  price       Int
+  createdAt   DateTime  @default(now())
+
+  product Product @relation(fields: [productID], references: [id], onDelete: Cascade)
+  bidder User @relation(fields: [bidderID], references: [id], onDelete: Cascade)
+
 }
 
 model WatchList {

@@ -9,15 +9,16 @@ const ProductBidPlace = ({
   endingDate,
   price,
   buyNowPrice,
+  bidStep,
   seller,
   bidder,
   onBidSuccess,
 }) => {
-  const [timeLeft, setTimeLeft] = useState(getTimeRemaining(endingDate));
+  const [timeLeft, setTimeLeft] = useState(() => getTimeRemaining(endingDate));
   const [bidValue, setBidValue] = useState("");
-  const [error, setError] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState(null);
   const [submitError, setSubmitError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -29,40 +30,63 @@ const ProductBidPlace = ({
 
   useEffect(() => {
     if (!bidValue) {
-      setError(null);
+      setValidationError(null);
       return;
     }
 
     const value = Number(bidValue);
 
     if (Number.isNaN(value)) {
-      setError("Bid must be a number");
-    } else if (value < price) {
-      setError(`Bid must be at least ${price} USD`);
-    } else {
-      setError(null);
+      setValidationError("Bid must be a number");
+      return;
     }
+
+    if (value < price) {
+      setValidationError(`Bid must be at least ${price} USD`);
+      return;
+    }
+
+    if ((value - currentPrice) % bidStep !== 0) {
+      setValidationError(`Bid must increase by ${bidStep}`);
+      return;
+    }
+    setValidationError(null);
   }, [bidValue, price]);
 
   const handlePlaceBid = async () => {
-    if (error || !bidValue) return;
+    if (validationError || !bidValue) return;
 
     try {
       setIsSubmitting(true);
+      setSubmitError(null);
 
       await http.post("/bids", {
-        productId: productId,
+        productId,
         maxPrice: Number(bidValue),
       });
 
       setBidValue("");
       onBidSuccess?.();
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to place bid");
+      setSubmitError(err.response?.data?.message || "Failed to place bid");
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  {
+    validationError && (
+      <p className="w-[90%] text-center text-sm text-red-500">
+        {validationError}
+      </p>
+    );
+  }
+
+  {
+    submitError && (
+      <p className="w-[90%] text-center text-sm text-red-500">{submitError}</p>
+    );
+  }
 
   return (
     <div className="flex flex-col w-1/3 items-center ">
@@ -91,7 +115,7 @@ const ProductBidPlace = ({
         <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
 
         <div className="flex flex-row w-[90%] justify-between items-center ">
-          <p className="text-lg font-medium">Opening Bid</p>
+          <p className="text-lg font-medium">Current Price</p>
           <p className="text-2xl font-bold text-yellow-400">
             {price ? price : 0} USD
           </p>
@@ -108,6 +132,14 @@ const ProductBidPlace = ({
         )}
 
         <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
+        {buyNowPrice && (
+          <div className="flex flex-row w-[90%] justify-between items-center">
+            <p className="text-lg font-medium">Bid Step</p>
+            <p className="text-2xl font-bold text-yellow-400">{bidStep} USD</p>
+          </div>
+        )}
+
+        <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
 
         <div className="flex flex-row w-[90%] justify-between items-center">
           <p className="text-lg font-medium">Choose your maximum bid</p>
@@ -117,10 +149,6 @@ const ProductBidPlace = ({
         </div>
 
         <InputPrice value={bidValue} onChange={setBidValue} />
-
-        {error && (
-          <p className="w-[90%] text-center text-sm text-red-500">{error}</p>
-        )}
 
         <div className="flex w-[90%] text-end">
           <p className="text-xs font-extralight">
@@ -133,9 +161,11 @@ const ProductBidPlace = ({
         <div className="flex flex-col w-full justify-center items-center gap-2">
           <button
             type="button"
-            disabled={!!error || bidValue === ""}
+            disabled={!!validationError || !bidValue || isSubmitting}
             onClick={handlePlaceBid}
-            className="w-[90%] h-10 bg-brand uppercase text-yellow-400 text-xl font-bold hover:bg-yellow-400 hover:text-brand transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-[90%] h-10 bg-brand uppercase text-yellow-400 text-xl font-bold
+             hover:bg-yellow-400 hover:text-brand transition
+             disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting && (
               <span className="inset-x-0 bottom-0 h-1 bg-yellow-400 animate-pulse" />

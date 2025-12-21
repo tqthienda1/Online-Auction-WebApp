@@ -16,34 +16,81 @@ import { Spinner } from "@/components/ui/spinner.jsx";
 
 const ProductDetails = () => {
   const { id } = useParams();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(null);
-  const [product, setProduct] = useState();
+
+  const [product, setProduct] = useState(null);
+  const [auction, setAuction] = useState(null);
+  const [bidHistory, setBidHistory] = useState([]);
+
+  const [loading, setLoading] = useState({
+    product: true,
+    auction: true,
+    bidHistory: false,
+  });
+
+  const [error, setError] = useState({
+    product: null,
+    auction: null,
+    bidHistory: null,
+  });
+
   const [curFrame, setCurFrame] = useState("description");
-  const [question, setQuestion] = useState("");
 
   const fetchProduct = useCallback(async () => {
     try {
-      setIsLoading(true);
+      setLoading((p) => ({ ...p, product: true }));
       const res = await http.get(`/products/${id}`);
-
       setProduct(res.data.data);
-    } catch (err) {
-      setIsError("Failed to load product.");
+    } catch {
+      setError((p) => ({ ...p, product: "Failed to load product" }));
     } finally {
-      setIsLoading(false);
+      setLoading((p) => ({ ...p, product: false }));
     }
   }, [id]);
 
+  const fetchAuction = useCallback(async () => {
+    try {
+      setLoading((p) => ({ ...p, auction: true }));
+      const res = await http.get(`/products/${id}/auction`);
+      setAuction(res.data);
+    } catch {
+      setError((p) => ({ ...p, auction: "Failed to load auction state" }));
+    } finally {
+      setLoading((p) => ({ ...p, auction: false }));
+    }
+  }, [id]);
+
+  const fetchBidHistory = useCallback(async () => {
+    try {
+      setLoading((p) => ({ ...p, bidHistory: true }));
+      const res = await http.get(`/products/${id}/bid-history`);
+      setBidHistory(res.data.bidHistories);
+    } catch {
+      setError((p) => ({ ...p, bidHistory: "Failed to load bid history" }));
+    } finally {
+      setLoading((p) => ({ ...p, bidHistory: false }));
+    }
+  }, [id]);
+
+  const handleBidSuccess = async () => {
+    await Promise.all([fetchAuction(), fetchBidHistory()]);
+  };
+
   useEffect(() => {
     fetchProduct();
-  }, [fetchProduct]);
+    fetchAuction();
+  }, [fetchProduct, fetchAuction]);
+
+  useEffect(() => {
+    if (curFrame === "bidhistory" && bidHistory.length === 0) {
+      fetchBidHistory();
+    }
+  }, [curFrame, bidHistory.length, fetchBidHistory]);
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
   }, []);
 
-  if (isLoading) {
+  if (loading.product) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
         <Spinner className="size-8 text-yellow-500" />
@@ -52,8 +99,8 @@ const ProductDetails = () => {
     );
   }
 
-  if (isError) {
-    return <div className="text-center text-red-500">{isError}</div>;
+  if (error.product) {
+    return <div className="text-center text-red-500">{error.product}</div>;
   }
 
   if (!product) return null;
@@ -76,17 +123,22 @@ const ProductDetails = () => {
           )}
 
           {curFrame === "bidhistory" && (
-            <BidHistory BidHistory={product.bids} />
+            <BidHistory
+              data={bidHistory}
+              loading={loading.bidHistory}
+              error={error.bidHistory}
+            />
           )}
         </div>
         <ProductBidPlace
           productId={product.id}
           endingDate={product.endTime}
-          price={product.currentPrice || product.startingPrice}
+          price={auction?.currentPrice}
           buyNowPrice={product.buyNowPrice}
+          bidStep={product.bidStep}
           seller={product.seller}
-          bidder={product.highestBidder}
-          onBidSuccess={fetchProduct}
+          bidder={auction?.highestBidder}
+          onBidSuccess={handleBidSuccess}
         />
       </div>
       <div data-aos="zoom-in">
