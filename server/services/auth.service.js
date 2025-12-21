@@ -67,13 +67,15 @@ export const verifyEmail = async ({ supabaseId }) => {
   });
 };
 
-export const changePassword = async ({ email, oldPassword, newPassword }) => {
+export const changePassword = async (email, oldPassword, newPassword) => {
+  console.log(oldPassword);
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password: oldPassword,
   });
 
   if (error) {
+    console.log(error.message);
     throw { status: 400, message: "Old password is incorrect." };
   }
 
@@ -82,7 +84,7 @@ export const changePassword = async ({ email, oldPassword, newPassword }) => {
       {
         password: newPassword,
       },
-      { accessToken: signInData.session.access_token }
+      { accessToken: data.session.access_token }
     );
 
   if (updateError) {

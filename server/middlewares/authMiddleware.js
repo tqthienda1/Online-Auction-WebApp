@@ -35,13 +35,13 @@ export const authMiddleware = async (req, res, next) => {
         },
       });
     }
-
     req.user = {
       supabase: supabaseUser,
       db: dbUser,
       id: dbUser.id,
       supabaseId: supabaseUser.id,
       role: dbUser.role,
+      email: supabaseUser.email,
     };
     next();
   } catch (err) {
