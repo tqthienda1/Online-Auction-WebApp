@@ -1,5 +1,4 @@
 import express from "express";
-import { UserController } from "../controllers/userController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { requireRole } from "../middlewares/requireRole.js";
 
