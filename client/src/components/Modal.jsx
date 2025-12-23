@@ -78,6 +78,9 @@ const Modal = ({ info, setInfo, type, onClose }) => {
           break;
         case "upgrade":
           res = await http.post("/upgrade/");
+          console.log(res.data);
+          setInfo((prev) => ({ ...prev, upgrade: res.data }));
+          break;
       }
     } catch (error) {
       console.error(error.message);
@@ -322,7 +325,7 @@ const Modal = ({ info, setInfo, type, onClose }) => {
               <h3 className="my-6 text-body font-semibold">
                 {type === "changeInfo" && "Change information successfully"}
                 {type === "changePass" && "Change password successfully"}
-                {type === "upgrade" && "Upgrade to seller sucessfully"}
+                {type === "upgrade" && "Send upgrade request successfully "}
               </h3>
             </div>
           )}

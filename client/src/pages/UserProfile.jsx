@@ -125,11 +125,16 @@ const UserProfile = () => {
     const loadUserInfo = async () => {
       setLoading(true);
       try {
-        const res = await http.get("/user/");
+        const res = await Promise.all([
+          http.get("/user/"),
+          http.get("/upgrade/me"),
+        ]);
 
-        setInfo(res.data);
+        res[0].data.upgrade = res[1].data;
 
-        console.log(res.data);
+        console.log(res[0].data);
+
+        setInfo(res[0].data);
       } catch (error) {
         console.log(error.message);
       } finally {
@@ -140,9 +145,6 @@ const UserProfile = () => {
     loadUserInfo();
   }, []);
 
-  const handleChangeInfo = (username, address) => {
-    setInfo({ username, address });
-  };
 
   const wishlistItems = MOCK_PRODUCTS.slice(0, 2);
   const biddingItems = MOCK_PRODUCTS.slice(2, 4);
@@ -158,7 +160,7 @@ const UserProfile = () => {
       )}
       {!loading && (
         <div className="flex flex-col items-center justify-center">
-          <ProfileInfo info={info} setInfo={handleChangeInfo} />
+          <ProfileInfo info={info} setInfo={setInfo} />
           <ProfileReviews />
           <ProfileTab tab={tab} setTab={setTab} />
           <div className="my-10 w-3/4 ">
@@ -171,10 +173,6 @@ const UserProfile = () => {
                   ? biddingItems
                   : wonAuctions
               }
-              // sortBy={filters.sortBy}
-              // onSortChange={(newValue) =>
-              //   handleFilterChange("sortBy", newValue)
-              // }
             />
           </div>
         </div>
