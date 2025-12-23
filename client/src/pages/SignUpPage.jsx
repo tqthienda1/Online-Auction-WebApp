@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
-import { z } from "zod";
+import { set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "../../public/image/logo.png";
 import { signInWithGoogle, signUp } from "../services/auth.service.js";
@@ -26,6 +26,9 @@ const schema = z
   });
 
 const SignUpPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -38,6 +41,11 @@ const SignUpPage = () => {
 
   const navigate = useNavigate();
 
+  const password = watch("password");
+  const confirmPassword = watch("confirmPassword");
+
+  const passwordMismatch = confirmPassword && password !== confirmPassword;
+
   const [showPass, setShowPass] = useState(false);
 
   // const [recaptchaToken, setRecaptchaToken] = useState(null);
@@ -48,20 +56,34 @@ const SignUpPage = () => {
     //   return;
     // }
     try {
+      setIsLoading(true);
+      setFormError("");
+
       await signUp(data);
 
-      alert("Please check your email to verify your account.");
+      // alert("Please check your email to verify your account.");
       navigate(`/verify-email?email=${data.email}`);
     } catch (err) {
-      alert(err.message || "Sign up failed");
+      if (err.message?.includes("email")) {
+        setFormError("Email này đã được sử dụng");
+      } else {
+        setFormError("Sign up failed. Please try again later.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
+    if (isLoading) return;
+
     try {
+      setIsLoading(true);
       await signInWithGoogle();
     } catch (err) {
-      alert(err.message || "Google sign up failed");
+      setFormError("Google sign up failed. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -143,7 +165,11 @@ const SignUpPage = () => {
               {showPass ? <FaEye /> : <FaEyeSlash />}
             </button>
             <span className="text-red-600 text-sm mt-1 block">
-              {errors.confirmPassword ? errors.confirmPassword.message : ""}
+              {errors.confirmPassword ? (
+                <span>{errors.confirmPassword.message}</span>
+              ) : (
+                passwordMismatch && <span>Passwords do not match</span>
+              )}
             </span>
           </div>
 
@@ -201,14 +227,28 @@ const SignUpPage = () => {
             />
           </div> */}
 
+          {formError && (
+            <div className="text-red-600 text-sm text-center p-3 rounded-md mb-6">
+              {formError}
+            </div>
+          )}
           <div>
-            <button className="w-full bg-black text-white py-3 rounded-md hover:opacity-60 cursor-pointer">
-              Sign Up
+            <button
+              disabled={isLoading}
+              className={`w-full bg-black text-white py-3 rounded-md transition 
+                ${
+                  isLoading
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:opacity-60 cursor-pointer"
+                }`}
+            >
+              {isLoading ? "Signing up..." : "Sign up"}
             </button>
           </div>
         </form>
         <div className="mt-8 space-y-4">
           <button
+            disabled={isLoading}
             className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3 cursor-pointer"
             onClick={handleGoogleSignIn}
           >

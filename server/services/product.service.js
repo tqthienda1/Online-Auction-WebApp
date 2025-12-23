@@ -15,10 +15,12 @@ export const getProducts = async ({
   sellerId,
   sold,
 }) => {
+  console.log(category);
+
   const where = {
     name: search ? { contains: search, mode: "insensitive" } : undefined,
 
-    category: category || undefined,
+    categoryID: category || undefined,
 
     sellerId: sellerId || undefined,
 
