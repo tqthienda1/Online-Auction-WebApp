@@ -1,5 +1,4 @@
 import { CategoryService } from "../services/category.service.js";
-import { UserService } from "../services/user.service.js";
 // import { ProductService } from "../services/product.service.js";
 
 export const CategoryController = {
