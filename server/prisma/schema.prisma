@@ -185,6 +185,7 @@ model BidHistory {
   Product   Product  @relation(fields: [productID], references: [id], onDelete: Cascade)
 }
 
+
 enum Role {
   BIDDER
   SELLER

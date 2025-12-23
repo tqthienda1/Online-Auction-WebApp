@@ -1,9 +1,11 @@
-import Router from "express";
-import * as UserController from "../controllers/userController.js";
+import express from "express";
+
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { requireRole } from "../middlewares/requireRole.js";
 
-const router = Router();
+import * as UserController from "../controllers/userController.js";
+
+const router = express.Router();
 
 router.get("/", UserController.getUsers);
 

@@ -1,6 +1,6 @@
 import prisma from "../prismaClient.js";
 
-export const getUsers = async (page = 1, limit = 10) => {
+export const getUsers = async ({ page = 1, limit = 10 }) => {
   const skip = (page - 1) * limit;
   const [data, total] = await Promise.all([
     prisma.user.findMany({

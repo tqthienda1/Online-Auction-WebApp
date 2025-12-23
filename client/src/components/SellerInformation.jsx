@@ -22,7 +22,7 @@ const SellerInformation = ({ seller, bidder }) => {
       </div>
       {bidder && (
         <div className="flex justify-between items-center mt-5">
-          <div className="flex flex-col">
+          <div className="flex flex-col max-w-[60%] overflow-hidden">
             <h3 className="text-lg font-semibold text-gray-800">
               Highest Bidder
             </h3>

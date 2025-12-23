@@ -1,5 +1,6 @@
 import express from "express";
 import * as BidController from "../controllers/bidController.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -8,6 +9,6 @@ const mockUser = (req, res, next) => {
   next();
 };
 
-router.post("/", mockUser, BidController.placeBid);
+router.post("/", authMiddleware, BidController.placeBid);
 
 export default router;

@@ -80,23 +80,22 @@ export const verifyEmail = async (req, res) => {
 
 export const changePassword = async (req, res) => {
   try {
-    const { email, oldPassword, newPassword } = req.body;
+    const { curPass, newPass } = req.body;
 
-    if (!email || !oldPassword || !newPassword) {
+    if (!curPass || !newPass) {
       return res.status(400).json({
         message:
           "Some required information is missing. Please review and complete the form.",
       });
     }
 
-    const result = await authService.changePassword({
-      email,
-      oldPassword,
-      newPassword,
-    });
+    const email = req.user.email;
+
+    const result = await authService.changePassword(email, curPass, newPass);
 
     return res.status(200).json(result);
   } catch (err) {
+    console.error(err.message);
     return res.status(err.status || 500).json({
       message: err.message || "Internal server error",
     });
