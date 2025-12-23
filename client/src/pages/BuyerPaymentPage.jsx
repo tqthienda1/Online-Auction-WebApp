@@ -14,17 +14,21 @@ const BuyerPaymentPage = () => {
   const [chatOpen, setChatOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
 
-  // mapping status → step
+  // mapping status → step (status = next action needed)
   const mapStatusToStep = (status) => {
     switch (status) {
       case "CREATED":
-        return 1;
+        return 1; // buyer provides info
       case "PROVIDEBUYERINFO":
-        return 2;
+        return 2; // seller confirms payment (waiting)
+      case "RECEIVEPAYMENT":
+        return 3; // seller uploads shipping (waiting)
+      case "UPDATESHIPPINGINVOICE":
+        return 4; // buyer confirms receipt
       case "RECEIVEPRODUCT":
-        return 3;
+        return 5; // buyer rates seller
       case "RATING":
-        return 4;
+        return 6; // order completed
       default:
         return 1;
     }
@@ -84,23 +88,41 @@ const BuyerPaymentPage = () => {
           {currentStep === 1 && (
             <PaymentAndShippingInfo
               productID={productID}
-              onUpdated={fetchOrder}    // CHỈ refetch, không setStep
+              onUpdated={fetchOrder}
             />
           )}
 
           {currentStep === 2 && (
-            <DeliveryConfirmation
-              productID={productID}
-              onConfirmed={fetchOrder}  
-            />
+            <div className="bg-blue-50 p-4 rounded border border-blue-200">
+              <p className="text-sm text-blue-800">Waiting for seller to confirm payment reception...</p>
+            </div>
           )}
 
           {currentStep === 3 && (
+            <div className="bg-blue-50 p-4 rounded border border-blue-200">
+              <p className="text-sm text-blue-800">Waiting for seller to upload shipping invoice...</p>
+            </div>
+          )}
+
+          {currentStep === 4 && (
+            <DeliveryConfirmation
+              productID={productID}
+              onConfirmed={fetchOrder}
+            />
+          )}
+
+          {currentStep === 5 && (
             <Rating
               type="seller"
               productID={productID}
-              onRated={fetchOrder}      
+              onRated={fetchOrder}
             />
+          )}
+
+          {currentStep === 6 && (
+            <div className="bg-green-50 p-4 rounded border border-green-200">
+              <p className="text-sm text-green-800">Order completed! Thank you for your purchase.</p>
+            </div>
           )}
 
         </div>

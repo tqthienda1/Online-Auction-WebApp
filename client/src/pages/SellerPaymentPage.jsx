@@ -16,15 +16,19 @@ function SellerPaymentPage() {
   const mapStatusToStep = (status) => {
       switch (status) {
       case "CREATED":
-        return 1;
+        return 0; // seller waiting for buyer to provide info
+      case "PROVIDEBUYERINFO":
+        return 1; // seller confirms payment
       case "RECEIVEPAYMENT":
-        return 2;
+        return 2; // seller uploads shipping invoice
       case "UPDATESHIPPINGINVOICE":
-        return 3;
+        return 3; // seller waiting for buyer to confirm receipt
+      case "RECEIVEPRODUCT":
+        return 4; // seller rates buyer
       case "RATING":
-        return 4;
+        return 5; // order completed
       default:
-        return 1;
+        return 0;
     }
   };
 
@@ -93,6 +97,12 @@ function SellerPaymentPage() {
            <SellerProgress currentStep={currentStep} />
 
            <div className="mt-6 space-y-6">
+              {currentStep === 0 && (
+                <div className="bg-blue-50 p-4 rounded border border-blue-200">
+                  <p className="text-sm text-blue-800">Waiting for buyer to provide payment information...</p>
+                </div>
+              )}
+
               {currentStep === 1 && (
                 <>
                 <CancelOrder onCancelled={() => setIsCancelled(true)} />
@@ -112,9 +122,21 @@ function SellerPaymentPage() {
               )}
 
               {currentStep === 3 && (
+                <div className="bg-blue-50 p-4 rounded border border-blue-200">
+                  <p className="text-sm text-blue-800">Waiting for buyer to confirm product reception...</p>
+                </div>
+              )}
+
+              {currentStep === 4 && (
                 <Rating type="buyer"
                 productID={productID}
-              onRated={fetchOrder}   />
+                onRated={fetchOrder} />
+              )}
+
+              {currentStep === 5 && (
+                <div className="bg-green-50 p-4 rounded border border-green-200">
+                  <p className="text-sm text-green-800">Order completed! Thank you for selling.</p>
+                </div>
               )}
            </div>
          </div>
