@@ -44,7 +44,7 @@ const HomeProductCarousel = ({ heading, product }) => {
                   <img
                     src={item.productAvt}
                     alt=""
-                    className="w-3xl h-auto object-cover aspect-3/2 rounded-3xl"
+                    className="w-3xl h-auto object-contain aspect-3/2 rounded-3xl"
                   />
                   <div className="flex flex-col justify-between bg-brand flex-2 h-[80%] rounded-r-3xl text-white p-10">
                     <h1 className="text-4xl text-center font-playfair">

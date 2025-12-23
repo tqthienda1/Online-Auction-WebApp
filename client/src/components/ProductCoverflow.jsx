@@ -120,7 +120,7 @@ const ProductCoverflow = ({ products }) => {
             <img
               src={item.productAvt}
               alt=""
-              className={`w-full h-full object-cover rounded-t-2xl select-none transition-filter duration-300 ${
+              className={`object-contain w-full h-full rounded-t-2xl select-none transition-filter duration-300 ${
                 index === swiperRef.current?.activeIndex
                   ? "hover:brightness-30"
                   : ""
