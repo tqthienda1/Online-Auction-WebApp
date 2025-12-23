@@ -1,22 +1,41 @@
 import React, { useState, useEffect } from 'react'
 import { FiX, FiSend } from 'react-icons/fi'
 import { http as axios } from '../../lib/utils'
+import { supabase } from '../../lib/supabaseClient'
 
-function ChatModal({ isOpen, onClose, productID, counterpartyName = "Seller", counterpartyImage = null }) {
+function ChatModal({ isOpen, onClose, productID, counterpartyName = "Seller", counterpartyImage = null, meID = null, order }) {
   const [messages, setMessages] = useState([])
   const [inputText, setInputText] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [currentUserID, setCurrentUserID] = useState(null)
 
-  // Fetch messages and get current user ID
+  // Fetch messages and get current user ID via supabase auth
   useEffect(() => {
-    if (isOpen && productID) {
-      // Get current user ID from auth
-      const userID = localStorage.getItem('userID')
-      setCurrentUserID(userID)
+    if (meID) {
+      setCurrentUserID(meID)
+    }
+
+    const init = async () => {
+      try {
+        // Only try supabase lookup if meID not provided
+        if (!meID) {
+          const { data, error } = await supabase.auth.getUser()
+          if (!error && data?.user) setCurrentUserID(data.user.id)
+          else {
+            const { data: sessionData } = await supabase.auth.getSession()
+            const userId = sessionData?.session?.user?.id
+            if (userId) setCurrentUserID(userId)
+          }
+        }
+      } catch (err) {
+        console.error('Failed to get supabase user:', err)
+      }
+
       fetchMessages()
     }
+
+    init()
   }, [isOpen, productID])
 
   const fetchMessages = async () => {
@@ -34,21 +53,24 @@ function ChatModal({ isOpen, onClose, productID, counterpartyName = "Seller", co
   }
 
   const handleSend = async () => {
+    setInputText('')
+
+
     if (!inputText.trim() || !productID) return
 
     try {
       setError(null)
       const res = await axios.post(`/chat/products/${productID}/messages`, {
         content: inputText,
+        order
       })
       
       // Add new message to local state
       setMessages([...messages, res.data])
-      setInputText('')
     } catch (err) {
       console.error('Failed to send message:', err)
       setError(err?.response?.data?.message || 'Failed to send message')
-    }
+    } 
   }
 
   if (!isOpen) return null
@@ -83,27 +105,41 @@ function ChatModal({ isOpen, onClose, productID, counterpartyName = "Seller", co
             <p className="text-center text-gray-400 text-sm">No messages yet</p>
           )}
           {messages.map((msg) => {
-            const isCurrentUser = msg.senderID === currentUserID
-            return (
-              <div
-                key={msg.id}
-                className={`flex ${isCurrentUser ? 'justify-start' : 'justify-end'}`}
-              >
-                <div
-                  className={`max-w-xs ${
-                    isCurrentUser
-                      ? 'bg-gray-300 text-gray-900 rounded-3xl rounded-tl-none'
-                      : 'bg-[#FBBC04] text-white rounded-3xl rounded-tr-none'
-                  } px-4 py-3`}
-                >
-                  <p className="text-sm">{msg.content}</p>
-                  <p className="text-xs mt-1 opacity-70">
-                    {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </p>
-                </div>
-              </div>
-            )
-          })}
+  const senderIdCandidate =
+    msg.senderID ??
+    msg.senderId ??
+    msg.sender_id ??
+    msg.sender?.id ??
+    msg.sender ??
+    msg.userId ??
+    msg.user_id ??
+    msg.from
+
+  const isCurrentUser =
+    currentUserID && senderIdCandidate && String(senderIdCandidate) === String(currentUserID)
+
+  return (
+    <div
+      key={msg.id}
+      // isCurrentUser = true (mình gửi) -> justify-end (bên phải)
+      // isCurrentUser = false (người khác) -> justify-start (bên trái)
+      className={`flex w-full mb-4 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
+    >
+      <div
+        className={`max-w-[75%] px-4 py-2 shadow-sm ${
+          isCurrentUser
+            ? 'bg-[#FBBC04] text-white rounded-2xl rounded-tr-none' // Bong bóng Vàng bên phải
+            : 'bg-gray-200 text-gray-800 rounded-2xl rounded-tl-none' // Bong bóng Xám bên trái
+        }`}
+      >
+        <p className="text-sm">{msg.content}</p>
+        <p className={`text-[10px] mt-1 opacity-70 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
+          {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </p>
+      </div>
+    </div>
+  )
+})}
         </div>
 
         {/* Input */}
