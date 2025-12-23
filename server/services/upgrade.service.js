@@ -34,11 +34,13 @@ export const getMyUpgradeRequest = async (userId) => {
 export const getAllUpgradeRequests = async (status) => {
   const where = {};
 
-  if (status && !ALLOWED_STATUS.includes(status)) {
-    throw {
-      status: 400,
-      message: "Invalid status filter",
-    };
+  if (status) {
+    if (!ALLOWED_STATUS.includes(status)) {
+      throw {
+        status: 400,
+        message: "Invalid status filter",
+      };
+    }
     where.status = status;
   }
 
@@ -50,7 +52,8 @@ export const getAllUpgradeRequests = async (status) => {
         select: {
           id: true,
           username: true,
-          role: true,
+          ratingPos: true,
+          ratingNeg: true,
         },
       },
     },
