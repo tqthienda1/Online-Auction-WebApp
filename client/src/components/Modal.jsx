@@ -61,25 +61,23 @@ const Modal = ({ info, setInfo, type, onClose }) => {
     let res;
 
     try {
+      if (loading) {
+        return;
+      }
+      setLoading(true);
       switch (type) {
         case "changeInfo":
-          if (loading) {
-            return;
-          }
-          setLoading(true);
           res = await http.patch("/user/", data);
           console.log(res);
           setInfo(res.data.updatedUser.username, res.data.updatedUser.address);
 
           break;
         case "changePass":
-          if (loading) {
-            return;
-          }
-          setLoading(true);
           console.log(data);
           res = await http.patch("/auth/change-password", data);
           break;
+        case "upgrade":
+          res = await http.post("/upgrade/");
       }
     } catch (error) {
       console.error(error.message);
