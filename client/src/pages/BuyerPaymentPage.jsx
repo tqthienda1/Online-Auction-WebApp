@@ -123,7 +123,7 @@ const BuyerPaymentPage = () => {
         )}
       </div>
 
-      <ChatModal isOpen={chatOpen} onClose={() => setChatOpen(false)} counterpartyName="Seller" />
+      <ChatModal isOpen={chatOpen} onClose={() => setChatOpen(false)} productID={productID} counterpartyName="Seller" />
     </div>
   );
 };

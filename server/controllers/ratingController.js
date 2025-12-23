@@ -37,6 +37,19 @@ export const createOrToggleRating = async (req, res) => {
       comment: descriptionRating,
     });
 
+    // If a rating was created or updated (not removed), mark order as in RATING state
+    if (!result.removed) {
+      try {
+        await prisma.order.update({
+          where: { productID },
+          data: { status: 'RATING' },
+        });
+      } catch (updateErr) {
+        console.error('Failed to update order status to RATING:', updateErr);
+        // continue — rating succeeded but status update failed
+      }
+    }
+
     return res.json(result);
   } catch (err) {
     console.error("Submit rating failed:", err);
