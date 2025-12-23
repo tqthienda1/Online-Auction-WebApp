@@ -25,13 +25,17 @@ const PriceFilter = ({ value, onChange }) => {
         />
       </div>
 
-      <div className="flex font-playfair justify-between items-center mt-4">
+      <div className="flex flex-col gap-2 justify-center items-start mt-4">
         <span className="text-gray-600">
           From: <span className="text-yellow-500 font-bold">${value[0]}</span>
         </span>
         <span className="text-gray-600">
-          To: <span className="text-yellow-500 font-bold">${value[1]}</span>
+          To:{" "}
+          <span className="text-yellow-500 font-bold ml-5">${value[1]}</span>
         </span>
+        <button className="border-2 rounded-lg mt-2 py-2 px-3 bg-yellow-400 text-white font-semibold hover:bg-yellow-500 transition-colors">
+          View results
+        </button>
       </div>
     </div>
   );
