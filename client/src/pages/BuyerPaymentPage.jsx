@@ -69,7 +69,10 @@ const BuyerPaymentPage = () => {
             </div>
           </div>
 
-          <button onClick={() => setChatOpen(true)} className="px-4 py-2 bg-[#FBBC04] text-white rounded">
+          <button
+            onClick={() => order && setChatOpen(true)}
+            disabled={loading || !order}
+            className={`px-4 py-2 rounded ${loading || !order ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-[#FBBC04] text-white'}`}>
             Chat with Seller
           </button>
         </div>
@@ -119,11 +122,12 @@ const BuyerPaymentPage = () => {
                 </div>
               )}
             </div>
+      <ChatModal isOpen={chatOpen} onClose={() => setChatOpen(false)} productID={productID} counterpartyName="Seller" meID={order?.buyer?.id} order={order}/>
+
           </>
         )}
       </div>
 
-      <ChatModal isOpen={chatOpen} onClose={() => setChatOpen(false)} productID={productID} counterpartyName="Seller" />
     </div>
   );
 };
