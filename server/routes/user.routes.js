@@ -17,7 +17,7 @@ router.patch(
 );
 
 router.get(
-  "/",
+  "/me",
   authMiddleware,
   requireRole(["BIDDER", "ADMIN", "SELLER"]),
   UserController.getInfo
