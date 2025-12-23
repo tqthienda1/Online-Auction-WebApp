@@ -126,7 +126,7 @@ const UserProfile = () => {
       setLoading(true);
       try {
         const res = await Promise.all([
-          http.get("/user/"),
+          http.get("/user/me"),
           http.get("/upgrade/me"),
         ]);
 
