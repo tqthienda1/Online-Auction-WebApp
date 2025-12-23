@@ -1,6 +1,6 @@
 import React from "react";
 import { LuUser } from "react-icons/lu";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "./Modal";
 
 const ProfileInfo = ({ info, setInfo }) => {
@@ -8,10 +8,9 @@ const ProfileInfo = ({ info, setInfo }) => {
   const [modalType, setModalType] = useState("");
 
   const handleClick = (type) => {
-    setShowModal(true);
     setModalType(type);
+    setShowModal(true);
   };
-
   const handleCloseModal = () => {
     setShowModal(false);
   };
@@ -40,12 +39,25 @@ const ProfileInfo = ({ info, setInfo }) => {
         >
           Change password
         </button>
-        <button
-          onClick={() => handleClick("upgrade")}
-          className="font-semibold cursor-pointer text-white border border-gray-200 py-2 px-5 rounded-lg items-center bg-yellow-400 hover:bg-yellow-500"
-        >
-          Upgrade to seller
-        </button>
+
+        {!info.upgrade && (
+          <button
+            onClick={() => handleClick("upgrade")}
+            className="font-semibold cursor-pointer text-white border border-gray-200 py-2 px-5 rounded-lg items-center bg-yellow-400 hover:bg-yellow-500"
+          >
+            Upgrade to seller
+          </button>
+        )}
+        {info.upgrade && info.upgrade.status === "PENDING" && (
+          <button className="font-semibold text-white border border-gray-200 py-2 px-5 rounded-lg items-center bg-yellow-400 opacity-50 cursor-not-allowed">
+            Your request is pending
+          </button>
+        )}
+        {info.upgrade && info.upgrade.status === "ACCEPT" && (
+          <button className="font-semibold text-white border border-gray-200 py-2 px-5 rounded-lg items-center bg-yellow-400 ">
+            You are seller
+          </button>
+        )}
       </div>
 
       {showModal && (
