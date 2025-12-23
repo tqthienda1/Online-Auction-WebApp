@@ -25,7 +25,7 @@ const VerifyEmailPage = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isResending, setIsResending] = useState(false);
+  // const [isResending, setIsResending] = useState(false);
 
   const onSubmit = async (data) => {
     if (!email) {
@@ -49,19 +49,19 @@ const VerifyEmailPage = () => {
     }
   };
 
-  const handleResend = async () => {
-    if (!email) return;
+  // const handleResend = async () => {
+  //   if (!email) return;
 
-    try {
-      setIsResending(true);
-      await resendOtp({ email });
-      alert("OTP has been resent. Please check your email.");
-    } catch (err) {
-      alert(err.message || "Failed to resend OTP");
-    } finally {
-      setIsResending(false);
-    }
-  };
+  //   try {
+  //     setIsResending(true);
+  //     await resendOtp({ email });
+  //     alert("OTP has been resent. Please check your email.");
+  //   } catch (err) {
+  //     alert(err.message || "Failed to resend OTP");
+  //   } finally {
+  //     setIsResending(false);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-6 pb-6">
@@ -118,7 +118,7 @@ const VerifyEmailPage = () => {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
+        {/* <div className="mt-6 text-center">
           <button
             onClick={handleResend}
             disabled={isResending}
@@ -126,7 +126,7 @@ const VerifyEmailPage = () => {
           >
             {isResending ? "Resending..." : "Resend OTP"}
           </button>
-        </div>
+        </div> */}
 
         <p className="text-center text-sm text-gray-600 mt-6">
           Back to{" "}

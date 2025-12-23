@@ -45,16 +45,18 @@ const SignUpPage = () => {
   const confirmPassword = watch("confirmPassword");
 
   const passwordMismatch = confirmPassword && password !== confirmPassword;
+  const passLengthMismatch = password && password.length < 6;
 
   const [showPass, setShowPass] = useState(false);
 
-  // const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
 
   const onSubmit = async (data) => {
-    // if (!recaptchaToken) {
-    //   alert("Please verify you are not a robot!");
-    //   return;
-    // }
+    if (!recaptchaToken) {
+      setFormError("Please verify that you are not a robot");
+      return;
+    }
+
     try {
       setIsLoading(true);
       setFormError("");
@@ -65,9 +67,9 @@ const SignUpPage = () => {
       navigate(`/verify-email?email=${data.email}`);
     } catch (err) {
       if (err.message?.includes("email")) {
-        setFormError("Email này đã được sử dụng");
+        setFormError("Email is already used");
       } else {
-        setFormError("Sign up failed. Please try again later.");
+        setFormError("Sign up failed. Please try again later");
       }
     } finally {
       setIsLoading(false);
@@ -141,7 +143,13 @@ const SignUpPage = () => {
               {showPass ? <FaEye /> : <FaEyeSlash />}
             </button>
             <span className="text-red-600 text-sm mt-1 block">
-              {errors.password ? errors.password.message : ""}
+              {errors.password ? (
+                <span>{errors.password.message}</span>
+              ) : (
+                passLengthMismatch && (
+                  <span>Password must be at least 6 characters long</span>
+                )
+              )}
             </span>
           </div>
 
@@ -220,12 +228,13 @@ const SignUpPage = () => {
             </span>
           </div>
 
-          {/* <div className="my-4">
+          <div className="my-4 flex justify-center">
             <ReCAPTCHA
-              sitekey="6LeOcgosAAAAAJ2VsOk4pIajYhDRpr7eIxSqBpxG"
+              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
               onChange={(token) => setRecaptchaToken(token)}
+              onExpired={() => setRecaptchaToken(null)}
             />
-          </div> */}
+          </div>
 
           {formError && (
             <div className="text-red-600 text-sm text-center p-3 rounded-md mb-6">
@@ -237,7 +246,7 @@ const SignUpPage = () => {
               disabled={isLoading}
               className={`w-full bg-black text-white py-3 rounded-md transition 
                 ${
-                  isLoading
+                  isLoading || !recaptchaToken
                     ? "opacity-50 cursor-not-allowed"
                     : "hover:opacity-60 cursor-pointer"
                 }`}

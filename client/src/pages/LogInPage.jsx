@@ -149,8 +149,11 @@ const LogInPage = () => {
           </div>
         </form>
 
-        <div className="mt-4">
-          <Link to="#" className="text-sm text-gray-700 underline">
+        <div className="text-right mt-4">
+          <Link
+            to="/forgot-password"
+            className="text-sm text-gray-700 underline"
+          >
             Forgot password?
           </Link>
         </div>
