@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import logo from "../../public/image/logo.png";
 import Stepper from "../components/Stepper.jsx";
 import * as AuthService from "../services/auth.service.js";
@@ -12,6 +13,9 @@ const ForgotPasswordOTPPage = () => {
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -179,21 +183,43 @@ const ForgotPasswordOTPPage = () => {
               </p>
             </div>
 
-            <input
-              type="password"
-              placeholder="New password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border-b border-gray-300 py-3 focus:outline-none mb-4"
-            />
+            <div className="relative">
+              <input
+                type={showPass ? "text" : "password"}
+                id="password"
+                placeholder="New password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border-b border-gray-300 py-3 focus:outline-none mb-4"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPass((s) => !s)}
+                className="absolute right-0 top-1/2 -translate-y-1/2 mr-2 text-gray-500 cursor-pointer"
+                aria-label={showPass ? "Hide password" : "Show password"}
+              >
+                {showPass ? <FaEye /> : <FaEyeSlash />}
+              </button>
+            </div>
 
-            <input
-              type="password"
-              placeholder="Confirm password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full border-b border-gray-300 py-3 focus:outline-none"
-            />
+            <div className="relative">
+              <input
+                type={showConfirmPass ? "text" : "password"}
+                id="confirmPassword"
+                placeholder="Confirm password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full border-b border-gray-300 py-3 focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPass((s) => !s)}
+                className="absolute right-0 top-1/2 -translate-y-1/2 mr-2 text-gray-500 cursor-pointer"
+                aria-label={showConfirmPass ? "Hide password" : "Show password"}
+              >
+                {showConfirmPass ? <FaEye /> : <FaEyeSlash />}
+              </button>
+            </div>
 
             {error && (
               <p className="text-red-600 text-sm text-center mt-2">{error}</p>

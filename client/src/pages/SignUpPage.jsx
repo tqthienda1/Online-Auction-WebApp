@@ -48,6 +48,7 @@ const SignUpPage = () => {
   const passLengthMismatch = password && password.length < 6;
 
   const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   const [recaptchaToken, setRecaptchaToken] = useState(null);
 
@@ -158,7 +159,7 @@ const SignUpPage = () => {
               Confirm password
             </label>
             <input
-              type={showPass ? "text" : "password"}
+              type={showConfirmPass ? "text" : "password"}
               id="confirmPassword"
               {...register("confirmPassword")}
               placeholder="Confirm password"
@@ -166,11 +167,11 @@ const SignUpPage = () => {
             />
             <button
               type="button"
-              onClick={() => setShowPass((s) => !s)}
+              onClick={() => setShowConfirmPass((s) => !s)}
               className="absolute right-0 top-1/2 -translate-y-1/2 mr-2 text-gray-500 cursor-pointer"
-              aria-label={showPass ? "Hide password" : "Show password"}
+              aria-label={showConfirmPass ? "Hide password" : "Show password"}
             >
-              {showPass ? <FaEye /> : <FaEyeSlash />}
+              {showConfirmPass ? <FaEye /> : <FaEyeSlash />}
             </button>
             <span className="text-red-600 text-sm mt-1 block">
               {errors.confirmPassword ? (

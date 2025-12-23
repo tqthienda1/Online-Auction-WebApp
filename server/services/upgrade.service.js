@@ -39,6 +39,7 @@ export const getAllUpgradeRequests = async (status) => {
       status: 400,
       message: "Invalid status filter",
     };
+    where.status = status;
   }
 
   return prisma.upgradeRequest.findMany({
