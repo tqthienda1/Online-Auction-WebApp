@@ -146,7 +146,7 @@ function SellerPaymentPage() {
                 )}
             </div>
 
-            <ChatModal isOpen={chatOpen} onClose={() => setChatOpen(false)} counterpartyName="Buyer" />
+            <ChatModal isOpen={chatOpen} onClose={() => setChatOpen(false)} productID={productID} counterpartyName="Buyer" />
         </div>
     )
 }
