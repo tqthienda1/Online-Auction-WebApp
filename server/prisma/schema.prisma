@@ -157,8 +157,9 @@ model Rating {
 
 model SystemParameter {
   id                  String   @id @default(uuid())
-  autoExtendTime      DateTime
-  recentlyProductTime DateTime
+  autoExtendThreshold Int
+  autoExtendTime      Int
+  recentlyProductTime Int
 }
 
 model Message {
