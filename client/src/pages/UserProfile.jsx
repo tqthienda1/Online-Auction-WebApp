@@ -126,7 +126,7 @@ const UserProfile = () => {
       setLoading(true);
       try {
         const res = await Promise.all([
-          http.get("/user/"),
+          http.get("/user/me"),
           http.get("/upgrade/me"),
         ]);
 
@@ -144,7 +144,6 @@ const UserProfile = () => {
 
     loadUserInfo();
   }, []);
-
 
   const wishlistItems = MOCK_PRODUCTS.slice(0, 2);
   const biddingItems = MOCK_PRODUCTS.slice(2, 4);

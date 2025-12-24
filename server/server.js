@@ -37,8 +37,6 @@ app.get("/", (req, res) => res.send("Server is live!"));
 registerCronJobs();
 
 app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
-// app.use("/user", userRoutes);
 app.use("/user", userRoutes);
 app.use("/categories", categoryRoutes);
 // app.use("/descriptions", productDescRoutes);
