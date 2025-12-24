@@ -15,7 +15,6 @@ const ProductCard = ({ product, showType }) => {
     return diffInMinutes < RECENTLY_ADDED_MINUTES;
   };
 
-  // mock data không có createdAt → tắt tính năng này nếu cần
   const isRecentlyAdded = product.createdAt
     ? checkIsRecent(product.createdAt)
     : false;
@@ -42,7 +41,7 @@ const ProductCard = ({ product, showType }) => {
             <div className="flex items-center justify-center text-gray-500 mb-2">
               <RiAuctionLine className="w-7 h-7 mr-2" />
               <span className="text-brand font-semibold">
-                {product.bidCount || 0}
+                {product.totalBid || 0}
               </span>
             </div>
 
@@ -51,35 +50,44 @@ const ProductCard = ({ product, showType }) => {
             </h3>
 
             <p className="text-center text-yellow-500 font-bold text-lg mb-4">
-              {product.currentPrice.toLocaleString()}₫
+              ${product.currentPrice}
             </p>
 
             <div className="text-sm text-gray-600 space-y-1 mb-4">
               <p className="flex justify-between">
                 <span>Highest bidder:</span>
                 <span className="font-medium">
-                  {product.highestBidderID || "None"}
+                  {product.highestBidder || "None"}
                 </span>
               </p>
               <p className="flex justify-between">
                 <span>Buy now:</span>
                 <span className="font-medium text-yellow-500">
-                  {product.buyNowPrice.toLocaleString()}₫
+                  ${product.buyNowPrice}
                 </span>
               </p>
               <p className="flex justify-between text-gray-500">
                 <span>End:</span>
-                <span>{new Date(product.endTime).toLocaleString()}</span>
+                <span>
+                  {new Date(product.endTime).toLocaleString("en-GB", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour12: false,
+                  })}
+                </span>
               </p>
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-3">
-            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md text-white cursor-pointer font-semibold hover:bg-gray-100">
+          <div className="flex items-center justify-between gap-3 w-full">
+            <button className="flex w-1/2 items-center justify-center text-sm p-2 rounded-md bg-gray-100 cursor-pointer font-semibold hover:bg-gray-200 shadow-sm">
               <RiAuctionLine className="w-5 h-5 mr-1" />
               Bid now
             </button>
-            <button className="w-full flex items-center justify-center text-sm p-2 rounded-md text-white cursor-pointer font-semibold bg-yellow-500 hover:bg-yellow-600">
+            <button className="flex w-1/2 items-center justify-center text-sm p-2 rounded-md text-white cursor-pointer font-semibold bg-yellow-500 hover:bg-yellow-600 shadow-sm">
               <BsFillCartCheckFill className="w-5 h-5 mr-1" />
               Buy now
             </button>
