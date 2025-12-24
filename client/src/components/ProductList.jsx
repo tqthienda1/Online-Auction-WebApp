@@ -1,5 +1,6 @@
 import React from "react";
 import ProductCard from "./ProductCard";
+import { Link } from "react-router-dom";
 
 const ProductList = ({ products, showType }) => {
   return (
@@ -7,11 +8,13 @@ const ProductList = ({ products, showType }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.length > 0 ? (
           products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              showType={showType}
-            />
+            <Link to={`/products/${product.id}`}>
+              <ProductCard
+                key={product.id}
+                product={product}
+                showType={showType}
+              />
+            </Link>
           ))
         ) : (
           <p className="col-span-3 text-center text-gray-500">

@@ -1,45 +1,56 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom"; // Bỏ useSearchParams nếu chưa dùng
 import CategoryBanner from "../components/CategoryBanner";
 import Sidebar from "../components/SideBar";
 import ProductList from "../components/ProductList";
 import { http } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
+import AdminPagination from "@/components/AdminPagination";
 
 const CategoryPage = () => {
+  const { id } = useParams();
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const { id } = useParams();
   const [products, setProducts] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(9);
+  const [limit, setLimit] = useState(12);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(50000000);
+  const [order, setOrder] = useState("asc");
+  const [sort, setSort] = useState("startTime");
+
+  const [filterTrigger, setFilterTrigger] = useState(0);
 
   useEffect(() => {
-    const controller = new AbortController();
     const getProductsData = async () => {
+      const controller = new AbortController();
       try {
         setIsLoading(true);
 
-        const data = http.get(
-          `products?category=${id}&page=${page}&limit=${limit}&minPrice=${minPrice}&maxPrice=${maxPrice}`,
+        const data = await http.get(
+          `products?category=${id}&page=${page}&limit=${limit}&minPrice=${minPrice}&maxPrice=${maxPrice}&order=${order}&sortBy=${sort}`,
           {
             signal: controller.signal,
           }
         );
-        console.log(data);
+
+        setTotalPages(data.data.totalPages);
+        setProducts(data.data.data);
       } catch (error) {
-        console.error(error);
-        setError(error);
+        if (error.name !== "CanceledError") {
+          console.error(error);
+          setError(error);
+        }
       } finally {
         setIsLoading(false);
       }
     };
+
     getProductsData();
-  }, []);
+  }, [id, page, limit, sort, order, filterTrigger]);
 
   const handlePriceChange = (priceValue) => {
     const [min, max] = priceValue;
@@ -47,20 +58,54 @@ const CategoryPage = () => {
     setMaxPrice(max);
   };
 
-  return (
-    <div>
-      <main className="grid grid-cols-10 gap-8 px-5 py-10 mt-10">
-        <div className="col-span-2">
-          <Sidebar onPriceChange={handlePriceChange} />
-        </div>
+  const handleViewResult = () => {
+    setPage(1);
+    setFilterTrigger((prev) => prev + 1);
+  };
 
-        <div className="col-span-8 flex flex-col">
-          <div className="grow">
-            <ProductList showType={1} products={products} />
-          </div>
+  const handleSortChange = (newOrder) => {
+    setSort("currentPrice");
+    setOrder(newOrder);
+    setPage(1);
+  };
+
+  return (
+    <>
+      {!error && (
+        <div>
+          <main className="grid grid-cols-10 gap-8 px-5 py-10 mt-10">
+            <div className="col-span-2">
+              <Sidebar
+                onPriceChange={handlePriceChange}
+                onViewResult={handleViewResult}
+                onSortChange={handleSortChange}
+              />
+            </div>
+
+            <div className="col-span-8 flex flex-col">
+              {isLoading ? (
+                <div className="flex flex-col justify-center p-4 md:p-5 text-center h-60">
+                  <Spinner className="size-8 w-full text-yellow-500" />
+                  <h3 className="font-semibold my-6 text-body">Loading</h3>
+                </div>
+              ) : (
+                <>
+                  <div className="grow mb-4">
+                    <ProductList showType={1} products={products} />
+                  </div>
+
+                  <AdminPagination
+                    totalPages={totalPages}
+                    page={page}
+                    onPageChange={setPage}
+                  />
+                </>
+              )}
+            </div>
+          </main>
         </div>
-      </main>
-    </div>
+      )}
+    </>
   );
 };
 
