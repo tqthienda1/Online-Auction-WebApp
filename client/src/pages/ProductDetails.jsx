@@ -92,9 +92,9 @@ const ProductDetails = () => {
 
   if (loading.product) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
+      <div className="min-h-screen flex flex-col items-center justify-center overflow-hidden">
         <Spinner className="size-8 text-yellow-500" />
-        <p className="mt-4 font-medium">Loading product...</p>
+        <p className="mt-4 font-medium">Loading</p>
       </div>
     );
   }
@@ -133,7 +133,7 @@ const ProductDetails = () => {
         <ProductBidPlace
           productId={product.id}
           endingDate={product.endTime}
-          price={auction?.currentPrice}
+          currentPrice={auction?.currentPrice}
           buyNowPrice={product.buyNowPrice}
           bidStep={product.bidStep}
           seller={product.seller}
