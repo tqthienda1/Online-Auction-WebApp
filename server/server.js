@@ -19,7 +19,7 @@ import ratingRoutes from "./routes/rating.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
 // import orderRoutes from "./routes/order.routes.js";
 // import ratingRoutes from "./routes/rating.routes.js";
-// import systemRoutes from "./routes/system.routes.js";
+import systemRoutes from "./routes/system.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 
 import { registerCronJobs } from "./cron/index.js";
@@ -49,7 +49,7 @@ app.use("/upgrade", upgradeRoutes);
 app.use("/orders", orderRoutes);
 app.use("/rating", ratingRoutes);
 app.use("/chat", chatRoutes);
-// app.use("/system", systemRoutes);
+app.use("/system", systemRoutes);
 app.use("/admin", adminRoutes);
 
 app.use("/products", productRoutes);
