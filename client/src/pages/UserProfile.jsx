@@ -145,7 +145,6 @@ const UserProfile = () => {
     loadUserInfo();
   }, []);
 
-
   const wishlistItems = MOCK_PRODUCTS.slice(0, 2);
   const biddingItems = MOCK_PRODUCTS.slice(2, 4);
   const wonAuctions = MOCK_PRODUCTS.slice(4, 6);

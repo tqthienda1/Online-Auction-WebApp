@@ -27,14 +27,20 @@ const guestRoutes = [
   { path: "/signup", component: SignUpPage, layout: BlankLayout },
   { path: "/verify-email", component: VerifyEmailPage, layout: BlankLayout },
   { path: "/login", component: LogInPage, layout: BlankLayout },
-  {
+    {
     path: "/forgot-password",
     component: ForgotPasswordPage,
     layout: BlankLayout,
   },
-  { path: "/add-products", component: AddProductsPage, layout: MainLayout },
-  { path: "/user_profile", component: UserProfile, layout: UserProfileLayout },
-  { path: "/admin", component: AdminControlPanel, layout: AdminLayout },
+  {
+    path: "/categories/:id",
+    component: CategoryPage,
+    layout: MainLayout,
+  },
+  { path: "*", component: NotFoundPage, layout: MainLayout },
+];
+
+const bidderRoutes = [
   {
     path: "/buyer/payment/:productID",
     component: BuyerPaymentPage,
@@ -45,6 +51,28 @@ const guestRoutes = [
     component: SellerPaymentPage,
     layout: MainLayout,
   },
+
+  { path: "/user_profile", component: UserProfile, layout: UserProfileLayout },
+];
+
+const sellerRoutes = [
+  {
+    path: "/buyer/payment/:productID",
+    component: BuyerPaymentPage,
+    layout: MainLayout,
+  },
+  {
+    path: "/seller/payment/:productID",
+    component: SellerPaymentPage,
+    layout: MainLayout,
+  },
+
+  { path: "/user_profile", component: UserProfile, layout: UserProfileLayout },
+  { path: "/add-products", component: AddProductsPage, layout: MainLayout },
+];
+
+const adminRoutes = [
+  { path: "/admin", component: AdminControlPanel, layout: AdminLayout },
   {
     path: "/admin/categories",
     component: AdminCategoriesPage,
@@ -56,18 +84,6 @@ const guestRoutes = [
     layout: AdminLayout,
   },
   { path: "/admin/users", component: AdminUsersPage, layout: AdminLayout },
-  {
-    path: "/categories/:id",
-    component: CategoryPage,
-    layout: MainLayout,
-  },
-  { path: "*", component: NotFoundPage, layout: MainLayout },
 ];
-
-const bidderRoutes = [];
-
-const sellerRoutes = [];
-
-const adminRoutes = [];
 
 export { guestRoutes, bidderRoutes, sellerRoutes, adminRoutes };

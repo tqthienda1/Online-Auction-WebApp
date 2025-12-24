@@ -31,7 +31,7 @@ const ProductCoverflow = ({ products }) => {
 
     //hide info bar
     setIsUp(true);
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 100));
     setIsHide(true);
 
     //changing slide animation
@@ -53,7 +53,7 @@ const ProductCoverflow = ({ products }) => {
     ]);
 
     //wait changing slide animation
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     //show info bar again
     setIsHide(false);
@@ -62,7 +62,7 @@ const ProductCoverflow = ({ products }) => {
     //after show is done, stop changing slide animation
     setTimeout(() => {
       setIsAnimating(false);
-    }, 300);
+    }, 100);
   };
 
   return (
@@ -73,7 +73,7 @@ const ProductCoverflow = ({ products }) => {
         effect="coverflow"
         centeredSlides={true}
         initialSlide={2}
-        speed={600}
+        speed={100}
         slidesPerView={3}
         coverflowEffect={{
           rotate: 0,
@@ -120,7 +120,7 @@ const ProductCoverflow = ({ products }) => {
             <img
               src={item.productAvt}
               alt=""
-              className={`object-contain w-full h-full rounded-t-2xl select-none transition-filter duration-300 ${
+              className={`bg-white object-contain w-full h-full rounded-t-2xl select-none transition-filter duration-300 ${
                 index === swiperRef.current?.activeIndex
                   ? "hover:brightness-30"
                   : ""
@@ -158,7 +158,7 @@ const ProductCoverflow = ({ products }) => {
         ))}
       </Swiper>
       <div
-        className={`"h-full aspect-6/3 bg-white rounded-b-2xl transform transition-transform duration-300 ${
+        className={`"h-full aspect-6/3 bg-white rounded-b-2xl transform transition-transform duration-100 ${
           isUp ? "-translate-y-full" : "translate-y-0"
         } ${isHide ? "opacity-0" : "opacity-full"}`}
         style={{ width: slideWidth }}

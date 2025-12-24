@@ -6,24 +6,12 @@ import logo from "../../public/image/logo.png";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { logOut } from "@/services/auth.service";
-
+import { useAuth } from "@/context/AuthContext";
 
 const Header = () => {
-  const [user, setUser] = useState(null);
+  const { user, loading } = useAuth();
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  if (loading) return null;
 
   const handleLogout = async () => {
     try {
