@@ -9,6 +9,9 @@ import logo from "../../public/image/logo.png";
 import { logIn, signInWithGoogle } from "../services/auth.service.js";
 
 const LogInPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState("");
+
   const schema = z.object({
     identifier: z.string().nonempty("Identifier is required"),
     password: z.string().nonempty("Password is required"),
@@ -27,6 +30,9 @@ const LogInPage = () => {
 
   const onSubmit = async (data) => {
     try {
+      setIsLoading(true);
+      setFormError("");
+
       await logIn({
         email: data.identifier,
         password: data.password,
@@ -34,15 +40,28 @@ const LogInPage = () => {
 
       navigate("/");
     } catch (err) {
-      alert(err.message || "Log in failed");
+      if (err.message?.includes("Invalid")) {
+        setFormError("Email or password is incorrect");
+      } else {
+        setFormError("Log in failed. Please try again later.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
+    if (isLoading) return;
+
     try {
+      setIsLoading(true);
+
+      // await new Promise((r) => setTimeout(r, 1000));
       await signInWithGoogle();
     } catch (err) {
-      alert(err.message || "Google sign up failed");
+      setFormError("Google log in failed. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -107,29 +126,56 @@ const LogInPage = () => {
             </span>
           </div>
 
+          {formError && (
+            <div className="text-red-600 text-sm text-center p-3 rounded-md mb-6 ">
+              {formError}
+            </div>
+          )}
+
           <div>
             <button
               type="submit"
-              className="w-full bg-black text-white py-3 rounded-md hover:opacity-60 cursor-pointer"
+              disabled={isLoading}
+              className={`w-full py-3 rounded-md transition
+                          ${
+                            isLoading
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-black hover:opacity-60 cursor-pointer text-white"
+                          }
+                        `}
             >
-              Log In
+              {isLoading ? "Logging in..." : "Log In"}
             </button>
           </div>
         </form>
 
-        <div className="mt-4">
-          <Link to="#" className="text-sm text-gray-700 underline">
+        <div className="text-right mt-4">
+          <Link
+            to="/forgot-password"
+            className="text-sm text-gray-700 underline"
+          >
             Forgot password?
           </Link>
         </div>
 
         <div className="mt-8 space-y-4">
           <button
-            className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3 cursor-pointer"
+            disabled={isLoading}
+            className={`w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3 
+                ${
+                  isLoading
+                    ? "bg-gray-100 opacity-50 cursor-not-allowed"
+                    : "hover:bg-gray-100 cursor-pointer"
+                }
+            `}
             onClick={handleGoogleSignIn}
           >
             <FaGoogle className="text-red-500" />
-            <span>Log in with Google</span>
+            {isLoading ? (
+              <span>Logging in with Google...</span>
+            ) : (
+              <span>Log in with Google</span>
+            )}
           </button>
         </div>
 

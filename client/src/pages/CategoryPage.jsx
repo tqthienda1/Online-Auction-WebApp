@@ -1,127 +1,111 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-import ReactPaginate from "react-paginate";
-
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom"; // Bỏ useSearchParams nếu chưa dùng
 import CategoryBanner from "../components/CategoryBanner";
 import Sidebar from "../components/SideBar";
 import ProductList from "../components/ProductList";
-
-const ITEMS_PER_PAGE = 2;
+import { http } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
+import AdminPagination from "@/components/AdminPagination";
 
 const CategoryPage = () => {
+  const { id } = useParams();
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const { id } = useParams();
   const [products, setProducts] = useState([]);
-  const [banner, setBanner] = useState(null);
-  const [searchParams, setSearchParams] = useSearchParams();
   const [totalPages, setTotalPages] = useState(0);
-  const mainContentRef = useRef(null);
-  const currentPage = Number(searchParams.get("page") || 1);
 
-  const filters = {
-    priceRange: [
-      Number(searchParams.get("minPrice") || 0),
-      Number(searchParams.get("maxPrice") || 50000000),
-    ],
-  };
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(12);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(50000000);
+  const [order, setOrder] = useState("asc");
+  const [sort, setSort] = useState("startTime");
+
+  const [filterTrigger, setFilterTrigger] = useState(0);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const getProductsData = async () => {
+      const controller = new AbortController();
       try {
         setIsLoading(true);
 
-        const minPrice = Number(searchParams.get("minPrice") || 0);
-        const maxPrice = Number(searchParams.get("maxPrice") || 50000000);
-        const page = Number(searchParams.get("page") || 1);
+        const data = await http.get(
+          `products?category=${id}&page=${page}&limit=${limit}&minPrice=${minPrice}&maxPrice=${maxPrice}&order=${order}&sortBy=${sort}`,
+          {
+            signal: controller.signal,
+          }
+        );
 
-        const url = `http://localhost:3000/categories/${id}/products?minPrice=${minPrice}&maxPrice=${maxPrice}&page=${page}`;
-
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("Failed to fetch products");
-
-        const data = await res.json();
-
-        setProducts(data.data.products);
         setTotalPages(data.data.totalPages);
-      } catch (err) {
-        setError(err.message);
+        setProducts(data.data.data);
+      } catch (error) {
+        if (error.name !== "CanceledError") {
+          console.error(error);
+          setError(error);
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchProducts();
-  }, [id, searchParams]);
+    getProductsData();
+  }, [id, page, limit, sort, order, filterTrigger]);
 
-  const handleFilterChange = (filterName, value) => {
-    setSearchParams((prevParams) => {
-      if (filterName === "priceRange") {
-        prevParams.set("minPrice", value[0]);
-        prevParams.set("maxPrice", value[1]);
-      }
-      prevParams.set("page", "1");
-      return prevParams;
-    });
+  const handlePriceChange = (priceValue) => {
+    const [min, max] = priceValue;
+    setMinPrice(min);
+    setMaxPrice(max);
   };
 
-  const handlePageClick = (event) => {
-    const newPage = event.selected + 1;
-    setSearchParams((prevParams) => {
-      prevParams.set("page", newPage);
-      return prevParams;
-    });
-
-    if (mainContentRef.current) {
-      mainContentRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
+  const handleViewResult = () => {
+    setPage(1);
+    setFilterTrigger((prev) => prev + 1);
   };
 
-  // if (isLoading) {
-  //   return <div>Loading...</div>;
-  // }
-  // if (error) {
-  //   return <div>Error loading data: {error}</div>;
-  // }
+  const handleSortChange = (newOrder) => {
+    setSort("currentPrice");
+    setOrder(newOrder);
+    setPage(1);
+  };
 
   return (
-    <div>
-      <main
-        ref={mainContentRef}
-        className="grid grid-cols-10 gap-8 px-5 py-10 mt-10"
-      >
-        <div className="col-span-2">
-          <Sidebar filters={filters} onFilterChange={handleFilterChange} />
-        </div>
+    <>
+      {!error && (
+        <div>
+          <main className="grid grid-cols-10 gap-8 px-5 py-10 mt-10">
+            <div className="col-span-2">
+              <Sidebar
+                onPriceChange={handlePriceChange}
+                onViewResult={handleViewResult}
+                onSortChange={handleSortChange}
+              />
+            </div>
 
-        <div className="col-span-8 flex flex-col">
-          <div className="grow">
-            <ProductList showType={1} products={products} />
-          </div>
+            <div className="col-span-8 flex flex-col">
+              {isLoading ? (
+                <div className="flex flex-col justify-center p-4 md:p-5 text-center h-60">
+                  <Spinner className="size-8 w-full text-yellow-500" />
+                  <h3 className="font-semibold my-6 text-body">Loading</h3>
+                </div>
+              ) : (
+                <>
+                  <div className="grow mb-4">
+                    <ProductList showType={1} products={products} />
+                  </div>
 
-          <ReactPaginate
-            breakLabel="..."
-            nextLabel="Next >"
-            onPageChange={handlePageClick}
-            pageRangeDisplayed={3}
-            pageCount={totalPages}
-            previousLabel="< Prev"
-            renderOnZeroPageCount={null}
-            forcePage={currentPage - 1}
-            containerClassName="flex items-center justify-center mt-8 gap-2"
-            pageLinkClassName="py-2 px-4 rounded-md hover:bg-gray-100"
-            previousLinkClassName="py-2 px-4 rounded-md hover:bg-gray-100"
-            nextLinkClassName="py-2 px-4 rounded-md hover:bg-gray-100"
-            activeLinkClassName="bg-yellow-400 text-yellow-900 font-bold hover:bg-yellow-500"
-            disabledLinkClassName="text-gray-400 cursor-not-allowed"
-          />
+                  <AdminPagination
+                    totalPages={totalPages}
+                    page={page}
+                    onPageChange={setPage}
+                  />
+                </>
+              )}
+            </div>
+          </main>
         </div>
-      </main>
-    </div>
+      )}
+    </>
   );
 };
 
