@@ -13,6 +13,7 @@ import QuestionBox from "@/components/QuestionBox.jsx";
 import { http } from "../lib/utils.js";
 import { useParams } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner.jsx";
+import { Signal } from "lucide-react";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -20,12 +21,16 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const [auction, setAuction] = useState(null);
   const [bidHistory, setBidHistory] = useState([]);
+  const [question, setQuestion] = useState("");
 
   const [loading, setLoading] = useState({
     product: true,
     auction: true,
     bidHistory: false,
+    comment: true,
   });
+
+  const [isLoadingComment, setIsLoadingComment] = useState(false);
 
   const [error, setError] = useState({
     product: null,
@@ -105,6 +110,34 @@ const ProductDetails = () => {
 
   if (!product) return null;
 
+  const handleSubmit = async () => {
+    const controller = new AbortController();
+    console.log(question);
+    try {
+      setIsLoadingComment(true);
+      const newComment = await http.post(
+        `/comments/products/${id}`,
+        {
+          content: question,
+        },
+        {
+          signal: controller.signal,
+        }
+      );
+
+      setProduct((prev) => ({
+        ...prev,
+        comments: [...prev.comments, newComment],
+      }));
+    } catch (error) {
+      console.error(error);
+      setError(error);
+    } finally {
+      setIsLoadingComment(false);
+      setQuestion("");
+    }
+  };
+
   return (
     <div className="overflow-hidden" data-aos="fade-up">
       <div className="p-10" data-aos="fade-down">
@@ -142,8 +175,20 @@ const ProductDetails = () => {
         />
       </div>
       <div data-aos="zoom-in">
-        <CommentSection type="ask" comments={product.comments} />
-        <QuestionBox />
+        {isLoadingComment ? (
+          <div className="min-h-screen flex flex-col items-center justify-center">
+            <Spinner className="size-8 text-yellow-500" />
+            <p className="mt-4 font-medium">Loading</p>
+          </div>
+        ) : (
+          <CommentSection type="ask" comments={product.comments} />
+        )}
+
+        <QuestionBox
+          onSubmit={handleSubmit}
+          question={question}
+          setQuestion={setQuestion}
+        />
       </div>
 
       <div

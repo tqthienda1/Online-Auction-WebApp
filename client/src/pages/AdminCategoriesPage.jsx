@@ -40,7 +40,7 @@ const AdminCategoriesPage = () => {
     };
 
     getCategoriesData();
-  }, []);
+  }, [page]);
 
   const categoryColumns = [
     { header: "Category Name", accessor: "name" },

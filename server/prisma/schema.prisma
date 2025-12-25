@@ -113,7 +113,7 @@ model Comment {
   userID        String    @db.Uuid
   productID     String
   content       String
-  createdAt     DateTime
+  createdAt     DateTime  @default(now())
   parentComment Comment?  @relation("TreeComment", fields: [parentID], references: [id], onDelete: Cascade)
   childComments Comment[] @relation("TreeComment")
   product       Product   @relation("ProductComment", fields: [productID], references: [id], onDelete: Cascade)

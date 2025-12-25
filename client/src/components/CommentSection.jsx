@@ -24,7 +24,9 @@ const CommentSection = ({ comments }) => {
             return (
               <div key={c.id} className="flex flex-col gap-4">
                 <div className="border rounded-md py-5 px-10">
-                  <p className="text-xl font-medium text-brand">{c.username}</p>
+                  <p className="text-xl font-medium text-brand">
+                    {c.user.username}
+                  </p>
                   <p className="text-sm font-light">
                     {formattedDate(c.createdAt)}
                   </p>
@@ -36,7 +38,7 @@ const CommentSection = ({ comments }) => {
                     <HiArrowTurnDownRight className="mb-15 ml-7 text-3xl text-brand" />
                     <div className="border rounded-md py-4 px-8 ml-10 bg-gray-50 shadow-sm">
                       <p className="text-lg font-semibold text-yellow-400 flex items-center gap-2">
-                        {reply.username}
+                        {reply.user.username}
                       </p>
                       <p className="text-sm font-light">
                         {formattedDate(reply.createdAt)}
