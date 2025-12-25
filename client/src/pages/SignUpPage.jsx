@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
-import { z } from "zod";
+import { set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "../../public/image/logo.png";
 import { signInWithGoogle, signUp } from "../services/auth.service.js";
@@ -26,6 +26,9 @@ const schema = z
   });
 
 const SignUpPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -38,30 +41,52 @@ const SignUpPage = () => {
 
   const navigate = useNavigate();
 
-  const [showPass, setShowPass] = useState(false);
+  const password = watch("password");
+  const confirmPassword = watch("confirmPassword");
 
-  // const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const passwordMismatch = confirmPassword && password !== confirmPassword;
+  const passLengthMismatch = password && password.length < 6;
+
+  const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
+
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
 
   const onSubmit = async (data) => {
-    // if (!recaptchaToken) {
-    //   alert("Please verify you are not a robot!");
-    //   return;
-    // }
+    if (!recaptchaToken) {
+      setFormError("Please verify that you are not a robot");
+      return;
+    }
+
     try {
+      setIsLoading(true);
+      setFormError("");
+
       await signUp(data);
 
-      alert("Please check your email to verify your account.");
+      // alert("Please check your email to verify your account.");
       navigate(`/verify-email?email=${data.email}`);
     } catch (err) {
-      alert(err.message || "Sign up failed");
+      if (err.message?.includes("email")) {
+        setFormError("Email is already used");
+      } else {
+        setFormError("Sign up failed. Please try again later");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
+    if (isLoading) return;
+
     try {
+      setIsLoading(true);
       await signInWithGoogle();
     } catch (err) {
-      alert(err.message || "Google sign up failed");
+      setFormError("Google sign up failed. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -119,7 +144,13 @@ const SignUpPage = () => {
               {showPass ? <FaEye /> : <FaEyeSlash />}
             </button>
             <span className="text-red-600 text-sm mt-1 block">
-              {errors.password ? errors.password.message : ""}
+              {errors.password ? (
+                <span>{errors.password.message}</span>
+              ) : (
+                passLengthMismatch && (
+                  <span>Password must be at least 6 characters long</span>
+                )
+              )}
             </span>
           </div>
 
@@ -128,7 +159,7 @@ const SignUpPage = () => {
               Confirm password
             </label>
             <input
-              type={showPass ? "text" : "password"}
+              type={showConfirmPass ? "text" : "password"}
               id="confirmPassword"
               {...register("confirmPassword")}
               placeholder="Confirm password"
@@ -136,14 +167,18 @@ const SignUpPage = () => {
             />
             <button
               type="button"
-              onClick={() => setShowPass((s) => !s)}
+              onClick={() => setShowConfirmPass((s) => !s)}
               className="absolute right-0 top-1/2 -translate-y-1/2 mr-2 text-gray-500 cursor-pointer"
-              aria-label={showPass ? "Hide password" : "Show password"}
+              aria-label={showConfirmPass ? "Hide password" : "Show password"}
             >
-              {showPass ? <FaEye /> : <FaEyeSlash />}
+              {showConfirmPass ? <FaEye /> : <FaEyeSlash />}
             </button>
             <span className="text-red-600 text-sm mt-1 block">
-              {errors.confirmPassword ? errors.confirmPassword.message : ""}
+              {errors.confirmPassword ? (
+                <span>{errors.confirmPassword.message}</span>
+              ) : (
+                passwordMismatch && <span>Passwords do not match</span>
+              )}
             </span>
           </div>
 
@@ -194,21 +229,36 @@ const SignUpPage = () => {
             </span>
           </div>
 
-          {/* <div className="my-4">
+          <div className="my-4 flex justify-center">
             <ReCAPTCHA
-              sitekey="6LeOcgosAAAAAJ2VsOk4pIajYhDRpr7eIxSqBpxG"
+              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
               onChange={(token) => setRecaptchaToken(token)}
+              onExpired={() => setRecaptchaToken(null)}
             />
-          </div> */}
+          </div>
 
+          {formError && (
+            <div className="text-red-600 text-sm text-center p-3 rounded-md mb-6">
+              {formError}
+            </div>
+          )}
           <div>
-            <button className="w-full bg-black text-white py-3 rounded-md hover:opacity-60 cursor-pointer">
-              Sign Up
+            <button
+              disabled={isLoading}
+              className={`w-full bg-black text-white py-3 rounded-md transition 
+                ${
+                  isLoading || !recaptchaToken
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:opacity-60 cursor-pointer"
+                }`}
+            >
+              {isLoading ? "Signing up..." : "Sign up"}
             </button>
           </div>
         </form>
         <div className="mt-8 space-y-4">
           <button
+            disabled={isLoading}
             className="w-full border border-gray-300 py-3 rounded-md flex items-center justify-center gap-3 cursor-pointer"
             onClick={handleGoogleSignIn}
           >

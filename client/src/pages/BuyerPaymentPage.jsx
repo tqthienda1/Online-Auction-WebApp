@@ -8,49 +8,45 @@ import Rating from '../components/order/Rating'
 import BuyerProgress from '../components/order/BuyerProgress'
 import ChatModal from '../components/order/ChatModal'
 
+
 const BuyerPaymentPage = () => {
   const { productID } = useParams();
   const [order, setOrder] = useState(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  // 1. Thêm state loading
+  const [loading, setLoading] = useState(true);
 
-  // mapping status → step
   const mapStatusToStep = (status) => {
     switch (status) {
-      case "CREATED":
-        return 1;
-      case "PROVIDEBUYERINFO":
-        return 2;
-      case "RECEIVEPRODUCT":
-        return 3;
-      case "RATING":
-        return 4;
-      default:
-        return 1;
+      case "CREATED": return 1;
+      case "PROVIDEBUYERINFO": return 2;
+      case "RECEIVEPAYMENT": return 3;
+      case "UPDATESHIPPINGINVOICE": return 4;
+      case "RECEIVEPRODUCT": return 5;
+      case "RATING": return 6;
+      default: return 1;
     }
   };
 
-  // function refetch order
   const fetchOrder = async () => {
-    const res = await axios.get(`/orders/${productID}`);
-    setOrder(res.data);
+    try {
+      const res = await axios.get(`/orders/${productID}`);
+      setOrder(res.data);
+      setCurrentStep(mapStatusToStep(res.data.status));
+    } catch (error) {
+      console.error("Error fetching order:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // fetch order chạy 1 lần khi load trang
   useEffect(() => {
     fetchOrder();
   }, [productID]);
 
-  // update currentStep khi order thay đổi
-  useEffect(() => {
-    if (order) {
-      setCurrentStep(mapStatusToStep(order.status));
-    }
-  }, [order]);
-
   return (
     <div className="mx-auto px-4 sm:px-6">
-
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
         <div className="flex items-start justify-between gap-6">
           <div className="flex-1">
@@ -58,9 +54,15 @@ const BuyerPaymentPage = () => {
             <p className="text-sm text-gray-600 mb-4">Review payment and delivery details below.</p>
 
             <div className="flex items-center gap-4 mb-4">
-              <img src={order?.product?.image || null} alt="product" className="w-24 h-24 object-cover rounded" />
+              <div className="w-24 h-24 bg-gray-100 rounded overflow-hidden">
+                {order?.product?.image ? (
+                  <img src={order.product.image} alt="product" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gray-400">No image</div>
+                )}
+              </div>
               <div>
-                <h2 className="font-medium">{order?.product?.name}</h2>
+                <h2 className="font-medium">{order?.product?.name || "Loading..."}</h2>
                 <p className="text-sm text-gray-500">${order?.product?.price}</p>
                 <p className="text-sm text-gray-500">Seller: {order?.seller?.name}</p>
               </div>
@@ -68,45 +70,64 @@ const BuyerPaymentPage = () => {
           </div>
 
           <button
-            onClick={() => setChatOpen(true)}
-            className="px-4 py-2 bg-[#FBBC04] text-white rounded"
-          >
+            onClick={() => order && setChatOpen(true)}
+            disabled={loading || !order}
+            className={`px-4 py-2 rounded ${loading || !order ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-[#FBBC04] text-white'}`}>
             Chat with Seller
           </button>
         </div>
       </div>
 
+      {/* PHẦN DƯỚI: Xử lý Loading để tránh nhảy Status */}
       <div className="mt-6">
-        <BuyerProgress currentStep={currentStep} />
+        {loading ? (
+          // Hiệu ứng Loading (Skeleton hoặc Spinner)
+          <div className="flex flex-col items-center justify-center py-12 space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FBBC04]"></div>
+            <p className="text-gray-500 animate-pulse">Updating order status...</p>
+          </div>
+        ) : (
+          // 3. Chỉ hiện Progress và Nội dung khi đã load xong data
+          <>
+            <BuyerProgress currentStep={currentStep} />
+            
+            <div className="mt-6">
+              {currentStep === 1 && (
+                <PaymentAndShippingInfo productID={productID} onUpdated={fetchOrder} />
+              )}
 
-        <div className="mt-6">
+              {currentStep === 2 && (
+                <div className="bg-blue-50 p-4 rounded border border-blue-200">
+                  <p className="text-sm text-blue-800">Waiting for seller to confirm payment reception...</p>
+                </div>
+              )}
 
-          {currentStep === 1 && (
-            <PaymentAndShippingInfo
-              productID={productID}
-              onUpdated={fetchOrder}    // CHỈ refetch, không setStep
-            />
-          )}
+              {currentStep === 3 && (
+                <div className="bg-blue-50 p-4 rounded border border-blue-200">
+                  <p className="text-sm text-blue-800">Waiting for seller to upload shipping invoice...</p>
+                </div>
+              )}
 
-          {currentStep === 2 && (
-            <DeliveryConfirmation
-              productID={productID}
-              onConfirmed={fetchOrder}  
-            />
-          )}
+              {currentStep === 4 && (
+                <DeliveryConfirmation productID={productID} onConfirmed={fetchOrder} />
+              )}
 
-          {currentStep === 3 && (
-            <Rating
-              type="seller"
-              productID={productID}
-              onRated={fetchOrder}      
-            />
-          )}
+              {currentStep === 5 && (
+                <Rating type="seller" productID={productID} onRated={fetchOrder} />
+              )}
 
-        </div>
+              {currentStep === 6 && (
+                <div className="bg-green-50 p-4 rounded border border-green-200">
+                  <p className="text-sm text-green-800">Order completed! Thank you for your purchase.</p>
+                </div>
+              )}
+            </div>
+      <ChatModal isOpen={chatOpen} onClose={() => setChatOpen(false)} productID={productID} counterpartyName="Seller" meID={order?.buyer?.id} order={order}/>
+
+          </>
+        )}
       </div>
 
-      <ChatModal isOpen={chatOpen} onClose={() => setChatOpen(false)} counterpartyName="Seller" />
     </div>
   );
 };

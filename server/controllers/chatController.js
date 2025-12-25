@@ -4,13 +4,11 @@ import { sendMessage, getMessages } from '../services/chat.service.js'
 export const postMessage = async (req, res) => {
   try {
     const { productID } = req.params;
-    const { content } = req.body;
+    const { content, order } = req.body;
     const senderID = req.user?.id || req.user;
 
     if (!senderID) return res.status(401).json({ message: 'Unauthorized' });
 
-    const order = await prisma.order.findUnique({ where: { productID } });
-    if (!order) return res.status(404).json({ message: 'Order not found' });
 
     let receiverID;
     if (senderID === order.buyerID) receiverID = order.sellerID;

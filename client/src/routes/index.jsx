@@ -18,6 +18,7 @@ import AdminCategoriesPage from "@/pages/AdminCategoriesPage";
 import AdminProductsPage from "@/pages/AdminProductsPage";
 import AdminUsersPage from "@/pages/AdminUsersPage";
 import NotFoundPage from "../pages/NotFoundPage";
+import ForgotPasswordPage from "@/pages/ForgotPassword";
 
 const guestRoutes = [
   { path: "/", component: Home, layout: MainLayout },
@@ -25,7 +26,11 @@ const guestRoutes = [
   { path: "/signup", component: SignUpPage, layout: BlankLayout },
   { path: "/verify-email", component: VerifyEmailPage, layout: BlankLayout },
   { path: "/login", component: LogInPage, layout: BlankLayout },
-
+    {
+    path: "/forgot-password",
+    component: ForgotPasswordPage,
+    layout: BlankLayout,
+  },
   {
     path: "/categories/:id",
     component: CategoryPage,
@@ -45,6 +50,7 @@ const bidderRoutes = [
     component: SellerPaymentPage,
     layout: MainLayout,
   },
+
   { path: "/user_profile", component: UserProfile, layout: UserProfileLayout },
 ];
 

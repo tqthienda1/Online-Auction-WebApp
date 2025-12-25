@@ -2,23 +2,50 @@ import React, { useState } from "react";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { http as axios } from "../../lib/utils";
 
 
 const schema = z.object({
-  descriptionRating: z.string().min(1, "Description is required"),
+  descriptionRating: z.string().optional(),
 });
-
-const Rating = ({ type = "item" }) => {
+const Rating = ({ type = "item", productID, onRated }) => {
   const [score, setScore] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema) });
 
-  const onSubmit = (data) => {
-    console.log("rating submitted", { score, ...data });
+  const onSubmit = async (data) => {
+    setError(null);
+    if (![1, -1].includes(score)) {
+      setError('Please select + or - rating');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await axios.post(`/rating/${productID}/rate`, {
+        score,
+        descriptionRating: data.descriptionRating,
+      });
+
+      // call parent to refresh order / UI
+      if (typeof onRated === 'function') onRated();
+
+      // reset local form
+      reset();
+      setScore(0);
+    } catch (err) {
+      console.error('Submit rating failed', err);
+      setError(err?.response?.data?.message || err.message || 'Submit failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,10 +57,10 @@ const Rating = ({ type = "item" }) => {
           <div className="flex items-center gap-3 flex-wrap justify-center ">
             <button
               type="button"
-              onClick={() => setScore((s) => s = -1)}
+              onClick={() => setScore(-1)}
               className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-40"
               aria-label="decrease rating"
-              disabled={score <= -1}
+              disabled={score <= -1 || loading}
             >
               -
             </button>
@@ -42,10 +69,10 @@ const Rating = ({ type = "item" }) => {
 
             <button
               type="button"
-              onClick={() => setScore((s) => s = 1)}
+              onClick={() => setScore(1)}
               className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#FBBC04] text-white hover:bg-[#e0a800] disabled:opacity-40"
               aria-label="increase rating"
-              disabled={score >= 1}
+              disabled={score >= 1 || loading}
             >
               +
             </button>
@@ -57,18 +84,22 @@ const Rating = ({ type = "item" }) => {
             {...register("descriptionRating")}
             placeholder={`Write your experience about the ${type}...`}
             className="w-full border border-gray-200 rounded-lg p-3 text-sm h-28 resize-none focus:ring-2 focus:ring-[#FBBC04] focus:border-transparent"
+            disabled={loading}
           />
           {errors.descriptionRating && (
             <p className="text-red-500 text-sm mt-1">{errors.descriptionRating.message}</p>
           )}
         </div>
 
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+
         <div className="flex justify-end">
           <button
             type="submit"
-            className="bg-[#FBBC04] hover:bg-[#e0a800] text-white px-5 py-2 rounded-md shadow"
+            disabled={loading}
+            className="bg-[#FBBC04] hover:bg-[#e0a800] text-white px-5 py-2 rounded-md shadow disabled:opacity-60"
           >
-            Submit Rating
+            {loading ? 'Submitting...' : 'Submit Rating'}
           </button>
         </div>
       </form>

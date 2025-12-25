@@ -7,6 +7,8 @@ import * as UserController from "../controllers/userController.js";
 
 const router = express.Router();
 
+router.get("/", UserController.getUsers);
+
 router.patch(
   "/",
   authMiddleware,

@@ -7,7 +7,7 @@ import { http } from "../lib/utils.js";
 const ProductBidPlace = ({
   productId,
   endingDate,
-  price,
+  currentPrice,
   buyNowPrice,
   bidStep,
   seller,
@@ -35,14 +35,15 @@ const ProductBidPlace = ({
     }
 
     const value = Number(bidValue);
+    console.log(value);
 
     if (Number.isNaN(value)) {
       setValidationError("Bid must be a number");
       return;
     }
 
-    if (value < price) {
-      setValidationError(`Bid must be at least ${price} USD`);
+    if (value < currentPrice) {
+      setValidationError(`Bid must be at least ${currentPrice} USD`);
       return;
     }
 
@@ -51,7 +52,7 @@ const ProductBidPlace = ({
       return;
     }
     setValidationError(null);
-  }, [bidValue, price]);
+  }, [bidValue, currentPrice]);
 
   const handlePlaceBid = async () => {
     if (validationError || !bidValue) return;
@@ -117,7 +118,7 @@ const ProductBidPlace = ({
         <div className="flex flex-row w-[90%] justify-between items-center ">
           <p className="text-lg font-medium">Current Price</p>
           <p className="text-2xl font-bold text-yellow-400">
-            {price ? price : 0} USD
+            {currentPrice ? currentPrice : 0} USD
           </p>
         </div>
 
