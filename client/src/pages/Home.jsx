@@ -14,13 +14,12 @@ const Home = () => {
 
   const [mostBiddenProducts, setMostBiddenProducts] = useState([]);
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
 
     const loadEndingSoonProduct = async () => {
       try {
-        if (isMounted) {
-          setLoading(true);
-        }
+        setLoading(true);
+
         const res = await Promise.all([
           http.get("/products", {
             params: {
@@ -35,7 +34,6 @@ const Home = () => {
               order: "desc",
             },
           }),
-          http.get(""),
         ]);
 
         const endingSoonData = res[0].data.data;
@@ -51,22 +49,18 @@ const Home = () => {
           item.endTime = formattedDate(item.endTime);
         });
 
-        console.log(endingSoonData);
-
-        if (isMounted) {
-          setEndingSoonProducts(endingSoonData);
-          setMostBiddenProducts(mostBiddenData);
-        }
+        setEndingSoonProducts(endingSoonData);
+        setMostBiddenProducts(mostBiddenData);
       } catch (error) {
         console.error("Load ending soon products failed: ", error.message);
       } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     };
 
     loadEndingSoonProduct();
+
+    return () => controller.abort();
   }, []);
 
   return (

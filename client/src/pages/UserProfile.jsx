@@ -122,6 +122,7 @@ const UserProfile = () => {
   const [info, setInfo] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
     const loadUserInfo = async () => {
       setLoading(true);
       try {
@@ -143,6 +144,8 @@ const UserProfile = () => {
     };
 
     loadUserInfo();
+
+    return () => controller.abort();
   }, []);
 
   const wishlistItems = MOCK_PRODUCTS.slice(0, 2);

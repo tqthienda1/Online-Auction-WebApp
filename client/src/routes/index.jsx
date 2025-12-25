@@ -18,7 +18,6 @@ import AdminCategoriesPage from "@/pages/AdminCategoriesPage";
 import AdminProductsPage from "@/pages/AdminProductsPage";
 import AdminUsersPage from "@/pages/AdminUsersPage";
 import NotFoundPage from "../pages/NotFoundPage";
-import path from "path";
 import ForgotPasswordPage from "@/pages/ForgotPassword";
 
 const guestRoutes = [
