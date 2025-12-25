@@ -69,7 +69,7 @@ const AdminProductsPage = () => {
     };
 
     getProductsData();
-  }, []);
+  }, [page]);
 
   const [query, setQuery] = useState("");
   const filteredProducts =
