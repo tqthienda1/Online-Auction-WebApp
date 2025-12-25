@@ -102,6 +102,13 @@ export const getProductById = async (productId, db = prisma) => {
       // },
       comments: {
         orderBy: { createdAt: "desc" },
+        include: {
+          user: {
+            select: {
+              username: true,
+            },
+          },
+        },
       },
       highestBidder: true,
       rating: true,
