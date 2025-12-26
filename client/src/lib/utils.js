@@ -2,6 +2,7 @@ import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import axios from "axios";
 import { supabase } from "./supabaseClient"; // 👈 thêm dòng này
+import { getAccessToken } from "@/lib/authToken";
 
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -12,17 +13,12 @@ export const http = axios.create({
   timeout: 20000,
 });
 
-http.interceptors.request.use(
-  async (config) => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+http.interceptors.request.use((config) => {
+  const token = getAccessToken();
 
-    if (session?.access_token) {
-      config.headers.Authorization = `Bearer ${session.access_token}`;
-    }
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
 
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+  return config;
+});

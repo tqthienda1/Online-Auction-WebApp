@@ -54,9 +54,10 @@ const AdminProductsPage = () => {
       try {
         setIsLoading(true);
 
-        const data = await http.get(`/products?page=${page}&limit=${limit}`, {
-          signal: controller.signal,
-        });
+        const data = await http.get(
+          `/products?page=${page}&limit=${limit}`,
+          {}
+        );
 
         setProducts(data.data.data);
         setTotalPages(data.data.totalPages);
@@ -69,6 +70,7 @@ const AdminProductsPage = () => {
     };
 
     getProductsData();
+    return () => controller.abort();
   }, []);
 
   const [query, setQuery] = useState("");
