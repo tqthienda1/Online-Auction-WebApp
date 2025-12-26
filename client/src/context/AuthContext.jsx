@@ -14,6 +14,8 @@ export const AuthProvider = ({ children }) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "INITIAL_SESSION") {
+        setUser(session.user);
+        setRoleLoading(true);
         setLoading(false);
         return;
       }
