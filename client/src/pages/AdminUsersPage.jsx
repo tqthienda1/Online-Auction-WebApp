@@ -65,33 +65,39 @@ const AdminUsersPage = () => {
 
   // Fetch dữ liệu Users và Requests khi đổi trang
   useEffect(() => {
-  const controller = new AbortController();
-  
-  const getData = async () => {
-    try {
-      setIsLoading(true);
-      
-      // Chạy cả 2 request song song
-      console.log("Fetching users for page:");
-      const [usersRes] = await Promise.all([
-        http.get(`/user?page=${page}&limit=${limit}`, { signal: controller.signal }),
-        fetchUpgradeRequests() // Hàm này tự setUpgradeRequests bên trong rồi
-      ]);
+    const controller = new AbortController();
 
-      console.log("Users API Response:", usersRes.data);
+    const getData = async () => {
+      try {
+        setIsLoading(true);
 
-      // Kiểm tra dữ liệu user
-      if (usersRes.data?.data) {
-        setUsers(usersRes.data.data.data || []);
-        setTotalPages(usersRes.data.data.totalPages || 1);
-      }
-    } catch (error) {
-      if (error.name !== "CanceledError") {
-        setError(error);
+        console.log("Fetching users for page:", page);
+
+        // chạy song song
+        const [usersRes] = await Promise.all([
+          http.get(`/user?page=${page}&limit=${limit}`, {
+            signal: controller.signal,
+          }),
+          fetchUpgradeRequests(), // hàm này tự set state bên trong
+        ]);
+
+        console.log("Users API Response:", usersRes.data);
+
+        if (usersRes.data?.data) {
+          setUsers(usersRes.data.data.data || []);
+          setTotalPages(usersRes.data.data.totalPages || 1);
+        }
+      } catch (error) {
+        if (error.name !== "CanceledError" && error.name !== "AbortError") {
+          setError(error);
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
 
     getData();
+
     return () => controller.abort();
   }, [page, limit]);
 
