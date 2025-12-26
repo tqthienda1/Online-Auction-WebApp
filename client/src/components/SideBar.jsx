@@ -7,7 +7,12 @@ import ConditionsFilter from "./ConditionsFilter";
 import { useState } from "react";
 import OrderBy from "./OrderBy";
 
-const SideBar = ({ onPriceChange, onViewResult, onSortChange }) => {
+const SideBar = ({
+  onPriceChange,
+  onViewResult,
+  onSortChange,
+  onOrderChange,
+}) => {
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const handleChange = (value) => {
     setPriceRange(value);
@@ -18,10 +23,17 @@ const SideBar = ({ onPriceChange, onViewResult, onSortChange }) => {
     onSortChange(value);
   };
 
+  const handleOrderChange = (value) => {
+    onOrderChange(value);
+  };
+
   return (
     <>
       <aside className="pr-8">
-        <OrderBy onSortChange={handleSortChange} />
+        <OrderBy
+          onSortChange={handleSortChange}
+          onOrderChange={handleOrderChange}
+        />
         <PriceFilter
           value={priceRange}
           onChange={handleChange}

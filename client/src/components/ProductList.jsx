@@ -8,12 +8,8 @@ const ProductList = ({ products, showType }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.length > 0 ? (
           products.map((product) => (
-            <Link to={`/products/${product.id}`}>
-              <ProductCard
-                key={product.id}
-                product={product}
-                showType={showType}
-              />
+            <Link key={product.id} to={`/products/${product.id}`}>
+              <ProductCard product={product} showType={showType} />
             </Link>
           ))
         ) : (

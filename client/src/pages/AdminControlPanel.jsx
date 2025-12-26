@@ -22,16 +22,12 @@ const AdminControlPanel = () => {
         setIsLoading(true);
         const [users, products, requests, categories] = await Promise.all([
           http.get("admin/users", {
-            signal: controller.signal,
           }),
           http.get("admin/products", {
-            signal: controller.signal,
           }),
           http.get("admin/requests", {
-            signal: controller.signal,
           }),
           http.get("admin/categories", {
-            signal: controller.signal,
           }),
         ]);
 
@@ -49,7 +45,7 @@ const AdminControlPanel = () => {
 
     getTotalsData();
 
-    return () => { controller.abort(); }
+    return () => controller.abort();
   }, []);
 
   const stats = [

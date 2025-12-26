@@ -32,35 +32,36 @@ const AdminUsersPage = () => {
 
   // Fetch danh sách Upgrade Requests
   const fetchUpgradeRequests = async () => {
-  try {
-    const res = await http.get("/upgrade?status=PENDING");
-    
-    // Kiểm tra log này để xem cấu trúc API trả về chính xác là gì
-    console.log("API Upgrade Response:", res.data);
+    try {
+      const res = await http.get("/upgrade?status=PENDING");
 
-    // Xử lý linh hoạt các trường hợp: res.data trực tiếp là array hoặc nằm trong res.data.data
-    let rawData = [];
-    if (Array.isArray(res.data)) {
-      rawData = res.data;
-    } else if (res.data?.data && Array.isArray(res.data.data)) {
-      rawData = res.data.data;
-    } else if (res.data?.requests) { // Tùy theo backend của bạn
-      rawData = res.data.requests;
+      // Kiểm tra log này để xem cấu trúc API trả về chính xác là gì
+      console.log("API Upgrade Response:", res.data);
+
+      // Xử lý linh hoạt các trường hợp: res.data trực tiếp là array hoặc nằm trong res.data.data
+      let rawData = [];
+      if (Array.isArray(res.data)) {
+        rawData = res.data;
+      } else if (res.data?.data && Array.isArray(res.data.data)) {
+        rawData = res.data.data;
+      } else if (res.data?.requests) {
+        // Tùy theo backend của bạn
+        rawData = res.data.requests;
+      }
+
+      const transformedRequests = rawData.map((r) => ({
+        id: r.id || r._id,
+        userId: r.userID || r.user?._id,
+        name: r.user?.username || r.user?.name || "Unknown",
+        rating: calculateRating(r.user),
+        status: r.status,
+      }));
+
+      setUpgradeRequests(transformedRequests);
+    } catch (err) {
+      console.error("Failed to fetch upgrade requests", err);
     }
-
-    const transformedRequests = rawData.map((r) => ({
-      id: r.id || r._id,
-      userId: r.userID || r.user?._id,
-      name: r.user?.username || r.user?.name || "Unknown",
-      rating: calculateRating(r.user),
-      status: r.status,
-    }));
-
-    setUpgradeRequests(transformedRequests);
-  } catch (err) {
-    console.error("Failed to fetch upgrade requests", err);
-  }
-};
+  };
 
   // Fetch dữ liệu Users và Requests khi đổi trang
   useEffect(() => {
@@ -88,14 +89,11 @@ const AdminUsersPage = () => {
       if (error.name !== "CanceledError") {
         setError(error);
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
-  getData();
-  return () => controller.abort();
-}, [page, limit]);
+    getData();
+    return () => controller.abort();
+  }, [page, limit]);
 
   // Logic xử lý Approve/Reject
   const onConfirmApprove = async (id) => {
@@ -130,9 +128,10 @@ const AdminUsersPage = () => {
     { header: "Address", accessor: "address" },
   ];
 
-  const filteredUsers = users?.filter((u) =>
-    u.username?.toLowerCase().includes(query.toLowerCase())
-  ) || [];
+  const filteredUsers =
+    users?.filter((u) =>
+      u.username?.toLowerCase().includes(query.toLowerCase())
+    ) || [];
 
   return (
     <>
@@ -146,7 +145,7 @@ const AdminUsersPage = () => {
       {!isLoading && !error && (
         <div className="space-y-6 p-6">
           <AdminHeader title="Users" description="Manage All Users" />
-          
+
           <AdminRequests
             upgradeRequests={upgradeRequests}
             dialog={dialog}
@@ -170,8 +169,10 @@ const AdminUsersPage = () => {
           />
         </div>
       )}
-      
-      {error && <div className="p-6 text-red-500 text-center">Error loading data.</div>}
+
+      {error && (
+        <div className="p-6 text-red-500 text-center">Error loading data.</div>
+      )}
     </>
   );
 };

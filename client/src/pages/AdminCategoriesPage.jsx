@@ -25,9 +25,7 @@ const AdminCategoriesPage = () => {
 
         const data = await http.get(
           `categories/categories?page=${page}&limit=${limit}`,
-          {
-            signal: controller.signal,
-          }
+          {}
         );
         setCategories(data.data.data.data);
         setTotalPages(data.data.data.totalPages);
@@ -41,8 +39,8 @@ const AdminCategoriesPage = () => {
 
     getCategoriesData();
 
-    return () => { controller.abort(); }
-  }, []);
+    return () => controller.abort();
+  }, [page]);
 
   const categoryColumns = [
     { header: "Category Name", accessor: "name" },
