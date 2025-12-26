@@ -1,6 +1,7 @@
 // contexts/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { setAccessToken, clearAccessToken } from "@/lib/authToken";
 
 const AuthContext = createContext(null);
 
@@ -13,23 +14,30 @@ export const AuthProvider = ({ children }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+
+      // 🔁 REFRESH / TAB LẠI
       if (event === "INITIAL_SESSION") {
-        setUser(session.user);
-        setRoleLoading(true);
+        if (session) {
+          setAccessToken(session.access_token);
+          setUser(session.user);
+          setRoleLoading(true);
+        }
         setLoading(false);
         return;
       }
 
       // 🔴 LOGOUT
       if (event === "SIGNED_OUT") {
+        clearAccessToken();
         setUser(null);
         setLoading(false);
         setRoleLoading(false);
         return;
       }
 
-      // 🟢 LOGIN THẬT
+      // 🟢 LOGIN
       if (event === "SIGNED_IN") {
+        setAccessToken(session.access_token);
         setUser(session.user);
         setRoleLoading(true);
         setLoading(false);
@@ -39,7 +47,7 @@ export const AuthProvider = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // 🔹 Fetch role CHỈ KHI LOGIN
+  // 🔹 FETCH ROLE
   useEffect(() => {
     if (!user?.id || !roleLoading) return;
 
