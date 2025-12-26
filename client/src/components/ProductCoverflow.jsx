@@ -31,7 +31,7 @@ const ProductCoverflow = ({ products }) => {
 
     //hide info bar
     setIsUp(true);
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 300));
     setIsHide(true);
 
     //changing slide animation
@@ -53,7 +53,7 @@ const ProductCoverflow = ({ products }) => {
     ]);
 
     //wait changing slide animation
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     //show info bar again
     setIsHide(false);
@@ -62,7 +62,7 @@ const ProductCoverflow = ({ products }) => {
     //after show is done, stop changing slide animation
     setTimeout(() => {
       setIsAnimating(false);
-    }, 100);
+    }, 300);
   };
 
   return (
@@ -73,7 +73,7 @@ const ProductCoverflow = ({ products }) => {
         effect="coverflow"
         centeredSlides={true}
         initialSlide={2}
-        speed={100}
+        speed={300}
         slidesPerView={3}
         coverflowEffect={{
           rotate: 0,
@@ -164,7 +164,7 @@ const ProductCoverflow = ({ products }) => {
         style={{ width: slideWidth }}
       >
         <div className="h-full w-full flex flex-col justify-between text-brand p-7">
-          <h1 className="w-full text-center text-4xl font-bold font-playfair my-5">
+          <h1 className="w-full text-center text-4xl font-bold font-playfair my-5 overflow-hidden">
             {productInfo.length > 0 ? productInfo[0].key : ""}
           </h1>
 
