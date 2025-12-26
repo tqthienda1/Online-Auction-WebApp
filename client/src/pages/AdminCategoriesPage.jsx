@@ -40,6 +40,8 @@ const AdminCategoriesPage = () => {
     };
 
     getCategoriesData();
+
+    return () => { controller.abort(); }
   }, []);
 
   const categoryColumns = [

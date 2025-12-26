@@ -71,10 +71,13 @@ const AdminUsersPage = () => {
       setIsLoading(true);
       
       // Chạy cả 2 request song song
+      console.log("Fetching users for page:");
       const [usersRes] = await Promise.all([
         http.get(`/user?page=${page}&limit=${limit}`, { signal: controller.signal }),
         fetchUpgradeRequests() // Hàm này tự setUpgradeRequests bên trong rồi
       ]);
+
+      console.log("Users API Response:", usersRes.data);
 
       // Kiểm tra dữ liệu user
       if (usersRes.data?.data) {

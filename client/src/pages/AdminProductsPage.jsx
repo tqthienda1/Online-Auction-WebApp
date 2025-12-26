@@ -69,6 +69,8 @@ const AdminProductsPage = () => {
     };
 
     getProductsData();
+
+    return () => { controller.abort(); }
   }, []);
 
   const [query, setQuery] = useState("");

@@ -48,6 +48,8 @@ const AdminControlPanel = () => {
     };
 
     getTotalsData();
+
+    return () => { controller.abort(); }
   }, []);
 
   const stats = [
