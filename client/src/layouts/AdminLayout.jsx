@@ -9,6 +9,7 @@ import {
   Bell,
   Settings,
   LogOut,
+  TrendingUp,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ const AdminLayout = ({ children }) => {
     { to: "/admin/categories", label: "Categories", icon: FolderOpen },
     { to: "/admin/products", label: "Products", icon: Package },
     { to: "/admin/users", label: "Users", icon: Users },
+    { to: "/admin/system", label: "System", icon: TrendingUp },
   ];
 
   return (
