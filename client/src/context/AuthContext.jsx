@@ -1,6 +1,5 @@
 // contexts/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
-import { setAccessToken, clearAccessToken } from "@/lib/authToken";
 import { supabase } from "@/lib/supabaseClient";
 
 const AuthContext = createContext(null);
@@ -8,59 +7,60 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [roleLoading, setRoleLoading] = useState(false);
 
   useEffect(() => {
-  const {
-    data: { subscription },
-  } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "INITIAL_SESSION") {
+        setLoading(false);
+        return;
+      }
 
-    // 1️⃣ Không có session → logout
-    if (!session) {
-      clearAccessToken();
-      setUser(null);
-      setLoading(false);
-      return;
-    }
+      // 🔴 LOGOUT
+      if (event === "SIGNED_OUT") {
+        setUser(null);
+        setLoading(false);
+        setRoleLoading(false);
+        return;
+      }
 
-    // 2️⃣ Có session → set token
-    setAccessToken(session.access_token);
+      // 🟢 LOGIN THẬT
+      if (event === "SIGNED_IN") {
+        setUser(session.user);
+        setRoleLoading(true);
+        setLoading(false);
+      }
+    });
 
-    // 3️⃣ Chỉ fetch profile khi cần
-    if (event === "INITIAL_SESSION" || event === "SIGNED_IN") {
-      const authUser = session.user;
-      console.log(authUser);
+    return () => subscription.unsubscribe();
+  }, []);
 
-      const { data: profile, error } = await supabase
+  // 🔹 Fetch role CHỈ KHI LOGIN
+  useEffect(() => {
+    if (!user?.id || !roleLoading) return;
+
+    const fetchRole = async () => {
+      const { data } = await supabase
         .from("User")
         .select("role")
-        .eq("supabaseId", authUser.id)
-        .single();
+        .eq("supabaseId", user.id)
+        .maybeSingle();
 
-      console.log("Fetched profile:", profile);
+      setUser((prev) => ({
+        ...prev,
+        role: data?.role ?? "BIDDER",
+      }));
 
-      setUser({
-        ...authUser,
-        role: profile?.role ?? "BIDDER",
-      });
-    }
+      setRoleLoading(false);
+    };
 
-    // 4️⃣ Refresh token / user update → chỉ update token
-    if (event === "TOKEN_REFRESHED") {
-      // không cần setUser lại
-    }
-
-    setLoading(false);
-  });
-
-  return () => {
-    subscription.unsubscribe();
-  };
-}, []);
-
-
+    fetchRole();
+  }, [user?.id, roleLoading]);
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, roleLoading }}>
       {children}
     </AuthContext.Provider>
   );
