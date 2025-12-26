@@ -101,6 +101,7 @@ model Bid {
 model WatchList {
   userID    String  @db.Uuid
   productID String
+  createdAt DateTime @default(now())
   product   Product @relation("ProductWatchList", fields: [productID], references: [id], onDelete: Cascade)
   user      User    @relation("UserWatchList", fields: [userID], references: [id], onDelete: Cascade)
 
