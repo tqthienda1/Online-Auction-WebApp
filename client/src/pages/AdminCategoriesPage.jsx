@@ -40,7 +40,7 @@ const AdminCategoriesPage = () => {
     getCategoriesData();
 
     return () => controller.abort();
-  }, []);
+  }, [page]);
 
   const categoryColumns = [
     { header: "Category Name", accessor: "name" },

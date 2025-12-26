@@ -34,36 +34,34 @@ export const replyComment = async (req, res) => {
 
 export const createComment = async (req, res) => {
   try {
-    const { productID } = req.params;
+    const { id } = req.params;
+    const userID = req.user.id;
     const { content, parentID } = req.body;
 
-    console.log(productID);
+    console.log(req.body);
+    console.log(content);
 
     if (!content) {
-      return res.status(400).json({
-        message: "Missing userID or content.",
-      });
+      return res.status(400).json({ message: "Content is required." });
     }
 
-    const product = await CommentService.getProductById(productID);
+    const product = await CommentService.getProductById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
     if (parentID) {
       const parentComment = await CommentService.getById(parentID);
-
-      if (!parentComment || parentComment.productID !== Number(productID)) {
+      if (!parentComment || parentComment.productID !== id) {
         return res.status(400).json({ message: "Invalid parent comment" });
       }
     }
 
     const comment = await CommentService.create({
-      userID: req.user,
-      productID: productID,
+      userID,
+      productID: id,
       content,
       parentID,
-      createdAt: new Date(),
     });
 
     return res.status(201).json(comment);
