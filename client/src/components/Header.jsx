@@ -49,13 +49,12 @@ const Header = () => {
                 <CiUser size={36} className="cursor-pointer hover:text-brand" />
               </Link>
 
-              <Link
-                to="/"
+              <button
                 onClick={handleLogout}
                 className="flex items-center bg-brand font-semibold rounded-3xl py-3 px-9 text-white"
               >
                 Logout
-              </Link>
+              </button>
             </>
           )}
         </div>
