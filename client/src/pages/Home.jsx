@@ -13,6 +13,7 @@ const Home = () => {
   const [endingSoonProducts, setEndingSoonProducts] = useState([]);
 
   const [mostBiddenProducts, setMostBiddenProducts] = useState([]);
+  const [highestPriceProducts, setHighestPriceProducts] = useState([]);
   useEffect(() => {
     const controller = new AbortController();
 
@@ -34,10 +35,19 @@ const Home = () => {
             },
             // signal: controller.signal,
           }),
+          http.get("/products", {
+            params: {
+              sortBy: "currentPrice",
+              limit: 5,
+              order: "desc",
+            },
+            // signal: controller.signal,
+          }),
         ]);
 
         const endingSoonData = res[0].data.data;
         const mostBiddenData = res[1].data.data;
+        const highestPriceData = res[2].data.data;
 
         endingSoonData.forEach((item) => {
           item.startTime = formattedDate(item.startTime);
@@ -49,8 +59,14 @@ const Home = () => {
           item.endTime = formattedDate(item.endTime);
         });
 
+        highestPriceData.forEach((item) => {
+          item.startTime = formattedDate(item.startTime);
+          item.endTime = formattedDate(item.endTime);
+        });
+
         setEndingSoonProducts(endingSoonData);
         setMostBiddenProducts(mostBiddenData);
+        setHighestPriceProducts(highestPriceData);
       } catch (error) {
           console.error("Load ending soon products failed: ", error);
       } finally {
@@ -73,10 +89,10 @@ const Home = () => {
             heading="Most Bidden Items"
             product={mostBiddenProducts}
           />
-          {/* <HomeProductCarousel
+          <HomeProductCarousel
             heading="Highest - price Items"
-            product={mockUpData.product}
-          /> */}
+            product={highestPriceProducts}
+          /> 
         </>
       )}
       {loading && (
