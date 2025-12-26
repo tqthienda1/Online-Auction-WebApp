@@ -63,9 +63,15 @@ const CategoryPage = () => {
     setFilterTrigger((prev) => prev + 1);
   };
 
-  const handleSortChange = (newOrder) => {
-    setSort("currentPrice");
+  const handleSortChange = (newSort) => {
+    setSort(newSort);
+    console.log(newSort);
+    setPage(1);
+  };
+
+  const handleOrderChange = (newOrder) => {
     setOrder(newOrder);
+    console.log(newOrder);
     setPage(1);
   };
 
@@ -79,6 +85,7 @@ const CategoryPage = () => {
                 onPriceChange={handlePriceChange}
                 onViewResult={handleViewResult}
                 onSortChange={handleSortChange}
+                onOrderChange={handleOrderChange}
               />
             </div>
 

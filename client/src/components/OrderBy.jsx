@@ -1,20 +1,37 @@
 import { useState } from "react";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
+import { TbChartBarPopular } from "react-icons/tb";
 
-const OrderBy = ({ onSortChange }) => {
+const OrderBy = ({ onSortChange, onOrderChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState("Order by");
 
   const options = [
-    { label: "Price Low to High", value: "asc", icon: <FaArrowUp /> },
-    { label: "Price High to Low", value: "desc", icon: <FaArrowDown /> },
-    // {label: "Most Popular", value:"totalBid", icon: }
+    {
+      label: "Most Popular",
+      value: "totalBid",
+      order: "desc",
+      icon: <TbChartBarPopular />,
+    },
+    {
+      label: "Price Low to High",
+      value: "currentPrice",
+      order: "asc",
+      icon: <FaArrowUp />,
+    },
+    {
+      label: "Price High to Low",
+      value: "currentPrice",
+      order: "desc",
+      icon: <FaArrowDown />,
+    },
   ];
 
   const handleSelect = (option) => {
     setSelected(option.label);
     setIsOpen(false);
     onSortChange(option.value);
+    onOrderChange(option.order);
   };
 
   return (
@@ -54,7 +71,7 @@ const OrderBy = ({ onSortChange }) => {
         <div className="absolute mt-1 w-[85%] bg-gray-100 shadow-lg rounded-md z-10">
           {options.map((option) => (
             <div
-              key={option.value}
+              key={option.label}
               onClick={() => handleSelect(option)}
               className="cursor-pointer px-4 py-2 flex items-center gap-2 hover:bg-gray-200"
             >

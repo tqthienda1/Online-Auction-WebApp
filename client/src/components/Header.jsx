@@ -50,8 +50,9 @@ const Header = () => {
               </Link>
 
               <button
+                to="/"
                 onClick={handleLogout}
-                className="flex items-center bg-brand font-semibold rounded-3xl py-3 px-9 text-white"
+                className="flex items-center bg-brand font-semibold rounded-3xl py-3 px-9 text-white cursor-pointer"
               >
                 Logout
               </button>

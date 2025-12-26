@@ -71,7 +71,7 @@ const AdminProductsPage = () => {
 
     getProductsData();
     return () => controller.abort();
-  }, []);
+  }, [page]);
 
   const [query, setQuery] = useState("");
   const filteredProducts =

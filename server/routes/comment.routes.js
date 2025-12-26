@@ -5,18 +5,21 @@ import {
   updateComment,
   deleteComment,
 } from "../controllers/commentController.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { requireRole } from "../middlewares/requireRole.js";
 
 const router = express.Router();
 
-const mockUser = (req, res, next) => {
-  req.user = "a0859fe9-9bf5-4b7b-adf7-8f7a8675780b";
-  next();
-};
+router.post(
+  "/products/:id",
+  authMiddleware,
+  requireRole(["BIDDER", "SELLER", "ADMIN"]),
+  createComment
+);
 
-router.post("/products/:productID/", mockUser, createComment);
 router.put("/:commentID", updateComment);
 router.delete("/:commentID", deleteComment);
 
-router.post("/:commentID/replies", mockUser, replyComment);
+router.post("/:commentID/replies", replyComment);
 
 export default router;
