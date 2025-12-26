@@ -36,6 +36,18 @@ const guestRoutes = [
     component: CategoryPage,
     layout: MainLayout,
   },
+    { path: "/admin", component: AdminControlPanel, layout: AdminLayout },
+  {
+    path: "/admin/categories",
+    component: AdminCategoriesPage,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/products",
+    component: AdminProductsPage,
+    layout: AdminLayout,
+  },
+  { path: "/admin/users", component: AdminUsersPage, layout: AdminLayout },
   { path: "*", component: NotFoundPage, layout: MainLayout },
 ];
 
@@ -71,18 +83,7 @@ const sellerRoutes = [
 ];
 
 const adminRoutes = [
-  { path: "/admin", component: AdminControlPanel, layout: AdminLayout },
-  {
-    path: "/admin/categories",
-    component: AdminCategoriesPage,
-    layout: AdminLayout,
-  },
-  {
-    path: "/admin/products",
-    component: AdminProductsPage,
-    layout: AdminLayout,
-  },
-  { path: "/admin/users", component: AdminUsersPage, layout: AdminLayout },
+
 ];
 
 export { guestRoutes, bidderRoutes, sellerRoutes, adminRoutes };
