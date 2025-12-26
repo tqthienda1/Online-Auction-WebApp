@@ -42,6 +42,10 @@ const schema = z
     ratingRequired: z.boolean().default(false),
     autoExtend: z.boolean().default(false),
   })
+  .refine((data) => new Date(data.startDate) > new Date(), {
+    message: "Start date must be greater than now",
+    path: ["startDate"],
+  })
   .refine((data) => new Date(data.startDate) < new Date(data.endDate), {
     message: "End date must be greater than Start date",
     path: ["endDate"],
@@ -55,6 +59,10 @@ const AddProductsPage = () => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
+    defaultValues: {
+      startingPrice: null,
+      bidStep: null,
+    },
   });
 
   const navigate = useNavigate();
