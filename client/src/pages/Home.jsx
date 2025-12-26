@@ -18,14 +18,13 @@ const Home = () => {
 
     const loadEndingSoonProduct = async () => {
       try {
-        setLoading(true);
-
         const res = await Promise.all([
           http.get("/products", {
             params: {
               sortBy: "endTime",
               limit: 5,
             },
+            // signal: controller.signal,
           }),
           http.get("/products", {
             params: {
@@ -33,6 +32,7 @@ const Home = () => {
               limit: 5,
               order: "desc",
             },
+            // signal: controller.signal,
           }),
         ]);
 
@@ -52,7 +52,7 @@ const Home = () => {
         setEndingSoonProducts(endingSoonData);
         setMostBiddenProducts(mostBiddenData);
       } catch (error) {
-        console.error("Load ending soon products failed: ", error.message);
+          console.error("Load ending soon products failed: ", error);
       } finally {
         setLoading(false);
       }

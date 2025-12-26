@@ -71,21 +71,24 @@ const AdminUsersPage = () => {
       try {
         setIsLoading(true);
 
-        // Chạy cả 2 request song song
+        console.log("Fetching users for page:", page);
+
+        // chạy song song
         const [usersRes] = await Promise.all([
           http.get(`/user?page=${page}&limit=${limit}`, {
             signal: controller.signal,
           }),
-          fetchUpgradeRequests(), // Hàm này tự setUpgradeRequests bên trong rồi
+          fetchUpgradeRequests(), // hàm này tự set state bên trong
         ]);
 
-        // Kiểm tra dữ liệu user
+        console.log("Users API Response:", usersRes.data);
+
         if (usersRes.data?.data) {
           setUsers(usersRes.data.data.data || []);
           setTotalPages(usersRes.data.data.totalPages || 1);
         }
       } catch (error) {
-        if (error.name !== "CanceledError") {
+        if (error.name !== "CanceledError" && error.name !== "AbortError") {
           setError(error);
         }
       } finally {
@@ -94,6 +97,7 @@ const AdminUsersPage = () => {
     };
 
     getData();
+
     return () => controller.abort();
   }, [page, limit]);
 

@@ -16,9 +16,11 @@ import SellerPaymentPage from "@/pages/SellerPaymentPage";
 import AdminControlPanel from "@/pages/AdminControlPanel";
 import AdminCategoriesPage from "@/pages/AdminCategoriesPage";
 import AdminProductsPage from "@/pages/AdminProductsPage";
+import AdminSystemPage from "@/pages/AdminSystemPage.jsx";
 import AdminUsersPage from "@/pages/AdminUsersPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import ForgotPasswordPage from "@/pages/ForgotPassword";
+
 
 const guestRoutes = [
   { path: "/", component: Home, layout: MainLayout },
@@ -36,6 +38,7 @@ const guestRoutes = [
     component: CategoryPage,
     layout: MainLayout,
   },
+
   { path: "*", component: NotFoundPage, layout: MainLayout },
 ];
 
@@ -71,7 +74,7 @@ const sellerRoutes = [
 ];
 
 const adminRoutes = [
-  { path: "/admin", component: AdminControlPanel, layout: AdminLayout },
+   { path: "/admin", component: AdminControlPanel, layout: AdminLayout },
   {
     path: "/admin/categories",
     component: AdminCategoriesPage,
@@ -83,6 +86,7 @@ const adminRoutes = [
     layout: AdminLayout,
   },
   { path: "/admin/users", component: AdminUsersPage, layout: AdminLayout },
+  { path: "/admin/system", component: AdminSystemPage, layout: AdminLayout },
 ];
 
 export { guestRoutes, bidderRoutes, sellerRoutes, adminRoutes };
