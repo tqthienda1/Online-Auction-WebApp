@@ -1,7 +1,7 @@
 import Header from "../components/Header";
 import Footer from "@/components/Footer";
 import CategoriesBar from "../components/CategoriesBar";
-import { http as axios } from "../lib/utils"
+import { http as axios } from "../lib/utils";
 import { useEffect, useState } from "react";
 
 const MainLayout = ({ children }) => {
@@ -11,8 +11,8 @@ const MainLayout = ({ children }) => {
     const fetchCategories = async () => {
       try {
         // QUAN TRỌNG: Đổi sang /tree để lấy kèm danh mục con
-        const response = await axios.get("/categories/tree"); 
-        setCategories(response.data);
+        const response = await axios.get("/categories/tree");
+        setCategories(response.data.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -20,7 +20,7 @@ const MainLayout = ({ children }) => {
 
     fetchCategories();
   }, []);
-  
+
   return (
     <div className="h-screen flex flex-col">
       <Header />
