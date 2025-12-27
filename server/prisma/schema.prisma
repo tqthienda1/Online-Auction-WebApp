@@ -178,7 +178,7 @@ model Message {
 
 
 model BidHistory {
-  id        String   @id
+  id        String   @id  @default(uuid())
   productID String
   bidderID  String   @db.Uuid
   price     Int
