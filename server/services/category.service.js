@@ -34,9 +34,25 @@ export const CategoryService = {
   },
 
   async delete(id) {
-    return await prisma.category.delete({
-      where: { id: id },
+    const hasChildren = await prisma.category.findFirst({
+      where: { parentID: id },
+      select: { id: true },
     });
+
+    if (hasChildren) {
+      throw new Error("CATEGORY_HAS_CHILDREN");
+    }
+
+    const hasProducts = await prisma.product.findFirst({
+      where: { categoryID: id },
+      select: { id: true },
+    });
+
+    if (hasProducts) {
+      throw new Error("CATEGORY_HAS_PRODUCTS");
+    }
+
+    return prisma.category.delete({ where: { id } });
   },
 
   async getParentCategories() {

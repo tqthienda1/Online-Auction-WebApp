@@ -20,7 +20,6 @@ export const replyComment = async (req, res) => {
       productID: parentComment.productID,
       content: content,
       parentID: parentComment.id,
-      createdAt: new Date(),
     });
 
     return res.status(201).json(reply);

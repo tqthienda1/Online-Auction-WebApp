@@ -46,7 +46,7 @@ const AdminPagination = ({ totalPages, page, onPageChange }) => {
             className={
               page === p
                 ? "font-bold border rounded-lg bg-yellow-400 px-2"
-                : "px-2 hover:bg-yellow-400 rounded-lg border"
+                : "px-2 hover:bg-yellow-400 rounded-lg border cursor-pointer"
             }
           >
             {p}

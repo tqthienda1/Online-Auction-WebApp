@@ -89,7 +89,7 @@ const AddProductsPage = () => {
       try {
         const res = await http.get("categories/tree");
 
-        setCategories(res.data);
+        setCategories(res.data.data);
 
         console.log(res.data);
       } catch (error) {
