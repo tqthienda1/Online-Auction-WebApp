@@ -315,7 +315,6 @@ export const getBidHistory = async (productId) => {
     where: { productID: productId },
     orderBy: { createdAt: "desc" },
     include: {
-      // relation name in schema is `User` (owner of bidderID)
       User: {
         select: {
           id: true,
