@@ -33,6 +33,9 @@ const SimilarProducts = ({ products }) => {
                         to={`/products/${p.id}`}
                         className="absolute inset-0 z-10"
                         aria-label={`View product ${p.productName}`}
+                        onClick={() =>
+                          window.scrollTo({ top: 0, behavior: "smooth" })
+                        }
                       />
 
                       <CardContent className="relative z-0 flex flex-col aspect-square items-center justify-center p-6">

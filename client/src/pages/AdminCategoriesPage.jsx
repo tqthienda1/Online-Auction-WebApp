@@ -6,6 +6,7 @@ import AdminForm from "@/components/AdminForm";
 import { Spinner } from "@/components/ui/spinner";
 import { http } from "@/lib/utils";
 import AdminPagination from "@/components/AdminPagination";
+import DeleteWarning from "@/components/DeleteWarning";
 
 const AdminCategoriesPage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -16,6 +17,7 @@ const AdminCategoriesPage = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  const [deleteError, setDeleteError] = useState(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -27,6 +29,8 @@ const AdminCategoriesPage = () => {
           `categories/categories?page=${page}&limit=${limit}`,
           {}
         );
+
+        console.log(data.data.data.data);
         setCategories(data.data.data.data);
         setTotalPages(data.data.data.totalPages);
       } catch (error) {
@@ -82,7 +86,7 @@ const AdminCategoriesPage = () => {
       const res = await http.get("categories/tree", {
         signal: controller.signal,
       });
-      setCategories(res.data);
+      setCategories(res.data.data);
     } catch (error) {
       console.error(error);
       setError(error);
@@ -110,7 +114,7 @@ const AdminCategoriesPage = () => {
       const res = await http.get("categories/tree", {
         signal: controller.signal,
       });
-      setCategories(res.data);
+      setCategories(res.data.data);
     } catch (error) {
       console.error(error);
       setError(error);
@@ -149,14 +153,11 @@ const AdminCategoriesPage = () => {
   };
 
   const handleDeleteCategory = async (id) => {
-    const controller = new AbortController();
-
     try {
       setIsLoading(true);
+      setDeleteError(null);
 
-      await http.delete(`/categories/${id}`, {
-        signal: controller.signal,
-      });
+      await http.delete(`/categories/${id}`);
 
       setCategories((prev) =>
         prev
@@ -166,12 +167,29 @@ const AdminCategoriesPage = () => {
             categoryChild: c.categoryChild?.filter((child) => child.id !== id),
           }))
       );
+
+      setConfirm(null);
     } catch (error) {
-      console.error(error);
-      setError(error);
+      const code = error?.response?.data?.code;
+
+      if (code === "CATEGORY_HAS_CHILDREN") {
+        setDeleteError(
+          "This category cannot be deleted because it has subcategories."
+        );
+      }
+
+      if (code === "CATEGORY_HAS_PRODUCTS") {
+        setDeleteError(
+          "This category cannot be deleted because it has products."
+        );
+      }
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCancel = () => {
+    setDeleteError(null);
   };
 
   return (
@@ -228,6 +246,10 @@ const AdminCategoriesPage = () => {
                   : handleEditCategory
               }
             />
+          )}
+
+          {deleteError && (
+            <DeleteWarning content={deleteError} onCancel={handleCancel} />
           )}
         </div>
       )}

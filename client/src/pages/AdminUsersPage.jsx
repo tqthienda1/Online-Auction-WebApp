@@ -148,7 +148,7 @@ const AdminUsersPage = () => {
         </div>
       )}
 
-      {!isLoading && !error && (
+      {!error && (
         <div className="space-y-6 p-6">
           <AdminHeader title="Users" description="Manage All Users" />
 

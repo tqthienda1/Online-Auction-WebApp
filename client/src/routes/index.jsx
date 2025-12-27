@@ -21,17 +21,21 @@ import AdminUsersPage from "@/pages/AdminUsersPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import ForgotPasswordPage from "@/pages/ForgotPassword";
 
-
 const guestRoutes = [
   { path: "/", component: Home, layout: MainLayout },
   { path: "/products/:id", component: ProductDetails, layout: MainLayout },
   { path: "/signup", component: SignUpPage, layout: BlankLayout },
   { path: "/verify-email", component: VerifyEmailPage, layout: BlankLayout },
   { path: "/login", component: LogInPage, layout: BlankLayout },
-    {
+  {
     path: "/forgot-password",
     component: ForgotPasswordPage,
     layout: BlankLayout,
+  },
+  {
+    path: "/categories",
+    component: CategoryPage,
+    layout: MainLayout,
   },
   {
     path: "/categories/:id",
@@ -74,7 +78,7 @@ const sellerRoutes = [
 ];
 
 const adminRoutes = [
-   { path: "/admin", component: AdminControlPanel, layout: AdminLayout },
+  { path: "/admin", component: AdminControlPanel, layout: AdminLayout },
   {
     path: "/admin/categories",
     component: AdminCategoriesPage,
