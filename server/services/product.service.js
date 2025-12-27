@@ -311,11 +311,12 @@ export const deleteProduct = async (userId, productId) => {
 };
 
 export const getBidHistory = async (productId) => {
-  return prisma.bidHistory.findMany({
+  const histories = await prisma.bidHistory.findMany({
     where: { productID: productId },
     orderBy: { createdAt: "desc" },
     include: {
-      bidder: {
+      // relation name in schema is `User` (owner of bidderID)
+      User: {
         select: {
           id: true,
           username: true,
@@ -323,6 +324,16 @@ export const getBidHistory = async (productId) => {
       },
     },
   });
+
+  // map to shape frontend expects: include `bidder` object
+  return histories.map((h) => ({
+    id: h.id,
+    productID: h.productID,
+    bidderID: h.bidderID,
+    price: h.price,
+    createdAt: h.createdAt,
+    bidder: h.User || null,
+  }));
 };
 
 export const getAuction = async (productId) => {
