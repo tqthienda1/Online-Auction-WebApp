@@ -15,15 +15,34 @@ export const getProducts = async ({
   sellerId,
   sold,
 }) => {
-  console.log(category);
+  let categoryCondition = undefined;
+
+  if (category) {
+    const currentCategory = await prisma.category.findUnique({
+      where: { id: category },
+      select: { id: true, parentID: true },
+    });
+
+    if (currentCategory) {
+      if (!currentCategory.parentID) {
+        const children = await prisma.category.findMany({
+          where: { parentID: currentCategory.id },
+          select: { id: true },
+        });
+
+        categoryCondition = {
+          in: children.map((c) => c.id),
+        };
+      } else {
+        categoryCondition = category;
+      }
+    }
+  }
 
   const where = {
     name: search ? { contains: search, mode: "insensitive" } : undefined,
-
-    categoryID: category || undefined,
-
+    categoryID: categoryCondition,
     sellerId: sellerId || undefined,
-
     currentPrice:
       minPrice || maxPrice
         ? {
@@ -31,51 +50,35 @@ export const getProducts = async ({
             lte: maxPrice ? Number(maxPrice) : undefined,
           }
         : undefined,
-
     sold: sold !== undefined ? sold : undefined,
   };
 
-  let orderBy;
-  if (sortBy === "totalBid") {
-    orderBy = {
-      bids: {
-        _count: order === "asc" ? "asc" : "desc",
-      },
-    };
-  } else {
-    orderBy = {
-      [sortBy]: order === "asc" ? "asc" : "desc",
-    };
-  }
+  const orderBy =
+    sortBy === "totalBid"
+      ? { bids: { _count: order === "asc" ? "asc" : "desc" } }
+      : { [sortBy]: order === "asc" ? "asc" : "desc" };
 
   const skip = (page - 1) * limit;
-  const take = limit;
 
   const [products, total] = await Promise.all([
     prisma.product.findMany({
       where,
       skip,
-      take,
+      take: limit,
       orderBy,
       include: {
-        _count: {
-          select: { bids: true },
-        },
-        category: {
-          select: { name: true },
-        },
+        _count: { select: { bids: true } },
+        category: { select: { name: true } },
       },
     }),
     prisma.product.count({ where }),
   ]);
 
-  const mappedProducts = products.map((p) => ({
-    ...p,
-    category: p.category?.name ?? null,
-  }));
-
   return {
-    products: mappedProducts,
+    products: products.map((p) => ({
+      ...p,
+      category: p.category?.name ?? null,
+    })),
     total,
   };
 };

@@ -89,7 +89,7 @@ const CategoryPage = () => {
               />
             </div>
 
-            <div className="col-span-8 flex flex-col">
+            <div className="col-span-8 flex flex-col min-h-[600px]">
               {isLoading ? (
                 <div className="flex flex-col justify-center p-4 md:p-5 text-center h-60">
                   <Spinner className="size-8 w-full text-yellow-500" />
