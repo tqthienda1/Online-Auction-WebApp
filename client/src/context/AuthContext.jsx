@@ -14,16 +14,11 @@ export const AuthProvider = ({ children }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-
-      // 🔁 REFRESH / TAB LẠI
       if (event === "INITIAL_SESSION") {
-        if (session) {
-          setAccessToken(session.access_token);
-          setUser(session.user);
-          setRoleLoading(true);
-        }
+        setAccessToken(session.access_token);
+        setUser(session.user);
+        setRoleLoading(true);
         setLoading(false);
-        return;
       }
 
       // 🔴 LOGOUT
@@ -39,6 +34,9 @@ export const AuthProvider = ({ children }) => {
       if (event === "SIGNED_IN") {
         setAccessToken(session.access_token);
         setUser(session.user);
+        if (session) {
+          return;
+        }
         setRoleLoading(true);
         setLoading(false);
       }

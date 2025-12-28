@@ -46,6 +46,10 @@ const guestRoutes = [
   { path: "*", component: NotFoundPage, layout: MainLayout },
 ];
 
+const userRoutes = [
+  { path: "/user_profile", component: UserProfile, layout: UserProfileLayout },
+];
+
 const bidderRoutes = [
   {
     path: "/buyer/payment/:productID",
@@ -57,8 +61,6 @@ const bidderRoutes = [
     component: SellerPaymentPage,
     layout: MainLayout,
   },
-
-  { path: "/user_profile", component: UserProfile, layout: UserProfileLayout },
 ];
 
 const sellerRoutes = [
@@ -73,7 +75,6 @@ const sellerRoutes = [
     layout: MainLayout,
   },
 
-  { path: "/user_profile", component: UserProfile, layout: UserProfileLayout },
   { path: "/add-products", component: AddProductsPage, layout: MainLayout },
 ];
 
@@ -93,4 +94,4 @@ const adminRoutes = [
   { path: "/admin/system", component: AdminSystemPage, layout: AdminLayout },
 ];
 
-export { guestRoutes, bidderRoutes, sellerRoutes, adminRoutes };
+export { guestRoutes, userRoutes, bidderRoutes, sellerRoutes, adminRoutes };
