@@ -44,6 +44,10 @@ const PriceFilter = ({ value, onChange, onViewResult }) => {
           max={10000}
           value={value}
           onChange={handleSliderChange}
+          styles={{
+            track: { backgroundColor: "#facc15" },
+            handle: { backgroundColor: "#ffffff", border: "2px solid #facc15" },
+          }}
         />
       </div>
 
@@ -71,7 +75,7 @@ const PriceFilter = ({ value, onChange, onViewResult }) => {
         </div>
 
         <button
-          className="border-2 rounded-lg mt-2 py-2 px-3 bg-yellow-400 text-white font-semibold hover:bg-yellow-500 transition-colors"
+          className="rounded-lg mt-2 py-2 px-3 bg-yellow-400 text-white font-semibold hover:bg-yellow-500 transition-colors cursor-pointer"
           onClick={onViewResult}
         >
           View results

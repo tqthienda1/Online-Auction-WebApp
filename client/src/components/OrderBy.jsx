@@ -48,7 +48,7 @@ const OrderBy = ({ onSortChange, onOrderChange }) => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full font-semibold bg-yellow-400 border border-gray-300 rounded-md shadow-sm px-4 py-2 text-white flex justify-between items-center hover:bg-yellow-500 focus:outline-none"
+        className="w-full font-semibold bg-yellow-400 rounded-md shadow-sm px-4 py-2 text-white flex justify-between items-center hover:bg-yellow-500 focus:outline-none cursor-pointer"
       >
         {selected}
         <svg
