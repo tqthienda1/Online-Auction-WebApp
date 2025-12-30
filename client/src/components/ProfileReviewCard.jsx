@@ -7,7 +7,9 @@ const ProfileReviewCard = ({ review }) => {
     <div className="flex flex-col gap-5 border border-gray-100 rounded-lg p-5 shadow-sm">
       <div className="flex items-center gap-2">
         <h1>{review.rater}</h1>
-        {review.like ? (
+        {review.isComment ? (
+          <BiMessageRounded className="text-blue-500" />
+        ) : review.like ? (
           <AiOutlineLike className="text-green-500" />
         ) : (
           <AiOutlineDislike className="text-red-500" />

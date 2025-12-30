@@ -48,3 +48,25 @@ export const getInfo = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const getUserRatings = async (req, res) => {
+  try {
+    const ratings = await UserService.getUserRatings(req.user.id);
+    return res.status(200).json({ data: ratings });
+  } catch (error) {
+    console.log("Get user ratings failed: ", error.message);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getUserComments = async (req, res) => {
+  try {
+    console.log("Fetching comments for user:", req.user.id);
+    const comments = await UserService.getUserComments(req.user.id);
+    console.log("Comments found:", comments);
+    return res.status(200).json({ data: comments });
+  } catch (error) {
+    console.log("Get user comments failed: ", error.message);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
