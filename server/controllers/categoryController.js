@@ -49,7 +49,16 @@ export const CategoryController = {
 
   async create(req, res) {
     try {
-      const newCategory = await CategoryService.create(req.body);
+      const newCategory = req.body;
+
+      const existed = await CategoryService.getByName(newCategory.name);
+
+      if (existed) {
+        return res
+          .status(409)
+          .json({ success: false, message: "Category already exists" });
+      }
+
       return res
         .status(201)
         .json({ data: newCategory, message: "Category created" });
@@ -57,7 +66,7 @@ export const CategoryController = {
       console.error(error);
       return res
         .status(500)
-        .json({ success: false, message: "Faile to create category" });
+        .json({ success: false, message: "Failed to create category" });
     }
   },
 

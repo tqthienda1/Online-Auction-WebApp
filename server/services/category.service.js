@@ -15,6 +15,16 @@ export const CategoryService = {
     });
   },
 
+  async getByName(name) {
+    return await prisma.category.findUnique({
+      where: { name },
+      include: {
+        categoryChild: true,
+        product: true,
+      },
+    });
+  },
+
   async create(data) {
     const existed = await prisma.category.findFirst({
       where: { name: data.name },
@@ -40,6 +50,7 @@ export const CategoryService = {
     });
 
     if (hasChildren) {
+      console.log("aa");
       throw new Error("CATEGORY_HAS_CHILDREN");
     }
 
@@ -49,6 +60,7 @@ export const CategoryService = {
     });
 
     if (hasProducts) {
+      console.log("bb");
       throw new Error("CATEGORY_HAS_PRODUCTS");
     }
 
@@ -94,7 +106,10 @@ export const CategoryService = {
     const formattedData = data.map((c) => ({
       id: c.id,
       name: c.name,
-      total: c._count.product,
+      total: c.categoryChild?.reduce(
+        (sum, child) => sum + child._count.product,
+        0
+      ),
       categoryChild: c.categoryChild.map((child) => ({
         id: child.id,
         name: child.name,
