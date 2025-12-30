@@ -57,7 +57,7 @@ const ProductCard = ({ product, showType }) => {
               <p className="flex justify-between">
                 <span>Highest bidder:</span>
                 <span className="font-medium">
-                  {product.highestBidder || "None"}
+                  {product.highestBidder?.username || "None"}
                 </span>
               </p>
               <p className="flex justify-between">
