@@ -6,6 +6,7 @@ import ProductList from "../components/ProductList";
 import { http } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
 import AdminPagination from "@/components/AdminPagination";
+import { useAuth } from "@/context/AuthContext";
 
 const CategoryPage = () => {
   const { id } = useParams();
@@ -18,7 +19,7 @@ const CategoryPage = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(50000000);
+  const [maxPrice, setMaxPrice] = useState(500000);
   const [order, setOrder] = useState("asc");
   const [sort, setSort] = useState("startTime");
 
