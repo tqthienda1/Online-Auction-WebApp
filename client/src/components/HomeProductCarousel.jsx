@@ -1,14 +1,17 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Pagination } from "swiper/modules";
-import { useId, useState } from "react";
+import { useId } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
+import { maskUsername } from "@/helper/maskUser";
+import { useNavigate } from "react-router-dom";
 
 import "swiper/css";
 import "swiper/css/navigation";
 
 const HomeProductCarousel = ({ heading, product }) => {
   const swiperID = useId();
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col items-center m-30">
@@ -34,7 +37,7 @@ const HomeProductCarousel = ({ heading, product }) => {
               { label: "Current price", key: item.currentPrice },
               {
                 label: "Highest bidder",
-                key: item.highestBidder?.username ?? "None",
+                key: maskUsername(item.highestBidder?.username) ?? "None",
               },
               { label: "Buy now", key: item.buyNowPrice },
               { label: "Date added", key: item.startTime },
@@ -46,6 +49,9 @@ const HomeProductCarousel = ({ heading, product }) => {
                 <div className="flex items-center justify-center w-full h-full">
                   <div className="relative group pointer-events-auto">
                     <img
+                      onClick={() => {
+                        navigate(`/products/${item.id}`);
+                      }}
                       src={item.productAvt}
                       alt=""
                       className="w-3xl h-auto object-contain aspect-3/2 rounded-3xl cursor-pointer"

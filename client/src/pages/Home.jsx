@@ -24,6 +24,7 @@ const Home = () => {
             params: {
               sortBy: "endTime",
               limit: 5,
+              sold: false,
             },
             // signal: controller.signal,
           }),
@@ -32,6 +33,7 @@ const Home = () => {
               sortBy: "totalBid",
               limit: 5,
               order: "desc",
+              sold: false,
             },
             // signal: controller.signal,
           }),
@@ -40,6 +42,7 @@ const Home = () => {
               sortBy: "currentPrice",
               limit: 5,
               order: "desc",
+              sold: false,
             },
             // signal: controller.signal,
           }),
