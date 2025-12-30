@@ -2,12 +2,15 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, EffectCoverflow } from "swiper/modules";
 import { useState, useRef } from "react";
 import { maskUsername } from "@/helper/maskUser";
+import { useNavigate } from "react-router-dom";
 
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 const ProductCoverflow = ({ products }) => {
+  const navigate = useNavigate();
+
   //scale bar width with slide width
   const [slideWidth, setSlideWidth] = useState("400px");
 
@@ -48,7 +51,7 @@ const ProductCoverflow = ({ products }) => {
       { label: "Current price", key: product.currentPrice },
       {
         label: "Highest bidder",
-        key: maskUsername(product?.highestBidder.username) ?? "None",
+        key: maskUsername(product.highestBidder?.username) ?? "None",
       },
       { label: "Buy now", key: product.buyNowPrice },
       { label: "Date added", key: product.startTime },
@@ -145,6 +148,10 @@ const ProductCoverflow = ({ products }) => {
                 if (!e.currentTarget.contains(e.relatedTarget)) {
                   setBidIcon(false);
                 }
+              }}
+              onClick={() => {
+                if (index === swiperRef.current?.activeIndex)
+                  navigate(`/products/${item.id}`);
               }}
             />
             {index === swiperRef.current?.activeIndex ? (
