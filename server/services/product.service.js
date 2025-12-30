@@ -248,11 +248,11 @@ export const addProduct = async (userId, body, files) => {
 export const updateProduct = async (userId, productId, descriptions) => {
   const product = await prisma.product.findUnique({
     where: { id: productId },
-    select: { sellerID: true, sold: true },
+    select: { sellerID: true, sold: false },
   });
 
   if (!product) {
-    throw new Error("Product is not exist.");
+    throw new Error("Product is not exist or has been sold.");
   }
 
   if (userId != product.sellerID) {
@@ -261,22 +261,12 @@ export const updateProduct = async (userId, productId, descriptions) => {
     );
   }
 
-  if (product.sold) {
-    throw new Error("Product is sold.");
-  }
-
-  await prisma.productDescription.deleteMany({
-    where: { productID: productId },
+  await prisma.productDescription.create({
+    data: {
+      productID: productId,
+      productDescription: descriptions,
+    },
   });
-
-  if (descriptions.length > 0) {
-    await prisma.productDescription.createMany({
-      data: descriptions.map((text) => ({
-        productID: productId,
-        productDescription: text,
-      })),
-    });
-  }
 
   return await prisma.productDescription.findMany({
     where: { productID: productId },
@@ -353,5 +343,12 @@ export const getAuction = async (productId) => {
         },
       },
     },
+  });
+};
+
+export const getProductDescriptions = async (productId) => {
+  return prisma.productDescription.findMany({
+    where: { productID: productId },
+    orderBy: { createdAt: "asc" },
   });
 };
