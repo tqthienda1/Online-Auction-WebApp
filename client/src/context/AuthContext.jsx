@@ -13,6 +13,10 @@ export const AuthProvider = ({ children }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!session) {
+        setLoading(false);
+        return;
+      }
       if (event === "INITIAL_SESSION") {
         setAccessToken(session.access_token);
         setUser(session.user);
@@ -29,9 +33,6 @@ export const AuthProvider = ({ children }) => {
       if (event === "SIGNED_IN") {
         setAccessToken(session.access_token);
         setUser((prev) => prev ?? session.user);
-        if (session) {
-          return;
-        }
       }
     });
 
