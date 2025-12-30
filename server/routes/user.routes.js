@@ -9,11 +9,18 @@ const router = express.Router();
 
 router.get("/", UserController.getUsers);
 
-router.patch(
-  "/",
+router.get(
+  "/me/ratings",
   authMiddleware,
-  requireRole(["BIDDER"]),
-  UserController.updateUsername
+  requireRole(["BIDDER", "ADMIN", "SELLER"]),
+  UserController.getUserRatings
+);
+
+router.get(
+  "/me/comments",
+  authMiddleware,
+  requireRole(["BIDDER", "ADMIN", "SELLER"]),
+  UserController.getUserComments
 );
 
 router.get(
@@ -21,6 +28,13 @@ router.get(
   authMiddleware,
   requireRole(["BIDDER", "ADMIN", "SELLER"]),
   UserController.getInfo
+);
+
+router.patch(
+  "/",
+  authMiddleware,
+  requireRole(["BIDDER"]),
+  UserController.updateUsername
 );
 
 export default router;

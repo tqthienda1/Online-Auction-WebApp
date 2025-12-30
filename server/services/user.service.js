@@ -39,3 +39,55 @@ export const getInfo = async (userId) => {
     },
   });
 };
+
+export const getUserRatings = async (userId) => {
+  return await prisma.rating.findMany({
+    where: {
+      rateeID: userId,
+    },
+    include: {
+      rater: {
+        select: {
+          id: true,
+          username: true,
+        },
+      },
+      product: {
+        select: {
+          id: true,
+          productName: true,
+        },
+      },
+    },
+    orderBy: {
+      productID: "desc",
+    },
+  });
+};
+
+export const getUserComments = async (userId) => {
+  return await prisma.comment.findMany({
+    where: {
+      userID: userId,
+      parentID: null,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+        },
+      },
+      product: {
+        select: {
+          id: true,
+          productName: true,
+        },
+      },
+      childComments: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
