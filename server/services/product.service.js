@@ -117,6 +117,7 @@ export const getProductById = async (productId, db = prisma) => {
       highestBidder: true,
       rating: true,
       order: true,
+      inWatchList: true,
     },
   });
 
