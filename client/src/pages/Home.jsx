@@ -45,6 +45,8 @@ const Home = () => {
           }),
         ]);
 
+        console.log(res);
+
         const endingSoonData = res[0].data.data;
         const mostBiddenData = res[1].data.data;
         const highestPriceData = res[2].data.data;
@@ -68,7 +70,7 @@ const Home = () => {
         setMostBiddenProducts(mostBiddenData);
         setHighestPriceProducts(highestPriceData);
       } catch (error) {
-          console.error("Load ending soon products failed: ", error);
+        console.error("Load ending soon products failed: ", error);
       } finally {
         setLoading(false);
       }
@@ -92,7 +94,7 @@ const Home = () => {
           <HomeProductCarousel
             heading="Highest - price Items"
             product={highestPriceProducts}
-          /> 
+          />
         </>
       )}
       {loading && (
