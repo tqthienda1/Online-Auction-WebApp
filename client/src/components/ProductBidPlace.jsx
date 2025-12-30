@@ -6,27 +6,58 @@ import { http } from "../lib/utils.js";
 
 const ProductBidPlace = ({
   productId,
-  endingDate,
+  startTime,
+  endTime,
   currentPrice,
   buyNowPrice,
   bidStep,
   seller,
   bidder,
   onBidSuccess,
+  isSold,
 }) => {
-  const [timeLeft, setTimeLeft] = useState(() => getTimeRemaining(endingDate));
+  const [now, setNow] = useState(Date.now());
+  const [timeLeft, setTimeLeft] = useState();
   const [bidValue, setBidValue] = useState("");
   const [validationError, setValidationError] = useState(null);
   const [submitError, setSubmitError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const start = new Date(startTime).getTime();
+  const end = new Date(endTime).getTime();
+
+  let auctionState;
+
+  if (isSold || now >= end) {
+    auctionState = "ended";
+  } else if (now < start) {
+    auctionState = "upcoming";
+  } else {
+    auctionState = "live";
+  }
+  const isBidDisabled = auctionState !== "live";
+  const countDownTarget =
+    auctionState === "upcoming" ? start : auctionState === "live" ? end : null;
+
   useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    if (!countDownTarget) {
+      setTimeLeft(null);
+      return;
+    }
+
+    setTimeLeft(getTimeRemaining(countDownTarget));
+
     const timer = setInterval(() => {
-      setTimeLeft(getTimeRemaining(endingDate));
+      setTimeLeft(getTimeRemaining(countDownTarget));
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [endingDate]);
+  }, [countDownTarget]);
 
   useEffect(() => {
     if (!bidValue) {
@@ -42,17 +73,13 @@ const ProductBidPlace = ({
       return;
     }
 
-    if (value < currentPrice) {
-      setValidationError(`Bid must be at least ${currentPrice} USD`);
+    if (value < currentPrice + bidStep) {
+      setValidationError(`Bid must be at least ${currentPrice + bidStep} USD`);
       return;
     }
 
-    if ((value - currentPrice) % bidStep !== 0) {
-      setValidationError(`Bid must increase by ${bidStep}`);
-      return;
-    }
     setValidationError(null);
-  }, [bidValue, currentPrice]);
+  }, [bidValue, currentPrice, bidStep]);
 
   const handlePlaceBid = async () => {
     if (validationError || !bidValue) return;
@@ -95,15 +122,26 @@ const ProductBidPlace = ({
         <p className="text-2xl font-medium font-playfair">Place your bid</p>
       </div>
 
-      <div className="flex flex-col items-center w-[90%] h-auto border mt-10 py-5 gap-5">
+      <div
+        className={`flex flex-col items-center w-[90%] h-auto border mt-10 py-5 gap-5  ${
+          isBidDisabled ? "pointer-events-none opacity-60" : ""
+        }`}
+      >
         <div className="flex flex-row w-[90%] justify-between items-center">
-          <p className="text-lg font-medium">Ending</p>
+          <p className="text-lg font-medium">
+            {auctionState === "upcoming" && "Starts in"}
+            {auctionState === "live" && "Ends in"}
+            {auctionState === "ended" && "Auction ended"}
+          </p>
           <div className="flex flex-col items-end">
-            <p className="text-yellow-400 text-xl font-bold">
-              {timeLeft.days}days, {timeLeft.hours}hours, {timeLeft.minutes}mins
-            </p>
+            {timeLeft && (
+              <p className="text-yellow-400 text-xl font-bold">
+                {timeLeft.days}days, {timeLeft.hours}hours, {timeLeft.minutes}
+                mins
+              </p>
+            )}
             <p className="text-md font-light">
-              {new Date(endingDate).toLocaleString("en-US", {
+              {new Date(endTime).toLocaleString("en-US", {
                 month: "long",
                 day: "numeric",
                 hour: "numeric",

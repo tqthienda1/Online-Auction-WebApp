@@ -69,6 +69,7 @@ export const getProducts = async ({
       include: {
         _count: { select: { bids: true } },
         category: { select: { name: true } },
+        highestBidder: { select: { id: true, username: true } },
       },
     }),
     prisma.product.count({ where }),
