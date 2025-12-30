@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
       // 🟢 LOGIN
       if (event === "SIGNED_IN") {
         setAccessToken(session.access_token);
-        setUser(session.user);
+        setUser((prev) => prev ?? session.user);
         if (session) {
           return;
         }
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }) => {
 
       setUser((prev) => ({
         ...prev,
-        role: data?.role ?? "BIDDER",
+        roleUser: data?.role ?? "BIDDER",
       }));
 
       setRoleLoading(false);
