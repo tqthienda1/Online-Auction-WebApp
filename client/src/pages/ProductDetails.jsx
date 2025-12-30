@@ -31,7 +31,6 @@ const ProductDetails = () => {
   const [descMessage, setDescMessage] = useState("");
   const [text, setText] = useState("");
   const [parent, setParent] = useState(null);
-  const { user } = useAuth();
 
   const [loading, setLoading] = useState({
     product: true,
