@@ -1,6 +1,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, EffectCoverflow } from "swiper/modules";
 import { useState, useRef } from "react";
+import { maskUsername } from "@/helper/maskUser";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -45,7 +46,10 @@ const ProductCoverflow = ({ products }) => {
     setProductInfo([
       { label: "Name", key: product.productName },
       { label: "Current price", key: product.currentPrice },
-      { label: "Highest bidder", key: product.highestBidder ?? "None" },
+      {
+        label: "Highest bidder",
+        key: maskUsername(product?.highestBidder.username) ?? "None",
+      },
       { label: "Buy now", key: product.buyNowPrice },
       { label: "Date added", key: product.startTime },
       { label: "Time ends", key: product.endTime },
@@ -101,7 +105,7 @@ const ProductCoverflow = ({ products }) => {
             { label: "Current price", key: product.currentPrice },
             {
               label: "Highest bidder",
-              key: product.highestBidder?.username ?? "None",
+              key: maskUsername(product.highestBidder?.username) ?? "None",
             },
             { label: "Buy now", key: product.buyNowPrice },
             { label: "Date added", key: product.startTime },
