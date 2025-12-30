@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import CategoryFilter from "./CategoryFilter";
 import PriceFilter from "./PriceFilter";
@@ -22,6 +22,8 @@ const SideBar = ({
     onPriceChange(value);
   };
 
+  console.log(user);
+
   const handleSortChange = (value) => {
     onSortChange(value);
   };
@@ -43,7 +45,8 @@ const SideBar = ({
           onViewResult={onViewResult}
         />
 
-        {user?.data.role === "SELLER" && <AddProductButton />}
+        {/* {user?.data.role === "SELLER" && <AddProductButton />} */}
+        <AddProductButton />
       </aside>
     </>
   );

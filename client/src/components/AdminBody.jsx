@@ -23,6 +23,9 @@ const AdminBody = ({
     }));
   };
 
+  const countTotal = (parent = []) =>
+    parent.reduce((sum, item) => sum + (item.total ?? 0), 0);
+
   const [confirm, setConfirm] = useState(null);
 
   return (

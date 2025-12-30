@@ -2,34 +2,39 @@ import React from "react";
 import { RiAuctionLine } from "react-icons/ri";
 import { BsFillCartCheckFill } from "react-icons/bs";
 import { maskUsername } from "@/helper/maskUser";
+import { formattedDate } from "@/helper/formatDate";
 
-const RECENTLY_ADDED_MINUTES = 30;
+const RECENTLY_ADDED_MINUTES = 1;
 
 const ProductCard = ({ product, showType }) => {
   const checkIsRecent = (timestamp) => {
     if (!timestamp) return false;
 
-    const createdAt = new Date(timestamp);
+    const time = new Date(product.startTime);
     const now = new Date();
-    const diffInMinutes = (now - createdAt) / (1000 * 60);
+    console.log(time, now);
+    const diffMs = now - time;
+    const diffMinutes = diffMs / (1000 * 60);
+    const diffHours = diffMs / (1000 * 60 * 60);
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+    console.log(diffDays);
 
-    return diffInMinutes < RECENTLY_ADDED_MINUTES;
+    return diffDays < RECENTLY_ADDED_MINUTES;
   };
 
-  const isRecentlyAdded = product.createdAt
-    ? checkIsRecent(product.createdAt)
+  const isRecentlyAdded = product.startTime
+    ? checkIsRecent(product.startTime)
     : false;
 
   return (
     <div className="relative flex flex-col justify-between items-center border border-gray-200 rounded-lg shadow-sm bg-white p-4 transition-shadow hover:shadow-xl">
-      {isRecentlyAdded && (
-        <span className="absolute top-0 left-0 -mt-3 ml-3 bg-yellow-400 text-yellow-900 text-xs font-semibold px-3 py-1 rounded-full z-10">
-          Recently added
-        </span>
-      )}
-
       {showType === 1 && (
         <>
+          {isRecentlyAdded && (
+            <span className="absolute top-0 left-0 px-4 m-2 py-1 bg-red-500 text-white text-xs font-semibold rounded-full z-10">
+              New
+            </span>
+          )}
           <div className="w-[250px] cursor-pointer">
             <div className="aspect-video w-full mb-3 flex items-center justify-center ">
               <img

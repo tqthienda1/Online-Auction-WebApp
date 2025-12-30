@@ -17,7 +17,7 @@ const AdminCategoriesPage = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-  const [deleteError, setDeleteError] = useState(null);
+  const [warning, setWarning] = useState(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -87,9 +87,11 @@ const AdminCategoriesPage = () => {
         signal: controller.signal,
       });
       setCategories(res.data.data);
+      console.log(categories);
     } catch (error) {
-      console.error(error);
-      setError(error);
+      if (error?.response?.data?.message === "Category already exists") {
+        setWarning("Category has already exists");
+      }
     } finally {
       setIsLoading(false);
       setOpenForm(null);
@@ -141,7 +143,8 @@ const AdminCategoriesPage = () => {
       const res = await http.get("categories/tree", {
         signal: controller.signal,
       });
-      setCategories(res.data);
+      console.log(res.data);
+      setCategories(res.data.data);
     } catch (error) {
       console.error(error);
       setError(error);
@@ -154,8 +157,9 @@ const AdminCategoriesPage = () => {
 
   const handleDeleteCategory = async (id) => {
     try {
+      console.log("aaaaa");
       setIsLoading(true);
-      setDeleteError(null);
+      setWarning(null);
 
       await http.delete(`/categories/${id}`);
 
@@ -173,15 +177,13 @@ const AdminCategoriesPage = () => {
       const code = error?.response?.data?.code;
 
       if (code === "CATEGORY_HAS_CHILDREN") {
-        setDeleteError(
+        setWarning(
           "This category cannot be deleted because it has subcategories."
         );
       }
 
       if (code === "CATEGORY_HAS_PRODUCTS") {
-        setDeleteError(
-          "This category cannot be deleted because it has products."
-        );
+        setWarning("This category cannot be deleted because it has products.");
       }
     } finally {
       setIsLoading(false);
@@ -189,7 +191,7 @@ const AdminCategoriesPage = () => {
   };
 
   const handleCancel = () => {
-    setDeleteError(null);
+    setWarning(null);
   };
 
   return (
@@ -248,8 +250,8 @@ const AdminCategoriesPage = () => {
             />
           )}
 
-          {deleteError && (
-            <DeleteWarning content={deleteError} onCancel={handleCancel} />
+          {warning && (
+            <DeleteWarning content={warning} onCancel={handleCancel} />
           )}
         </div>
       )}
