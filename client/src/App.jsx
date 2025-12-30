@@ -1,5 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { guestRoutes, userRoutes, bidderRoutes, sellerRoutes, adminRoutes } from "./routes";
+import {
+  guestRoutes,
+  userRoutes,
+  bidderRoutes,
+  sellerRoutes,
+  adminRoutes,
+} from "./routes";
 import BidderRoute from "./routes/BidderRoute";
 import SellerRoute from "./routes/SellerRoute";
 import AdminRoute from "./routes/AdminRoute";

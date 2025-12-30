@@ -112,8 +112,8 @@ export const updateProduct = async (req, res) => {
     const { descriptions } = req.body;
     const userId = req.user?.id;
 
-    if (!Array.isArray(descriptions)) {
-      return res.status(400).json({ message: "Descriptions must be an array" });
+    if (!descriptions) {
+      return res.status(400).json({ message: "Descriptions are required." });
     }
 
     if (!id) {
@@ -126,7 +126,7 @@ export const updateProduct = async (req, res) => {
       descriptions
     );
 
-    res.status(200).json({ message: "Update product successful." });
+    res.status(200).json(product);
   } catch (err) {
     console.error("Update product is fail:", err);
     return res.status(500).json({ message: "Internal server error" });
@@ -194,6 +194,23 @@ export const getProductAuction = async (req, res) => {
     });
   } catch (err) {
     console.log("Get product auction failed", err.message);
+    return res
+      .status(err.status || 500)
+      .json({ message: err.message || "Internal server error" });
+  }
+};
+
+export const getProductDescriptions = async (req, res) => {
+  try {
+    const productId = req.params.id;
+
+    const descriptions = await productService.getProductDescriptions(productId);
+
+    return res.status(200).json({
+      descriptions,
+    });
+  } catch (err) {
+    console.log("Get product descriptions failed", err.message);
     return res
       .status(err.status || 500)
       .json({ message: err.message || "Internal server error" });

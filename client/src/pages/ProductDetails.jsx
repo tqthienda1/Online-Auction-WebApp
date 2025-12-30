@@ -13,7 +13,9 @@ import QuestionBox from "@/components/QuestionBox.jsx";
 import { http } from "../lib/utils.js";
 import { useParams } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner.jsx";
-import { Signal } from "lucide-react";
+import NotFoundPage from "./NotFoundPage.jsx";
+import { useProductPermission } from "@/hooks/useProductPermission.js";
+import { useAuth } from "@/context/AuthContext.jsx";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -22,23 +24,22 @@ const ProductDetails = () => {
   const [auction, setAuction] = useState(null);
   const [bidHistory, setBidHistory] = useState([]);
   const [question, setQuestion] = useState("");
-
+  const { user } = useAuth();
+  const [curFrame, setCurFrame] = useState("description");
+  const [isLoadingComment, setIsLoadingComment] = useState(false);
+  const { canBid, canEditDescription } = useProductPermission(user, product);
+  const [descMessage, setDescMessage] = useState("");
   const [loading, setLoading] = useState({
     product: true,
     auction: true,
     bidHistory: false,
     comment: true,
   });
-
-  const [isLoadingComment, setIsLoadingComment] = useState(false);
-
   const [error, setError] = useState({
     product: null,
     auction: null,
     bidHistory: null,
   });
-
-  const [curFrame, setCurFrame] = useState("description");
 
   const fetchProduct = useCallback(async () => {
     try {
@@ -76,10 +77,6 @@ const ProductDetails = () => {
     }
   }, [id]);
 
-  const handleBidSuccess = async () => {
-    await Promise.all([fetchAuction(), fetchBidHistory()]);
-  };
-
   useEffect(() => {
     fetchProduct();
     fetchAuction();
@@ -105,14 +102,18 @@ const ProductDetails = () => {
   }
 
   if (error.product) {
-    return <div className="text-center text-red-500">{error.product}</div>;
+    return NotFoundPage();
   }
 
   if (!product) return null;
 
+  const handleBidSuccess = async () => {
+    await Promise.all([fetchAuction(), fetchBidHistory()]);
+  };
+
   const handleSubmit = async () => {
     const controller = new AbortController();
-    console.log(question);
+
     try {
       setIsLoadingComment(true);
       const newComment = await http.post(
@@ -138,6 +139,31 @@ const ProductDetails = () => {
     }
   };
 
+  const handleUpdateDescription = async (htmlContent) => {
+    if (!canEditDescription) return;
+    if (!htmlContent || htmlContent.trim() === "") return;
+
+    try {
+      setDescMessage("Description adding...");
+
+      const res = await http.put(`/products/${id}`, {
+        descriptions: htmlContent,
+      });
+
+      setProduct((prev) => ({
+        ...prev,
+        productDescriptions: res.data,
+      }));
+
+      setDescMessage("Description added successfully");
+
+      setTimeout(() => setDescMessage(null), 3000);
+    } catch (err) {
+      console.error("Failed to update description:", err);
+      setDescMessage("Failed to add description");
+    }
+  };
+
   return (
     <div className="overflow-hidden" data-aos="fade-up">
       <div className="p-10" data-aos="fade-down">
@@ -146,13 +172,22 @@ const ProductDetails = () => {
       <ProductTitle nameMain={product.productName} isSold={product.sold} />
 
       <div className="flex" data-aos="fade-up">
-        <div className="flex flex-col w-3/4 ">
+        <div
+          className={`flex flex-col ${
+            canEditDescription ? "w-3/4 mx-auto" : "w-3/4"
+          }   `}
+        >
           <DetailNavBar
             frame={curFrame}
             onFrameChange={setCurFrame}
           ></DetailNavBar>
           {curFrame === "description" && (
-            <ProductDescription descriptions={product.productDescriptions} />
+            <ProductDescription
+              descriptions={product.productDescriptions}
+              editable={canEditDescription}
+              onSave={handleUpdateDescription}
+              message={descMessage}
+            />
           )}
 
           {curFrame === "bidhistory" && (
@@ -163,18 +198,20 @@ const ProductDetails = () => {
             />
           )}
         </div>
-        <ProductBidPlace
-          productId={product.id}
-          startTime={product.startTime}
-          endTime={product.endTime}
-          currentPrice={auction?.currentPrice}
-          buyNowPrice={product.buyNowPrice}
-          bidStep={product.bidStep}
-          seller={product.seller}
-          bidder={auction?.highestBidder}
-          onBidSuccess={handleBidSuccess}
-          isSold={product.sold}
-        />
+        {canBid && (
+          <ProductBidPlace
+            productId={product.id}
+            startTime={product.startTime}
+            endTime={product.endTime}
+            currentPrice={auction?.currentPrice}
+            buyNowPrice={product.buyNowPrice}
+            bidStep={product.bidStep}
+            seller={product.seller}
+            bidder={auction?.highestBidder}
+            onBidSuccess={handleBidSuccess}
+            isSold={product.sold}
+          />
+        )}
       </div>
       <div data-aos="zoom-in">
         {isLoadingComment ? (

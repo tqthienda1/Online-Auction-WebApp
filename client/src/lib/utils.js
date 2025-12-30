@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import axios from "axios";
-import { supabase } from "./supabaseClient"; // 👈 thêm dòng này
+import { supabase } from "./supabaseClient";
 import { getAccessToken } from "@/lib/authToken";
 
 export function cn(...inputs) {
