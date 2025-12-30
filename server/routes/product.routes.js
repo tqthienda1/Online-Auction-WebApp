@@ -26,6 +26,7 @@ router.get("/", getProducts);
 router.get("/:id", getProductById);
 router.get("/:id/bid-history", getProductBidHistory);
 router.get("/:id/auction", getProductAuction);
+// router.get("/search");
 
 // seller
 router.post(
@@ -43,8 +44,4 @@ router.delete(
   deleteProduct
 );
 
-// admin
-// router.delete("/", deleteProduct);
-
-//router.post("/", mockUser, upload.array("productImages"), addProduct);
 export default router;
