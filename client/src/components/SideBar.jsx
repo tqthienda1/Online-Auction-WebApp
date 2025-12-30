@@ -6,6 +6,8 @@ import ColorFilter from "./ColorFilter";
 import ConditionsFilter from "./ConditionsFilter";
 import { useState } from "react";
 import OrderBy from "./OrderBy";
+import AddProductButton from "./AddProductButton";
+import { useAuth } from "@/context/AuthContext";
 
 const SideBar = ({
   onPriceChange,
@@ -13,6 +15,7 @@ const SideBar = ({
   onSortChange,
   onOrderChange,
 }) => {
+  const { user } = useAuth();
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const handleChange = (value) => {
     setPriceRange(value);
@@ -39,6 +42,8 @@ const SideBar = ({
           onChange={handleChange}
           onViewResult={onViewResult}
         />
+
+        {user?.data.role === "SELLER" && <AddProductButton />}
       </aside>
     </>
   );

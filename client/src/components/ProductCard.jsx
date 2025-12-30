@@ -1,6 +1,7 @@
 import React from "react";
 import { RiAuctionLine } from "react-icons/ri";
 import { BsFillCartCheckFill } from "react-icons/bs";
+import { maskUsername } from "@/helper/maskUser";
 
 const RECENTLY_ADDED_MINUTES = 30;
 
@@ -57,7 +58,7 @@ const ProductCard = ({ product, showType }) => {
               <p className="flex justify-between">
                 <span>Highest bidder:</span>
                 <span className="font-medium">
-                  {product.highestBidder?.username || "None"}
+                  {maskUsername(product.highestBidder?.username) || "None"}
                 </span>
               </p>
               <p className="flex justify-between">

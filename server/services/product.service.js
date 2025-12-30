@@ -50,7 +50,7 @@ export const getProducts = async ({
             lte: maxPrice ? Number(maxPrice) : undefined,
           }
         : undefined,
-    sold: sold !== undefined ? sold : undefined,
+    sold: false,
   };
 
   const orderBy =

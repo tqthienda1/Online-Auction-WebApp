@@ -29,6 +29,10 @@ const ProductDetails = () => {
   const [isLoadingComment, setIsLoadingComment] = useState(false);
   const { canBid, canEditDescription } = useProductPermission(user, product);
   const [descMessage, setDescMessage] = useState("");
+  const [text, setText] = useState("");
+  const [parent, setParent] = useState(null);
+  const { user } = useAuth();
+
   const [loading, setLoading] = useState({
     product: true,
     auction: true,
@@ -92,6 +96,11 @@ const ProductDetails = () => {
     AOS.init({ duration: 800, once: true });
   }, []);
 
+  useEffect(() => {
+    console.log(product?.comments);
+    console.log(product);
+  }, [product?.comments]);
+
   if (loading.product) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center overflow-hidden">
@@ -113,29 +122,26 @@ const ProductDetails = () => {
 
   const handleSubmit = async () => {
     const controller = new AbortController();
-
     try {
       setIsLoadingComment(true);
       const newComment = await http.post(
         `/comments/products/${id}`,
         {
-          content: question,
+          content: text,
+          parentID: parent,
         },
         {
           signal: controller.signal,
         }
       );
-
-      setProduct((prev) => ({
-        ...prev,
-        comments: [...prev.comments, newComment],
-      }));
+      const res = await http.get(`/products/${id}`);
+      setProduct(res.data.data);
     } catch (error) {
       console.error(error);
       setError(error);
     } finally {
       setIsLoadingComment(false);
-      setQuestion("");
+      setText("");
     }
   };
 
@@ -220,14 +226,24 @@ const ProductDetails = () => {
             <p className="mt-4 font-medium">Loading</p>
           </div>
         ) : (
-          <CommentSection type="ask" comments={product.comments} />
+          <CommentSection
+            type="ask"
+            comments={product.comments}
+            setParent={setParent}
+            onReply={handleSubmit}
+            user={user.data.role}
+            replyText={text}
+            setReplyText={setText}
+          />
         )}
 
-        <QuestionBox
-          onSubmit={handleSubmit}
-          question={question}
-          setQuestion={setQuestion}
-        />
+        {user?.data.role === "BIDDER" && (
+          <QuestionBox
+            onSubmit={handleSubmit}
+            question={text}
+            setQuestion={setText}
+          />
+        )}
       </div>
 
       <div
