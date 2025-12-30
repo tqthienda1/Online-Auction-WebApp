@@ -133,8 +133,6 @@ const UserProfile = () => {
 
         res[0].data.upgrade = res[1].data;
 
-        console.log(res[0].data);
-
         setInfo(res[0].data);
       } catch (error) {
         console.log(error.message);
