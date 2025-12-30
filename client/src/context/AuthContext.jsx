@@ -8,7 +8,6 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [roleLoading, setRoleLoading] = useState(false);
 
   useEffect(() => {
     const {
@@ -17,16 +16,12 @@ export const AuthProvider = ({ children }) => {
       if (event === "INITIAL_SESSION") {
         setAccessToken(session.access_token);
         setUser(session.user);
-        setRoleLoading(true);
-        setLoading(false);
       }
 
       // 🔴 LOGOUT
       if (event === "SIGNED_OUT") {
         clearAccessToken();
         setUser(null);
-        setLoading(false);
-        setRoleLoading(false);
         return;
       }
 
@@ -37,8 +32,6 @@ export const AuthProvider = ({ children }) => {
         if (session) {
           return;
         }
-        setRoleLoading(true);
-        setLoading(false);
       }
     });
 
@@ -47,7 +40,7 @@ export const AuthProvider = ({ children }) => {
 
   // 🔹 FETCH ROLE
   useEffect(() => {
-    if (!user?.id || !roleLoading) return;
+    if (!user?.id) return;
 
     const fetchRole = async () => {
       const { data } = await supabase
@@ -61,14 +54,14 @@ export const AuthProvider = ({ children }) => {
         data,
       }));
 
-      setRoleLoading(false);
+      setLoading(false);
     };
 
     fetchRole();
-  }, [user?.id, roleLoading]);
+  }, [user?.id]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, roleLoading }}>
+    <AuthContext.Provider value={{ user, loading }}>
       {children}
     </AuthContext.Provider>
   );

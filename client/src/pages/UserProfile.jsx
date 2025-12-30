@@ -5,6 +5,7 @@ import ProfileTab from "../components/ProfileTab";
 import ProductList from "@/components/ProductList";
 import { http } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
+import { useAuth } from "@/context/AuthContext";
 
 const MOCK_PRODUCTS = [
   {
@@ -118,26 +119,23 @@ const MOCK_PRODUCTS = [
 
 const UserProfile = () => {
   const [tab, setTab] = useState("love");
-  const [loading, setLoading] = useState(true);
   const [info, setInfo] = useState(null);
+  const { user, loading } = useAuth();
+  const [loadUpgrade, setLoadUpgrade] = useState(true);
 
   useEffect(() => {
     const controller = new AbortController();
     const loadUserInfo = async () => {
-      setLoading(true);
       try {
-        const res = await Promise.all([
-          http.get("/user/me"),
-          http.get("/upgrade/me"),
-        ]);
+        const res = await http.get("/upgrade/me");
 
-        res[0].data.upgrade = res[1].data;
+        user.data.upgrade = res.data;
 
-        setInfo(res[0].data);
+        setInfo(user.data);
       } catch (error) {
         console.log(error.message);
       } finally {
-        setLoading(false);
+        setLoadUpgrade(false);
       }
     };
 
@@ -146,19 +144,23 @@ const UserProfile = () => {
     return () => controller.abort();
   }, []);
 
+  useEffect(() => {
+    console.log(info);
+  }, [info]);
+
   const wishlistItems = MOCK_PRODUCTS.slice(0, 2);
   const biddingItems = MOCK_PRODUCTS.slice(2, 4);
   const wonAuctions = MOCK_PRODUCTS.slice(4, 6);
 
   return (
     <>
-      {loading && (
+      {(loading || loadUpgrade) && (
         <div className="flex flex-col justify-center p-4 md:p-5 text-center h-full">
           <Spinner className="size-8 w-full text-yellow-500" />
           <h3 className="font-semibold my-6 text-body">Loading</h3>
         </div>
       )}
-      {!loading && (
+      {!loading && !loadUpgrade && (
         <div className="flex flex-col items-center justify-center">
           <ProfileInfo info={info} setInfo={setInfo} />
           <ProfileReviews />
