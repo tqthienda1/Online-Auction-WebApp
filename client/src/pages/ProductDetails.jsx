@@ -165,13 +165,15 @@ const ProductDetails = () => {
         </div>
         <ProductBidPlace
           productId={product.id}
-          endingDate={product.endTime}
+          startTime={product.startTime}
+          endTime={product.endTime}
           currentPrice={auction?.currentPrice}
           buyNowPrice={product.buyNowPrice}
           bidStep={product.bidStep}
           seller={product.seller}
           bidder={auction?.highestBidder}
           onBidSuccess={handleBidSuccess}
+          isSold={product.sold}
         />
       </div>
       <div data-aos="zoom-in">

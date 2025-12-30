@@ -15,7 +15,7 @@ const ProductDescription = ({ descriptions }) => {
     const el = contentRef.current;
 
     requestAnimationFrame(() => {
-      const overflow = el.scrollHeight > el.clientHeight;
+      const overflow = el.scrollHeight > COLLAPSED_HEIGHT;
       setIsOverflowing(overflow);
     });
   }, [descriptions]);
@@ -55,7 +55,7 @@ const ProductDescription = ({ descriptions }) => {
               onClick={() => setExpanded(!expanded)}
               className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-yellow-400 transition"
             >
-              {expanded ? "Thu gọn" : "Xem thêm"}
+              {expanded ? "View less" : "View More"}
               <span
                 className={`transition-transform ${
                   expanded ? "rotate-180" : ""
