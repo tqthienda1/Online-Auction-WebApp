@@ -9,7 +9,6 @@ import "swiper/css/navigation";
 
 const HomeProductCarousel = ({ heading, product }) => {
   const swiperID = useId();
-  const [bidIcon, setBidIcon] = useState(false);
 
   return (
     <div className="flex flex-col items-center m-30">
@@ -33,7 +32,10 @@ const HomeProductCarousel = ({ heading, product }) => {
           {product.map((item, index) => {
             const productInfo = [
               { label: "Current price", key: item.currentPrice },
-              { label: "Highest bidder", key: item.highestBidder },
+              {
+                label: "Highest bidder",
+                key: item.highestBidder?.username ?? "None",
+              },
               { label: "Buy now", key: item.buyNowPrice },
               { label: "Date added", key: item.startTime },
               { label: "Date ended", key: item.endTime },

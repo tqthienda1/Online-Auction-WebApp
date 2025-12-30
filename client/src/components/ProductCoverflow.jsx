@@ -45,7 +45,7 @@ const ProductCoverflow = ({ products }) => {
     setProductInfo([
       { label: "Name", key: product.productName },
       { label: "Current price", key: product.currentPrice },
-      { label: "Highest bidder", key: product.highestBidder },
+      { label: "Highest bidder", key: product.highestBidder ?? "None" },
       { label: "Buy now", key: product.buyNowPrice },
       { label: "Date added", key: product.startTime },
       { label: "Time ends", key: product.endTime },
@@ -95,13 +95,14 @@ const ProductCoverflow = ({ products }) => {
         }}
         onInit={(swiper) => {
           const activeSlide = swiper.slides[swiper.activeIndex];
-
           const product = products[swiper.activeIndex];
-
           setProductInfo([
             { label: "Name", key: product.productName },
             { label: "Current price", key: product.currentPrice },
-            { label: "Highest bidder", key: product.highestBidder },
+            {
+              label: "Highest bidder",
+              key: product.highestBidder?.username ?? "None",
+            },
             { label: "Buy now", key: product.buyNowPrice },
             { label: "Date added", key: product.startTime },
             { label: "Time ends", key: product.endTime },
