@@ -52,13 +52,13 @@ export const AuthProvider = ({ children }) => {
     const fetchRole = async () => {
       const { data } = await supabase
         .from("User")
-        .select("role")
+        .select("*")
         .eq("supabaseId", user.id)
         .maybeSingle();
 
       setUser((prev) => ({
         ...prev,
-        roleUser: data?.role ?? "BIDDER",
+        data,
       }));
 
       setRoleLoading(false);
