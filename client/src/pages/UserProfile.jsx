@@ -148,9 +148,44 @@ const UserProfile = () => {
     console.log(info);
   }, [info]);
 
-  const wishlistItems = MOCK_PRODUCTS.slice(0, 2);
+  const [wishlistItems, setWishlistItems] = useState([]);
   const biddingItems = MOCK_PRODUCTS.slice(2, 4);
   const wonAuctions = MOCK_PRODUCTS.slice(4, 6);
+
+  useEffect(() => {
+    if (loading || !user?.id) return; // wait for auth
+
+    let mounted = true;
+
+    const loadWatchlist = async () => {
+      try {
+        const res = await http.get("/watchlist");
+
+        console.debug("/watchlist response:", res?.data);
+
+        // API responds with { data: products, ... }
+        if (mounted) setWishlistItems(res.data?.data || []);
+      } catch (err) {
+        // If request was cancelled by axios it has code 'ERR_CANCELED' or message 'canceled'
+        const isCanceled = err?.code === "ERR_CANCELED" || /canceled/i.test(err?.message || "");
+        if (isCanceled) {
+          console.debug("Watchlist request canceled");
+          return;
+        }
+
+        console.error("Failed to load watchlist:", err?.response?.data || err.message || err);
+
+        // If unauthorized or forbidden, ensure empty list and optionally show UI later
+        if (mounted) setWishlistItems([]);
+      }
+    };
+
+    loadWatchlist();
+
+    return () => {
+      mounted = false;
+    };
+  }, [loading, user]);
 
   return (
     <>
@@ -162,7 +197,13 @@ const UserProfile = () => {
       )}
       {!loading && !loadUpgrade && (
         <div className="flex flex-col items-center justify-center">
-          <ProfileInfo info={info} setInfo={setInfo} />
+          {info ? (
+            <ProfileInfo info={info} setInfo={setInfo} />
+          ) : (
+            <div className="w-3/4 p-6 bg-white rounded-lg border border-gray-200 text-center">
+              <p className="text-gray-500">User information not available.</p>
+            </div>
+          )}
           <ProfileReviews />
           <ProfileTab tab={tab} setTab={setTab} />
           <div className="my-10 w-3/4 ">

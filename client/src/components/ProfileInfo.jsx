@@ -48,7 +48,7 @@ const ProfileInfo = ({ info, setInfo }) => {
             Upgrade to seller
           </button>
         )}
-        {info.role === "BIDDER" && info?.upgrade.status === "PENDING" && (
+        {info.role === "BIDDER" && info?.upgrade?.status === "PENDING" && (
           <button className="font-semibold text-white border border-gray-200 py-2 px-5 rounded-lg items-center bg-yellow-400 opacity-50 cursor-not-allowed">
             Your request is pending
           </button>
