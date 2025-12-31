@@ -14,7 +14,9 @@ export const AuthProvider = ({ children }) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!session) {
+        setUser(null);
         setLoading(false);
+        clearAccessToken();
         return;
       }
       if (event === "INITIAL_SESSION") {
@@ -24,6 +26,7 @@ export const AuthProvider = ({ children }) => {
 
       // 🔴 LOGOUT
       if (event === "SIGNED_OUT") {
+        console.log(event);
         clearAccessToken();
         setUser(null);
         return;
