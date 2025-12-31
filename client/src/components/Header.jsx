@@ -9,9 +9,9 @@ import { logOut } from "@/services/auth.service";
 import { useAuth } from "@/context/AuthContext";
 
 const Header = () => {
-  const { user, loading, roleLoading } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (loading || roleLoading) return null;
+  if (loading) return null;
 
   const handleLogout = async () => {
     try {
