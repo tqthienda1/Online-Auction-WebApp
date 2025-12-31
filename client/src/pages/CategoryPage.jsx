@@ -78,6 +78,47 @@ const CategoryPage = () => {
     setPage(1);
   };
 
+  const handleDeleteFromWatchList = async (id) => {
+    console.log(id);
+    const controller = new AbortController();
+    try {
+      setIsLoading(true);
+      await http.delete(`/watchlist/${id}`, { signal: controller.signal });
+
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, isLiked: false } : p))
+      );
+    } catch (error) {
+      console.error(error);
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddToWatchList = async (id) => {
+    console.log(id);
+    const controller = new AbortController();
+    try {
+      setIsLoading(true);
+      await http.post(
+        `/watchlist`,
+        { productId: id },
+        { signal: controller.signal }
+      );
+
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, isLiked: true } : p))
+      );
+      console.log(products);
+    } catch (error) {
+      console.error(error);
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       {!error && (
@@ -101,7 +142,12 @@ const CategoryPage = () => {
               ) : (
                 <>
                   <div className="grow mb-4">
-                    <ProductList showType={1} products={products} />
+                    <ProductList
+                      showType={1}
+                      products={products}
+                      onRemoveFromWatchList={handleDeleteFromWatchList}
+                      onAddToWatchList={handleAddToWatchList}
+                    />
                   </div>
 
                   <AdminPagination
