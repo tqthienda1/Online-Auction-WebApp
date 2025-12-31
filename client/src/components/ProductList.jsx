@@ -15,7 +15,7 @@ const ProductList = ({ products, showType }) => {
 
   return (
     <section>
-      {isHorizontal ? (
+      {/* {isHorizontal ? (
         <div className="flex gap-6 overflow-x-auto py-2 -mx-2 px-2">
           {products.map((product) => (
             <Link
@@ -27,15 +27,12 @@ const ProductList = ({ products, showType }) => {
             </Link>
           ))}
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <Link key={product.id} to={`/products/${product.id}`}>
-              <ProductCard product={product} showType={showType} />
-            </Link>
-          ))}
-        </div>
-      )}
+      ) : ( */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {products.map((product) => (
+          <ProductCard key={product.id} product={product} showType={showType} />
+        ))}
+      </div>
     </section>
   );
 };

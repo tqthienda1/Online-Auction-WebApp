@@ -2,6 +2,7 @@ import prisma from "../prismaClient.js";
 import { addDescription } from "./productDescription.service.js";
 import { addProductImages } from "./productImages.service.js";
 import { uploadFilesToSupabase } from "../services/supabase.service.js";
+import { checkWatchlist } from "./watchlist.service.js";
 
 export const getProducts = async ({
   page,
@@ -14,6 +15,7 @@ export const getProducts = async ({
   order,
   sellerId,
   sold,
+  user,
 }) => {
   let categoryCondition = undefined;
 
@@ -76,10 +78,13 @@ export const getProducts = async ({
   ]);
 
   return {
-    products: products.map((p) => ({
-      ...p,
-      category: p.category?.name ?? null,
-    })),
+    products: await Promise.all(
+      products.map(async (p) => ({
+        ...p,
+        category: p.category?.name ?? null,
+        isLiked: await checkWatchlist(user, p.id),
+      }))
+    ),
     total,
   };
 };

@@ -49,3 +49,58 @@ export const authMiddleware = async (req, res, next) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const optionalAuthMiddleware = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    // Guest → không có token
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      req.user = null;
+      return next();
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    const { data, error } = await supabase.auth.getUser(token);
+
+    if (error || !data.user) {
+      req.user = null;
+      return next();
+    }
+
+    const supabaseUser = data.user;
+
+    let dbUser = await prisma.user.findUnique({
+      where: { supabaseId: supabaseUser.id },
+    });
+
+    if (!dbUser) {
+      dbUser = await prisma.user.create({
+        data: {
+          supabaseId: supabaseUser.id,
+          username: supabaseUser.email,
+          role: "BIDDER",
+          ratingPos: 0,
+          ratingNeg: 0,
+          emailVerified: true,
+        },
+      });
+    }
+
+    req.user = {
+      supabase: supabaseUser,
+      db: dbUser,
+      id: dbUser.id,
+      supabaseId: supabaseUser.id,
+      role: dbUser.role,
+      email: supabaseUser.email,
+    };
+
+    next();
+  } catch (err) {
+    console.error("Optional auth error:", err);
+    req.user = null;
+    next();
+  }
+};

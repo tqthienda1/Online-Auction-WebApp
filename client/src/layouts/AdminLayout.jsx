@@ -14,6 +14,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import logo from "../../public/image/logo.png";
+import { logOut } from "@/services/auth.service";
 
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
@@ -24,6 +25,14 @@ const AdminLayout = ({ children }) => {
     { to: "/admin/users", label: "Users", icon: Users },
     { to: "/admin/system", label: "System", icon: TrendingUp },
   ];
+
+  const handleLogout = async () => {
+    try {
+      await logOut();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="flex h-screen text-brand">
@@ -84,7 +93,7 @@ const AdminLayout = ({ children }) => {
                 className="text-destructive"
                 onClick={() => navigate("/login")}
               >
-                <LogOut className="h-5 w-5" />
+                <LogOut onClick={handleLogout} className="h-5 w-5" />
               </Button>
             </div>
           </div>

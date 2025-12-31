@@ -38,6 +38,8 @@ const CategoryPage = () => {
           }
         );
 
+        console.log(data.data.data);
+
         setTotalPages(data.data.totalPages);
         setProducts(data.data.data);
       } catch (error) {
