@@ -193,11 +193,13 @@ const ProductCard = ({ product, showType }) => {
       {showType === 4 && (
         <div className="w-[250px] cursor-pointer">
           <div className="flex flex-col aspect-video w-full items-center justify-center">
-            <img
-              src={product.productAvt}
-              alt={product.productName}
-              className="max-h-40 max-w-full object-contain"
-            />
+            <Link to={`/buyer/payment/${product.id}`}>
+              <img
+                src={product.productAvt}
+                alt={product.productName}
+                className="max-h-40 max-w-full object-contain"
+              />
+            </Link>
 
             <h3 className="text-center font-semibold text-gray-800 mb-1 truncate mt-5">
               {product.productName}

@@ -21,6 +21,8 @@ model User {
   bids               Bid[]            @relation("Bidder")
   BidHistory         BidHistory[]
   comments           Comment[]        @relation("UserComment")
+  receivedMessages   Message[]        @relation("MessageReceiver")
+  sentMessages       Message[]        @relation("MessageSender")
   boughtOrders       Order[]          @relation("Buyer")
   soldOrders         Order[]          @relation("Seller")
   highestBidProducts Product[]        @relation("HighestBidder")
@@ -29,14 +31,12 @@ model User {
   givenRatings       Rating[]         @relation("GivenRatings")
   upgradeRequest     UpgradeRequest[] @relation("UserUpgradeRequest")
   watchList          WatchList[]      @relation("UserWatchList")
-  sentMessages       Message[]        @relation("MessageSender")
-  receivedMessages   Message[]        @relation("MessageReceiver")
 }
 
 model Product {
-  id                  String               @id @default(uuid())
-  sellerID            String               @db.Uuid
-  highestBidderID     String?              @db.Uuid
+  id                  String                   @id @default(uuid())
+  sellerID            String                   @db.Uuid
+  highestBidderID     String?                  @db.Uuid
   productName         String
   productAvt          String
   categoryID          String
@@ -46,21 +46,22 @@ model Product {
   currentPrice        Int?
   startTime           DateTime
   endTime             DateTime
-  autoExtend          Boolean              @default(false)
-  sold                Boolean              @default(false)
-  ratingRequired      Boolean              @default(false)
-  bids                Bid[]                @relation("BidProduct")
+  autoExtend          Boolean                  @default(false)
+  sold                Boolean                  @default(false)
+  ratingRequired      Boolean                  @default(false)
+  search_vector       Unsupported("tsvector")?
+  bids                Bid[]                    @relation("BidProduct")
   BidHistory          BidHistory[]
-  comments            Comment[]            @relation("ProductComment")
-  order               Order?               @relation("OrderProduct")
-  category            Category             @relation("ProductCategory", fields: [categoryID], references: [id])
-  highestBidder       User?                @relation("HighestBidder", fields: [highestBidderID], references: [id], onDelete: Cascade)
-  seller              User                 @relation("ProductSeller", fields: [sellerID], references: [id], onDelete: Cascade)
-  productDescriptions ProductDescription[] @relation("ProductDescription")
-  productImages       ProductImage[]       @relation("ProductImages")
+  comments            Comment[]                @relation("ProductComment")
+  messages            Message[]                @relation("ProductMessages")
+  order               Order?                   @relation("OrderProduct")
+  category            Category                 @relation("ProductCategory", fields: [categoryID], references: [id])
+  highestBidder       User?                    @relation("HighestBidder", fields: [highestBidderID], references: [id], onDelete: Cascade)
+  seller              User                     @relation("ProductSeller", fields: [sellerID], references: [id], onDelete: Cascade)
+  productDescriptions ProductDescription[]     @relation("ProductDescription")
+  productImages       ProductImage[]           @relation("ProductImages")
   rating              Rating[]
-  inWatchList         WatchList[]          @relation("ProductWatchList")
-  messages            Message[]            @relation("ProductMessages")
+  inWatchList         WatchList[]              @relation("ProductWatchList")
 }
 
 model ProductDescription {
@@ -99,11 +100,11 @@ model Bid {
 }
 
 model WatchList {
-  userID    String  @db.Uuid
+  userID    String   @db.Uuid
   productID String
   createdAt DateTime @default(now())
-  product   Product @relation("ProductWatchList", fields: [productID], references: [id], onDelete: Cascade)
-  user      User    @relation("UserWatchList", fields: [userID], references: [id], onDelete: Cascade)
+  product   Product  @relation("ProductWatchList", fields: [productID], references: [id], onDelete: Cascade)
+  user      User     @relation("UserWatchList", fields: [userID], references: [id], onDelete: Cascade)
 
   @@id([userID, productID])
 }
@@ -137,6 +138,7 @@ model Order {
   shippingAddress String?
   paymentInvoice  String?
   shippingInvoice String?
+  createdAt       DateTime    @default(now())
   status          OrderStatus
   buyer           User        @relation("Buyer", fields: [buyerID], references: [id])
   product         Product     @relation("OrderProduct", fields: [productID], references: [id])
@@ -144,7 +146,7 @@ model Order {
 }
 
 model Rating {
-  productID String 
+  productID String
   raterID   String  @db.Uuid
   rateeID   String  @db.Uuid
   isPos     Boolean
@@ -157,7 +159,7 @@ model Rating {
 }
 
 model SystemParameter {
-  id                  String   @id @default(uuid())
+  id                  String @id @default(uuid())
   autoExtendThreshold Int
   autoExtendTime      Int
   recentlyProductTime Int
@@ -170,15 +172,13 @@ model Message {
   receiverID String   @db.Uuid
   content    String
   createdAt  DateTime @default(now())
-
-  product  Product @relation("ProductMessages", fields: [productID], references: [id], onDelete: Cascade)
-  sender   User    @relation("MessageSender", fields: [senderID], references: [id], onDelete: Cascade)
-  receiver User    @relation("MessageReceiver", fields: [receiverID], references: [id], onDelete: Cascade)
+  product    Product  @relation("ProductMessages", fields: [productID], references: [id], onDelete: Cascade)
+  receiver   User     @relation("MessageReceiver", fields: [receiverID], references: [id], onDelete: Cascade)
+  sender     User     @relation("MessageSender", fields: [senderID], references: [id], onDelete: Cascade)
 }
 
-
 model BidHistory {
-  id        String   @id  @default(uuid())
+  id        String   @id @default(uuid())
   productID String
   bidderID  String   @db.Uuid
   price     Int
@@ -186,7 +186,6 @@ model BidHistory {
   User      User     @relation(fields: [bidderID], references: [id], onDelete: Cascade)
   Product   Product  @relation(fields: [productID], references: [id], onDelete: Cascade)
 }
-
 
 enum Role {
   BIDDER

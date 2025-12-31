@@ -149,8 +149,8 @@ const UserProfile = () => {
   }, [info]);
 
   const [wishlistItems, setWishlistItems] = useState([]);
+  const [wonAuctions, setWonAuctions] = useState([]);
   const biddingItems = MOCK_PRODUCTS.slice(2, 4);
-  const wonAuctions = MOCK_PRODUCTS.slice(4, 6);
 
   useEffect(() => {
     if (loading || !user?.id) return; // wait for auth
@@ -180,7 +180,31 @@ const UserProfile = () => {
       }
     };
 
+    const loadWonAuctions = async () => {
+      try {
+        const res = await http.get("/orders/won/orders");
+
+        console.debug("/orders/won/orders response:", res?.data);
+
+        // API responds with { orders: products, total, ... }
+        if (mounted) setWonAuctions(res.data?.orders || []);
+      } catch (err) {
+        // If request was cancelled by axios it has code 'ERR_CANCELED' or message 'canceled'
+        const isCanceled = err?.code === "ERR_CANCELED" || /canceled/i.test(err?.message || "");
+        if (isCanceled) {
+          console.debug("Won auctions request canceled");
+          return;
+        }
+
+        console.error("Failed to load won auctions:", err?.response?.data || err.message || err);
+
+        // If unauthorized or forbidden, ensure empty list and optionally show UI later
+        if (mounted) setWonAuctions([]);
+      }
+    };
+
     loadWatchlist();
+    loadWonAuctions();
 
     return () => {
       mounted = false;
