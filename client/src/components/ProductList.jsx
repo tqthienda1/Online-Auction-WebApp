@@ -2,7 +2,12 @@ import React from "react";
 import ProductCard from "./ProductCard";
 import { Link } from "react-router-dom";
 
-const ProductList = ({ products, showType }) => {
+const ProductList = ({
+  products,
+  showType,
+  onAddToWatchList,
+  onRemoveFromWatchList,
+}) => {
   const isHorizontal = products && products.length > 4;
 
   if (!products || products.length === 0) {
@@ -12,6 +17,14 @@ const ProductList = ({ products, showType }) => {
       </section>
     );
   }
+
+  const handleRemoveFromWatchList = (id) => {
+    onRemoveFromWatchList(id);
+  };
+
+  const handleAddToWatchList = (id) => {
+    onAddToWatchList(id);
+  };
 
   return (
     <section>
@@ -30,7 +43,13 @@ const ProductList = ({ products, showType }) => {
       ) : ( */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} showType={showType} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            showType={showType}
+            onAddToWatchList={handleAddToWatchList}
+            onRemoveFromWatchList={handleRemoveFromWatchList}
+          />
         ))}
       </div>
     </section>
