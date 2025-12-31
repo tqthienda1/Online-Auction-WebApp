@@ -46,6 +46,8 @@ export const getProducts = async (req, res) => {
       sold,
     } = req.query;
 
+    const user = req.user?.id;
+
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
     const soldValue =
@@ -62,6 +64,7 @@ export const getProducts = async (req, res) => {
       order,
       sellerId,
       sold: soldValue,
+      user,
     });
 
     const result = products.map((p) => ({
