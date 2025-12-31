@@ -9,7 +9,12 @@ import { Link } from "react-router-dom";
 
 const RECENTLY_ADDED_MINUTES = 1;
 
-const ProductCard = ({ product, showType }) => {
+const ProductCard = ({
+  product,
+  showType,
+  onAddToWatchList,
+  onRemoveFromWatchList,
+}) => {
   const checkIsRecent = (timestamp) => {
     if (!timestamp) return false;
 
@@ -32,21 +37,27 @@ const ProductCard = ({ product, showType }) => {
       {showType === 1 && (
         <>
           <div className="flex items-center justify-between w-full relative">
-            <span>
+            <div>
               {isRecentlyAdded && (
                 <span className="absolute top-0 left-0 h-full px-4 flex justify-center items-center bg-red-500 text-white text-xs font-semibold rounded-full z-10">
                   New
                 </span>
               )}
-            </span>
+            </div>
             {product.isLiked === true ? (
-              <span className="h-full cursor-pointer">
-                <FaHeart className="text-2xl text-red-500" />
-              </span>
+              <button
+                className="h-full cursor-pointer"
+                onClick={() => onRemoveFromWatchList(product.id)}
+              >
+                <FaHeart className="text-2xl text-red-500 hover:text-red-600" />
+              </button>
             ) : (
-              <span className="h-full cursor-pointer">
-                <FaRegHeart className="text-2xl text-red-500" />
-              </span>
+              <button
+                className="h-full cursor-pointer"
+                onClick={() => onAddToWatchList(product.id)}
+              >
+                <FaRegHeart className="text-2xl text-red-500 hover:text-red-600" />
+              </button>
             )}
           </div>
           <div className="w-full">
