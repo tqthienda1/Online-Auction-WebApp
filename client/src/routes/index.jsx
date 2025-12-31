@@ -56,19 +56,10 @@ const bidderRoutes = [
     component: BuyerPaymentPage,
     layout: MainLayout,
   },
-  {
-    path: "/seller/payment/:productID",
-    component: SellerPaymentPage,
-    layout: MainLayout,
-  },
+
 ];
 
 const sellerRoutes = [
-  {
-    path: "/buyer/payment/:productID",
-    component: BuyerPaymentPage,
-    layout: MainLayout,
-  },
   {
     path: "/seller/payment/:productID",
     component: SellerPaymentPage,

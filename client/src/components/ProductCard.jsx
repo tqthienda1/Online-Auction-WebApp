@@ -3,6 +3,9 @@ import { RiAuctionLine } from "react-icons/ri";
 import { BsFillCartCheckFill } from "react-icons/bs";
 import { maskUsername } from "@/helper/maskUser";
 import { formattedDate } from "@/helper/formatDate";
+import { FaRegHeart } from "react-icons/fa6";
+import { FaHeart } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const RECENTLY_ADDED_MINUTES = 1;
 
@@ -12,12 +15,10 @@ const ProductCard = ({ product, showType }) => {
 
     const time = new Date(product.startTime);
     const now = new Date();
-    console.log(time, now);
     const diffMs = now - time;
     const diffMinutes = diffMs / (1000 * 60);
     const diffHours = diffMs / (1000 * 60 * 60);
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
-    console.log(diffDays);
 
     return diffDays < RECENTLY_ADDED_MINUTES;
   };
@@ -30,18 +31,33 @@ const ProductCard = ({ product, showType }) => {
     <div className="relative flex flex-col justify-between items-center border border-gray-200 rounded-lg shadow-sm bg-white p-4 transition-shadow hover:shadow-xl">
       {showType === 1 && (
         <>
-          {isRecentlyAdded && (
-            <span className="absolute top-0 left-0 px-4 m-2 py-1 bg-red-500 text-white text-xs font-semibold rounded-full z-10">
-              New
+          <div className="flex items-center justify-between w-full relative">
+            <span>
+              {isRecentlyAdded && (
+                <span className="absolute top-0 left-0 h-full px-4 flex justify-center items-center bg-red-500 text-white text-xs font-semibold rounded-full z-10">
+                  New
+                </span>
+              )}
             </span>
-          )}
-          <div className="w-[250px] cursor-pointer">
-            <div className="aspect-video w-full mb-3 flex items-center justify-center ">
-              <img
-                src={product.productAvt}
-                alt={product.productName}
-                className="max-h-40 max-w-[250px] object-contain"
-              />
+            {product.isLiked === true ? (
+              <span className="h-full cursor-pointer">
+                <FaHeart className="text-2xl text-red-500" />
+              </span>
+            ) : (
+              <span className="h-full cursor-pointer">
+                <FaRegHeart className="text-2xl text-red-500" />
+              </span>
+            )}
+          </div>
+          <div className="w-full">
+            <div className="aspect-video mb-3 flex items-center justify-center w-full">
+              <Link key={product.id} to={`/products/${product.id}`}>
+                <img
+                  src={product.productAvt}
+                  alt={product.productName}
+                  className="max-h-40 w-full object-contain"
+                />
+              </Link>
             </div>
 
             <div className="flex items-center justify-center text-gray-500 mb-2">
@@ -177,11 +193,13 @@ const ProductCard = ({ product, showType }) => {
       {showType === 4 && (
         <div className="w-[250px] cursor-pointer">
           <div className="flex flex-col aspect-video w-full items-center justify-center">
-            <img
-              src={product.productAvt}
-              alt={product.productName}
-              className="max-h-40 max-w-full object-contain"
-            />
+            <Link to={`/buyer/payment/${product.id}`}>
+              <img
+                src={product.productAvt}
+                alt={product.productName}
+                className="max-h-40 max-w-full object-contain"
+              />
+            </Link>
 
             <h3 className="text-center font-semibold text-gray-800 mb-1 truncate mt-5">
               {product.productName}

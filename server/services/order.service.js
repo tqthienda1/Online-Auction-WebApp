@@ -163,3 +163,45 @@ export const cancelOrder = async (productID) => {
   return updatedOrder
 }
 
+export const getWonOrdersByUser = async (userId, page = 1, limit = 10) => {
+  try {
+    const skip = (page - 1) * limit;
+
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        where: { buyerID: userId },
+        skip,
+        take: limit,
+        include: {
+          product: true, // Lấy toàn bộ thông tin product
+          seller: {
+            select: {
+              id: true,
+              username: true,
+            }
+          }
+        },
+        // Nếu database chưa có cột createdAt, hãy comment dòng orderBy này lại
+        // orderBy: { createdAt: 'desc' } 
+      }),
+      prisma.order.count({ where: { buyerID: userId } })
+    ]);
+
+    return {
+      // Sửa 'product.map' thành 'orders.map'
+      orders: orders.map(item => ({
+        ...item.product, // Trải dữ liệu sản phẩm ra ngoài
+        orderStatus: item.status, // Thêm trạng thái đơn hàng để FE xử lý
+        sellerName: item.seller?.username,
+        // addedToWonlistAt: item.createdAt // Chỉ mở nếu DB đã có cột này
+      })),
+      total
+    };
+  } catch (error) {
+    throw {
+      status: 500,
+      message: error.message || 'Failed to fetch won orders'
+    };
+  }
+};
+

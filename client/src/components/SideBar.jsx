@@ -22,8 +22,6 @@ const SideBar = ({
     onPriceChange(value);
   };
 
-  console.log(user);
-
   const handleSortChange = (value) => {
     onSortChange(value);
   };

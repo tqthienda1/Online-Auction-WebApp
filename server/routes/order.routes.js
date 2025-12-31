@@ -15,7 +15,6 @@ router.put(
   orderController.updateBuyerInfo
 );
 
-
 router.put('/:productID/shipping', upload.single("shippingInvoice"), orderController.uploadShipping)
 
 // Confirm received by buyer/seller
@@ -25,4 +24,6 @@ router.put('/:productID/receiveProduct', orderController.confirmProductReceived)
 // Cancel order
 router.delete('/:productID', orderController.cancelOrder)
 
+//get won orders
+router.get('/won/orders', orderController.getWonOrders)
 export default router

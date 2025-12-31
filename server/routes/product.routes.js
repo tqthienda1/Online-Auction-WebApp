@@ -1,5 +1,8 @@
 import express from "express";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
+import {
+  authMiddleware,
+  optionalAuthMiddleware,
+} from "../middlewares/authMiddleware.js";
 import { requireRole } from "../middlewares/requireRole.js";
 import {
   addProduct,
@@ -23,7 +26,7 @@ const mockUser = (req, res, next) => {
 };
 
 // public;
-router.get("/", getProducts);
+router.get("/", optionalAuthMiddleware, getProducts);
 router.get("/:id", getProductById);
 router.get("/:id/bid-history", getProductBidHistory);
 router.get("/:id/auction", getProductAuction);

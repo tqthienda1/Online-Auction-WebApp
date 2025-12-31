@@ -94,3 +94,15 @@ export const cancelOrder = async (req, res) => {
     return res.status(err.status || 500).json({ message: err.message || 'Internal server error' })
   }
 }
+
+export const getWonOrders = async (req, res) => {
+  try {
+    const userID = "4b7896cf-7206-4c8a-b246-adebedabfcdd"
+    //const { userID } = req.query 
+    if (!userID) return res.status(400).json({ message: 'userID required' })
+    const orders = await orderService.getWonOrdersByUser(userID)
+    return res.status(200).json(orders)
+  } catch (err) {
+    return res.status(err.status || 500).json({ message: err.message || 'Internal server error' })
+  }
+}
