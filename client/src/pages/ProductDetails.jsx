@@ -31,6 +31,8 @@ const ProductDetails = () => {
   const [descMessage, setDescMessage] = useState("");
   const [text, setText] = useState("");
   const [parent, setParent] = useState(null);
+  const [isWatched, setIsWatched] = useState(false);
+  const [watchlistLoading, setWatchlistLoading] = useState(false);
 
   const [loading, setLoading] = useState({
     product: true,
@@ -80,6 +82,18 @@ const ProductDetails = () => {
     }
   }, [id]);
 
+  const fetchWatchlistStatus = useCallback(async () => {
+    try {
+      setWatchlistLoading(true);
+      const res = await http.get(`/watchlist/check/${id}`);
+      setIsWatched(res.data.data.isLiked);
+    } catch (err) {
+      console.error("Failed to fetch watchlist status:", err);
+    } finally {
+      setWatchlistLoading(false);
+    }
+  }, [id]);
+
   useEffect(() => {
     fetchProduct();
     fetchAuction();
@@ -92,13 +106,12 @@ const ProductDetails = () => {
   }, [curFrame, bidHistory.length, fetchBidHistory]);
 
   useEffect(() => {
-    AOS.init({ duration: 800, once: true });
-  }, []);
+    fetchWatchlistStatus();
+  }, [fetchWatchlistStatus]);
 
   useEffect(() => {
-    console.log(product?.comments);
-    console.log(product);
-  }, [product?.comments]);
+    AOS.init({ duration: 800, once: true });
+  }, []);
 
   if (loading.product) {
     return (
@@ -169,6 +182,26 @@ const ProductDetails = () => {
     }
   };
 
+  const handleToggleWatchlist = async () => {
+    if (watchlistLoading) return;
+
+    try {
+      setWatchlistLoading(true);
+
+      if (isWatched) {
+        await http.delete(`/watchlist/${id}`);
+        setIsWatched(false);
+      } else {
+        await http.post("/watchlist", { productId: id });
+        setIsWatched(true);
+      }
+    } catch (err) {
+      console.error("Watchlist action failed", err);
+    } finally {
+      setWatchlistLoading(false);
+    }
+  };
+
   return (
     <div className="overflow-hidden" data-aos="fade-up">
       <div className="p-10" data-aos="fade-down">
@@ -215,6 +248,9 @@ const ProductDetails = () => {
             bidder={auction?.highestBidder}
             onBidSuccess={handleBidSuccess}
             isSold={product.sold}
+            isWatched={isWatched}
+            onToggleWatchlist={handleToggleWatchlist}
+            watchlistLoading={watchlistLoading}
           />
         )}
       </div>

@@ -3,6 +3,8 @@ import { getTimeRemaining } from "../helper/getTimeRemaining";
 import InputPrice from "./InputPrice";
 import SellerInformation from "./SellerInformation";
 import { http } from "../lib/utils.js";
+import { FaRegHeart } from "react-icons/fa";
+import { FaHeart } from "react-icons/fa";
 
 const ProductBidPlace = ({
   productId,
@@ -15,6 +17,9 @@ const ProductBidPlace = ({
   bidder,
   onBidSuccess,
   isSold,
+  isWatched,
+  watchlistLoading,
+  onToggleWatchlist,
 }) => {
   const [now, setNow] = useState(Date.now());
   const [timeLeft, setTimeLeft] = useState();
@@ -66,7 +71,6 @@ const ProductBidPlace = ({
     }
 
     const value = Number(bidValue);
-    console.log(value);
 
     if (Number.isNaN(value)) {
       setValidationError("Bid must be a number");
@@ -215,9 +219,29 @@ const ProductBidPlace = ({
 
           <button
             type="button"
-            className="w-[90%] h-10 bg-neutral-300 uppercase text-brand text-xl font-bold hover:bg-neutral-400 transition"
+            disabled={watchlistLoading}
+            onClick={onToggleWatchlist}
+            className={`w-[90%] h-10 bg-neutral-300 uppercase text-brand text-xl font-bold hover:bg-neutral-400 transition cursor-pointer 
+           ${
+             isWatched
+               ? "bg-red-400 text-white hover:bg-red-500"
+               : "bg-neutral-300 text-brand border-brand hover:bg-brand hover:text-black"
+           }
+            disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            Add to watch list
+            {watchlistLoading ? (
+              "Processing..."
+            ) : isWatched ? (
+              <div className="flex justify-center items-center gap-2">
+                <FaHeart />
+                Remove from watch list
+              </div>
+            ) : (
+              <div className="flex justify-center items-center gap-2">
+                <FaRegHeart />
+                Add to watch list
+              </div>
+            )}
           </button>
         </div>
       </div>
