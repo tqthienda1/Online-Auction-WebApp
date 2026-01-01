@@ -1,5 +1,6 @@
 import prisma from "../prismaClient.js";
 import { submitRating } from "../services/rating.service.js";
+import { getRatingForProduct } from "../services/rating.service.js";
 
 export const createOrToggleRating = async (req, res) => {
   try {
@@ -58,6 +59,20 @@ export const createOrToggleRating = async (req, res) => {
     }
     console.error(err.stack || err);
     return res.status(500).json({ message: err.message || "Server error" });
+  }
+};
+
+export const getRatingForCurrentUser = async (req, res) => {
+  try {
+    const { productID } = req.params;
+    const raterID = req.user.id;
+
+    const rating = await getRatingForProduct({ productID, raterID });
+    if (!rating) return res.status(200).json({ found: false });
+    return res.json({ found: true, rating });
+  } catch (err) {
+    console.error('Get rating failed:', err);
+    return res.status(500).json({ message: err.message || 'Server error' });
   }
 };
 

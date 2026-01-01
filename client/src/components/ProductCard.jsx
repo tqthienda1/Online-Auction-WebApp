@@ -237,7 +237,7 @@ const ProductCard = ({
               </p>
             </div>
             <button className="w-full flex items-center justify-center text-sm p-2 rounded-md cursor-pointer text-white font-semibold bg-yellow-500 hover:bg-yellow-600">
-              Rate the seller
+              See detail
             </button>
           </div>
         </div>
