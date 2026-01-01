@@ -3,6 +3,7 @@ import { addDescription } from "./productDescription.service.js";
 import { addProductImages } from "./productImages.service.js";
 import { uploadFilesToSupabase } from "../services/supabase.service.js";
 import { checkWatchlist } from "./watchlist.service.js";
+import { createOrder } from "./order.service.js";
 
 export const getProducts = async ({
   page,
@@ -357,4 +358,36 @@ export const getProductDescriptions = async (productId) => {
     where: { productID: productId },
     orderBy: { createdAt: "asc" },
   });
+};
+
+export const closeExpiredAuctions = async () => {
+  const now = new Date();
+
+  const products = await prisma.product.findMany({
+    where: {
+      endTime: { lte: now },
+      sold: false,
+    },
+  });
+
+  for (const product of products) {
+    await prisma.$transaction(async (tx) => {
+      const existingOrder = await tx.order.findUnique({
+        where: { productID: product.id },
+      });
+
+      if (!existingOrder && product.highestBidderID)
+        await createOrder({
+          db: tx,
+          productID: product.id,
+          sellerID: product.sellerID,
+          buyerID: product.highestBidderID,
+        });
+
+      await tx.product.update({
+        where: { id: product.id, sold: false }, // tránh race condition
+        data: { sold: true },
+      });
+    });
+  }
 };
