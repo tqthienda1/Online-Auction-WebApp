@@ -56,16 +56,20 @@ const Rating = ({ type = "item", productID, onRated }) => {
 
     try {
       setLoading(true);
-      await axios.post(`/rating/${productID}/rate`, {
+      const res = await axios.post(`/rating/${productID}/rate`, {
         score,
-        comment: data.descriptionRating, 
+        descriptionRating: data.descriptionRating,
       });
 
       if (typeof onRated === 'function') onRated();
 
-      setExisting({ isPos: score === 1, comment: data.descriptionRating });
+      if (res?.data?.rating) {
+        setExisting(res.data.rating);
+      } else {
+        setExisting({ isPos: score === 1, comment: data.descriptionRating });
+      }
       setEditMode(false);
-      reset({ descriptionRating: data.descriptionRating }); 
+      reset({ descriptionRating: data.descriptionRating });
     } catch (err) {
       console.error('Submit rating failed', err);
       setError(err?.response?.data?.message || err.message || 'Submit failed');
