@@ -227,7 +227,7 @@ const ProductCard = ({
               <p className="flex gap-1 text-gray-600 justify-between items-center">
                 <span className="text-sm ">Seller:</span>
                 <span className="text-sm font-semibold">
-                  {product.sellerID}
+                 {product.sellerName}
                 </span>
               </p>
 

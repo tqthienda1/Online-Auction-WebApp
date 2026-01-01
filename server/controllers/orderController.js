@@ -97,8 +97,7 @@ export const cancelOrder = async (req, res) => {
 
 export const getWonOrders = async (req, res) => {
   try {
-    const userID = "4b7896cf-7206-4c8a-b246-adebedabfcdd"
-    //const { userID } = req.query 
+    const userID = req.user.id;
     if (!userID) return res.status(400).json({ message: 'userID required' })
     const orders = await orderService.getWonOrdersByUser(userID)
     return res.status(200).json(orders)

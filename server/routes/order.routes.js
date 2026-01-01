@@ -1,5 +1,7 @@
 import express from 'express'
 import * as orderController from '../controllers/orderController.js'
+import { authMiddleware } from '../middlewares/authMiddleware.js'
+import { requireRole } from '../middlewares/requireRole.js'
 import multer from "multer";
 const router = express.Router()
 const upload = multer({ storage: multer.memoryStorage() });
@@ -7,7 +9,8 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.post('/', orderController.createOrder)
 
 // Get order by productID
-router.get('/:productID', orderController.getOrder)
+router.get('/:productID', 
+  orderController.getOrder)
 
 router.put(
   '/:productID/buyerInfo',
@@ -25,5 +28,8 @@ router.put('/:productID/receiveProduct', orderController.confirmProductReceived)
 router.delete('/:productID', orderController.cancelOrder)
 
 //get won orders
-router.get('/won/orders', orderController.getWonOrders)
+router.get('/won/orders', 
+  authMiddleware,
+  requireRole(["BIDDER", "SELLER"]),
+  orderController.getWonOrders)
 export default router
