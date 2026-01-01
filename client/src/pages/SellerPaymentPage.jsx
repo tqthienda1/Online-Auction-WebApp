@@ -74,14 +74,14 @@ function SellerPaymentPage() {
 
                         <div className="flex items-center gap-4">
                             <div className="w-24 h-24 bg-gray-100 rounded overflow-hidden">
-                                {order?.product?.image && (
-                                    <img src={order.product.image} alt="product" className="w-full h-full object-cover" />
+                                {order?.product?.productAva && (
+                                    <img src={order.product.productAva} alt="product" className="w-full h-full object-cover" />
                                 )}
                             </div>
                             <div>
-                                <h2 className="font-medium">{order?.product?.name || "Loading..."}</h2>
-                                <p className="text-sm text-gray-500">${order?.product?.price}</p>
-                                <p className="text-sm text-gray-500">Buyer: {order?.buyer?.name}</p>
+                                <h2 className="font-medium">{order?.product?.productName || "Loading..."}</h2>
+                                <p className="text-sm text-gray-500">${order?.product?.currentPrice}</p>
+                                <p className="text-sm text-gray-500">Buyer: {order?.buyer?.username}</p>
                             </div>
                         </div>
                     </div>
@@ -139,9 +139,16 @@ function SellerPaymentPage() {
                                 <Rating type="buyer" productID={productID} onRated={fetchOrder} />
                             )}
 
+                            {/* Ở bước 5 (Hoàn thành), chúng ta hiện cả thông báo và Component Rating */}
                             {currentStep === 5 && (
-                                <div className="bg-green-50 p-4 rounded border border-green-200">
-                                    <p className="text-sm text-green-800">Order completed! Thank you for selling.</p>
+                                <div className="space-y-6">
+                                    <div className="bg-green-50 p-4 rounded border border-green-200">
+                                        <p className="text-sm text-green-800 font-medium">
+                                            Order completed! You can still update your rating for the buyer below.
+                                        </p>
+                                    </div>
+                                    {/* Luôn hiển thị Rating ở đây để người dùng sửa nếu muốn */}
+                                    <Rating type="buyer" productID={productID} onRated={fetchOrder} />
                                 </div>
                             )}
                         </div>
