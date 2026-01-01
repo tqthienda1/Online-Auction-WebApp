@@ -69,7 +69,11 @@ const Modal = ({ info, setInfo, type, onClose }) => {
         case "changeInfo":
           res = await http.patch("/user/", data);
           console.log(res);
-          setInfo(res.data.updatedUser.username, res.data.updatedUser.address);
+          setInfo((prev) => ({
+            ...prev,
+            username: res.data.updatedUser.username,
+            address: res.data.updatedUser.address,
+          }));
 
           break;
         case "changePass":
