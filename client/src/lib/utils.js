@@ -13,9 +13,10 @@ export const http = axios.create({
   timeout: 20000,
 });
 
-http.interceptors.request.use((config) => {
-  const token = getAccessToken();
+http.interceptors.request.use(async (config) => {
+  const token = await getAccessToken();
 
+  console.log(token);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
