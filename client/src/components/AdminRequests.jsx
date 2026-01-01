@@ -1,4 +1,5 @@
 import React from "react";
+import { Loader2 } from "lucide-react"; // Nếu không có lucide-react, bạn có thể thay bằng text "..."
 
 const AdminRequests = ({
   upgradeRequests,
@@ -6,10 +7,11 @@ const AdminRequests = ({
   setDialog,
   onConfirmApprove,
   onConfirmReject,
+  isProcessing, // Nhận thêm prop xử lý loading
 }) => {
-  // Get current user data if there's an open dialog
+  // Tìm thông tin user hiện tại đang được chọn trong dialog
   const currentUser = upgradeRequests.find((r) => r.id === dialog.userId);
-  console.log("Render AdminRequests with:", upgradeRequests);
+
   return (
     <div className="border-l-4 border-l-amber-500 border bg-amber-50 p-5 rounded-lg">
       <h2 className="mb-4 font-semibold text-gray-900">
@@ -34,15 +36,17 @@ const AdminRequests = ({
 
               <div className="flex gap-2">
                 <button
+                  disabled={isProcessing} // Chặn click khi đang xử lý
                   onClick={() => setDialog({ type: "approve", userId: user.id })}
-                  className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm flex items-center gap-2"
+                  className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm flex items-center gap-2 disabled:opacity-50"
                 >
                   ✓ Approve
                 </button>
 
                 <button
+                  disabled={isProcessing}
                   onClick={() => setDialog({ type: "reject", userId: user.id })}
-                  className="border px-3 py-1 rounded hover:bg-gray-100 text-sm"
+                  className="border px-3 py-1 rounded hover:bg-gray-100 text-sm disabled:opacity-50"
                 >
                   ✕ Reject
                 </button>
@@ -56,28 +60,33 @@ const AdminRequests = ({
       {dialog.type === "approve" && currentUser && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-[90%] max-w-md shadow-lg">
-            <h3 className="text-lg font-semibold mb-2">
-              Confirm Upgrade to Seller
-            </h3>
-
+            <h3 className="text-lg font-semibold mb-2">Confirm Upgrade to Seller</h3>
             <p className="text-sm text-gray-600 mb-4">
-              Are you sure you want to upgrade <b>{currentUser.name}</b> to
-              Seller? Seller rights will expire after 7 days.
+              Are you sure you want to upgrade <b>{currentUser.name}</b> to Seller? Seller rights will expire after 7 days.
             </p>
 
             <div className="flex gap-2 justify-end">
               <button
+                disabled={isProcessing}
                 onClick={() => setDialog({ type: null, userId: null })}
-                className="px-3 py-1 border rounded hover:bg-gray-100"
+                className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
               >
                 Cancel
               </button>
 
               <button
+                disabled={isProcessing} // KHÓA NÚT CHÍNH
                 onClick={() => onConfirmApprove(currentUser.id)}
-                className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-green-400 flex items-center gap-2 min-w-[120px] justify-center"
               >
-                Confirm Approval
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  "Confirm Approval"
+                )}
               </button>
             </div>
           </div>
@@ -88,27 +97,33 @@ const AdminRequests = ({
       {dialog.type === "reject" && currentUser && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-[90%] max-w-md shadow-lg">
-            <h3 className="text-lg font-semibold mb-2">
-              Confirm Reject Request
-            </h3>
-
+            <h3 className="text-lg font-semibold mb-2">Confirm Reject Request</h3>
             <p className="text-sm text-gray-600 mb-4">
               Are you sure you want to reject the upgrade request for <b>{currentUser.name}</b>?
             </p>
 
             <div className="flex gap-2 justify-end">
               <button
+                disabled={isProcessing}
                 onClick={() => setDialog({ type: null, userId: null })}
-                className="px-3 py-1 border rounded hover:bg-gray-100"
+                className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
               >
                 Cancel
               </button>
 
               <button
+                disabled={isProcessing} // KHÓA NÚT CHÍNH
                 onClick={() => onConfirmReject(currentUser.id)}
-                className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-red-400 flex items-center gap-2 min-w-[120px] justify-center"
               >
-                Confirm Rejection
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  "Confirm Rejection"
+                )}
               </button>
             </div>
           </div>

@@ -14,12 +14,12 @@ const AdminUsersPage = () => {
   const [dialog, setDialog] = useState({ type: null, userId: null });
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [query, setQuery] = useState("");
 
-  // Helper tính toán rating
   const calculateRating = (user) => {
     if (!user) return "-";
     const pos = user.ratingPos ?? 0;
@@ -30,25 +30,11 @@ const AdminUsersPage = () => {
     return `${score}/5`;
   };
 
-  // Fetch danh sách Upgrade Requests
   const fetchUpgradeRequests = async () => {
     try {
       const res = await http.get("/upgrade?status=PENDING");
-
-      // Kiểm tra log này để xem cấu trúc API trả về chính xác là gì
-      console.log("API Upgrade Response:", res.data);
-
-      // Xử lý linh hoạt các trường hợp: res.data trực tiếp là array hoặc nằm trong res.data.data
-      let rawData = [];
-      if (Array.isArray(res.data)) {
-        rawData = res.data;
-      } else if (res.data?.data && Array.isArray(res.data.data)) {
-        rawData = res.data.data;
-      } else if (res.data?.requests) {
-        // Tùy theo backend của bạn
-        rawData = res.data.requests;
-      }
-
+      let rawData = Array.isArray(res.data) ? res.data : (res.data?.data || res.data?.requests || []);
+      
       const transformedRequests = rawData.map((r) => ({
         id: r.id || r._id,
         userId: r.userID || r.user?._id,
@@ -56,32 +42,21 @@ const AdminUsersPage = () => {
         rating: calculateRating(r.user),
         status: r.status,
       }));
-
       setUpgradeRequests(transformedRequests);
     } catch (err) {
       console.error("Failed to fetch upgrade requests", err);
     }
   };
 
-  // Fetch dữ liệu Users và Requests khi đổi trang
   useEffect(() => {
     const controller = new AbortController();
-
     const getData = async () => {
       try {
         setIsLoading(true);
-
-        console.log("Fetching users for page:", page);
-
-        // chạy song song
         const [usersRes] = await Promise.all([
-          http.get(`/user?page=${page}&limit=${limit}`, {
-            signal: controller.signal,
-          }),
-          fetchUpgradeRequests(), // hàm này tự set state bên trong
+          http.get(`/user?page=${page}&limit=${limit}`, { signal: controller.signal }),
+          fetchUpgradeRequests(),
         ]);
-
-        console.log("Users API Response:", usersRes.data);
 
         if (usersRes.data?.data) {
           setUsers(usersRes.data.data.data || []);
@@ -97,31 +72,34 @@ const AdminUsersPage = () => {
     };
 
     getData();
-
     return () => controller.abort();
   }, [page, limit]);
 
-  // Logic xử lý Approve/Reject
   const onConfirmApprove = async (id) => {
+    if (isProcessing) return;
     try {
+      setIsProcessing(true);
       await http.post(`/upgrade/${id}/approve`);
-      setDialog({ type: null, userId: null });
       setUpgradeRequests((prev) => prev.filter((r) => r.id !== id));
-      // Có thể fetch lại danh sách user nếu role thay đổi
+      setDialog({ type: null, userId: null });
     } catch (err) {
-      console.error("Approve failed", err);
-      alert("Failed to approve upgrade request");
+      alert(err.response?.data?.message || "Failed to approve");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   const onConfirmReject = async (id) => {
+    if (isProcessing) return;
     try {
+      setIsProcessing(true);
       await http.post(`/upgrade/${id}/reject`);
-      setDialog({ type: null, userId: null });
       setUpgradeRequests((prev) => prev.filter((r) => r.id !== id));
+      setDialog({ type: null, userId: null });
     } catch (err) {
-      console.error("Reject failed", err);
-      alert("Failed to reject upgrade request");
+      alert(err.response?.data?.message || "Failed to reject");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -134,52 +112,62 @@ const AdminUsersPage = () => {
     { header: "Address", accessor: "address" },
   ];
 
-  const filteredUsers =
-    users?.filter((u) =>
-      u.username?.toLowerCase().includes(query.toLowerCase())
-    ) || [];
+  const filteredUsers = users?.filter((u) => u.username?.toLowerCase().includes(query.toLowerCase())) || [];
 
   return (
-    <>
-      {isLoading && (
-        <div className="flex flex-col justify-center p-4 md:p-5 text-center h-60">
-          <Spinner className="size-8 w-full text-yellow-500" />
-          <h3 className="font-semibold my-6 text-body">Loading...</h3>
+    <div className="space-y-6 p-6">
+      {/* 1. Header luôn hiển thị */}
+      <AdminHeader title="Users" description="Manage All Users" />
+
+      {/* 2. Upgrade Requests luôn hiển thị (có danh sách hoặc thông báo trống) */}
+      <AdminRequests
+        upgradeRequests={upgradeRequests}
+        dialog={dialog}
+        setDialog={setDialog}
+        onConfirmApprove={onConfirmApprove}
+        onConfirmReject={onConfirmReject}
+        isProcessing={isProcessing}
+      />
+
+      {/* 3. Khu vực tìm kiếm */}
+      <AdminSearch query={query} setQuery={setQuery} />
+
+      {/* 4. Khu vực Bảng dữ liệu User (Nơi xử lý loading chuẩn) */}
+      <div className="relative min-h-[400px]">
+        {isLoading ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/50 z-10">
+            <Spinner className="size-8 text-yellow-500" />
+            <p className="mt-4 font-medium text-gray-500">Updating User List...</p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center h-40 text-red-500">
+            <p>Error loading users.</p>
+            <button onClick={() => window.location.reload()} className="underline mt-2">Retry</button>
+          </div>
+        ) : (
+          <>
+            <AdminBody
+              showType="users"
+              columns={usersColumns}
+              data={filteredUsers}
+            />
+            <AdminPagination
+              totalPages={totalPages}
+              page={page}
+              onPageChange={setPage}
+            />
+          </>
+        )}
+      </div>
+
+      {/* 5. Toast thông báo xử lý ngầm */}
+      {isProcessing && (
+        <div className="fixed bottom-4 right-4 bg-yellow-500 text-white px-4 py-2 rounded-md shadow-lg flex items-center gap-2 z-50">
+          <Spinner className="size-4" />
+          Processing request...
         </div>
       )}
-
-      {!error && (
-        <div className="space-y-6 p-6">
-          <AdminHeader title="Users" description="Manage All Users" />
-
-          <AdminRequests
-            upgradeRequests={upgradeRequests}
-            dialog={dialog}
-            setDialog={setDialog}
-            onConfirmApprove={onConfirmApprove}
-            onConfirmReject={onConfirmReject}
-          />
-
-          <AdminSearch query={query} setQuery={setQuery} />
-
-          <AdminBody
-            showType="users"
-            columns={usersColumns}
-            data={filteredUsers}
-          />
-
-          <AdminPagination
-            totalPages={totalPages}
-            page={page}
-            onPageChange={setPage}
-          />
-        </div>
-      )}
-
-      {error && (
-        <div className="p-6 text-red-500 text-center">Error loading data.</div>
-      )}
-    </>
+    </div>
   );
 };
 
