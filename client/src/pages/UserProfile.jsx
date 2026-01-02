@@ -295,19 +295,19 @@ const UserProfile = () => {
           <ProfileTab tab={tab} setTab={setTab} />
           <div className="my-10 w-3/4 ">
             <ProductList
-              showType={
-                tab === "love" ? 2 : tab === "bidding" ? 3 : tab === "selling" ? 2 : 4
-              }
-              products={
-                tab === "love"
-                  ? wishlistItems
-                  : tab === "bidding"
-                  ? biddingItems
-                  : tab === "selling"
-                  ? sellingItems
-                  : wonAuctions
-              }
-            />
+  showType={
+    tab === "watchList" || tab === "selling" ? 2 : tab === "bidding" ? 3 : 4
+  }
+  products={
+    tab === "watchList"
+      ? wishlistItems
+      : tab === "bidding"
+      ? biddingItems
+      : tab === "selling"
+      ? sellingItems
+      : wonAuctions
+  }
+/>
           </div>
         </div>
       )}
