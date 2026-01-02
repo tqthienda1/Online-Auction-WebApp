@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom"; // Bỏ useSearchParams nếu chưa dùng
+import { useParams, useSearchParams } from "react-router-dom"; // Bỏ useSearchParams nếu chưa dùng
 import CategoryBanner from "../components/CategoryBanner";
 import Sidebar from "../components/SideBar";
 import ProductList from "../components/ProductList";
@@ -11,6 +11,8 @@ import { useSearchParams } from "react-router-dom";
 
 const CategoryPage = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const keyword = searchParams.get("keyword");
 
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingSide, setIsLoadingSide] = useState(false);
@@ -45,18 +47,37 @@ const CategoryPage = () => {
       const controller = new AbortController();
       try {
         setIsLoading(true);
+        console.log(keyword);
 
-        const data = await http.get(
-          `products?category=${id}&page=${page}&limit=${limit}&minPrice=${minPrice}&maxPrice=${maxPrice}&order=${order}&sortBy=${sort}`,
-          {
+        if (keyword) {
+          const data = await http.get(`products/search/${keyword}`, {
+            params: {
+              page,
+              limit,
+              sortBy: sort,
+              order,
+              minPrice,
+              maxPrice,
+            },
             signal: controller.signal,
-          }
-        );
+          });
 
-        console.log(data.data.data);
+          console.log(data.data);
+          setTotalPages(data.data.total);
+          setProducts(data.data.data);
+        } else {
+          const data = await http.get(
+            `products?category=${id}&page=${page}&limit=${limit}&minPrice=${minPrice}&maxPrice=${maxPrice}&order=${order}&sortBy=${sort}`,
+            {
+              signal: controller.signal,
+            }
+          );
 
-        setTotalPages(data.data.totalPages);
-        setProducts(data.data.data);
+          console.log(data.data.data);
+
+          setTotalPages(data.data.totalPages);
+          setProducts(data.data.data);
+        }
       } catch (error) {
         if (error.name !== "CanceledError") {
           console.error(error);
@@ -68,7 +89,7 @@ const CategoryPage = () => {
     };
 
     getProductsData();
-  }, [id, page, limit, sort, order, filterTrigger]);
+  }, [id, page, limit, sort, order, filterTrigger, keyword]);
 
   const handlePriceChange = (priceValue) => {
     const [min, max] = priceValue;

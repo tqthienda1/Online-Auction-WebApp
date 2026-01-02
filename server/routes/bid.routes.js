@@ -10,5 +10,6 @@ const mockUser = (req, res, next) => {
 };
 
 router.post("/", authMiddleware, BidController.placeBid);
+router.get("/bidding", authMiddleware, BidController.getBiddingProducts);
 
 export default router;

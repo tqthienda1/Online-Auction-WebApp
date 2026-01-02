@@ -222,7 +222,35 @@ const AdminBody = ({
                       key={col.accessor}
                       className="p-3 max-w-[250px] wrap-break-word"
                     >
-                      {user[col.accessor]}
+                      {col.accessor === "actions" ? (
+                        <div className="flex gap-2 justify-center">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (onEdit) onEdit(user.id);
+                            }}
+                            className="cursor-pointer hover:text-yellow-400"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (onDelete) onDelete(user.id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        user[col.accessor]
+                      )}
                     </td>
                   ))}
                 </tr>

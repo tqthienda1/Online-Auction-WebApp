@@ -91,9 +91,12 @@ const AdminLayout = ({ children }) => {
                 variant="ghost"
                 size="icon"
                 className="text-destructive"
-                onClick={() => navigate("/login")}
+                onClick={() => {
+                  handleLogout();
+                  navigate("/login");
+                }}
               >
-                <LogOut onClick={handleLogout} className="h-5 w-5" />
+                <LogOut className="h-5 w-5" />
               </Button>
             </div>
           </div>

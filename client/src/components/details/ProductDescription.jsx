@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { FaAngleDoubleDown } from "react-icons/fa";
 
 import { CiSquarePlus } from "react-icons/ci";
-import RichTextEditor from "./RichTextEditor";
+import RichTextEditor from "../RichTextEditor";
 import { formattedDate } from "@/helper/formatDate";
 
-const COLLAPSED_HEIGHT = 1000;
+const COLLAPSED_HEIGHT = 800;
 
 const ProductDescription = ({
   descriptions = [],
@@ -42,7 +42,7 @@ const ProductDescription = ({
           className={`
             prose max-w-none text-justify font-light
             transition-all duration-300
-            overflow-hidden
+            overflow-hidden relative
           `}
         >
           {descriptions.map((d, index) => (
@@ -59,36 +59,58 @@ const ProductDescription = ({
             </div>
           ))}
 
-          {editable && (
-            <>
-              {!showAddBox && (
-                <div className="mt-10 flex items-center justify-center gap-4">
-                  <div className="flex-1 h-px bg-gray-300" />
+          {isOverflowing && !expanded && (
+            <div className="pointer-events-none absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-white to-transparent" />
+          )}
+        </div>
 
-                  <button
-                    onClick={() => setShowAddBox(true)}
-                    title="Add description"
-                  >
-                    <CiSquarePlus className="w-14 h-14 text-gray-400 hover:text-yellow-400 hover:scale-105 duration-200 transition" />
-                  </button>
+        {isOverflowing && (
+          <div className="flex justify-center">
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-yellow-400 transition"
+            >
+              {expanded ? "View less" : "View More"}
+              <span
+                className={`transition-transform ${
+                  expanded ? "rotate-180" : ""
+                }`}
+              >
+                <FaAngleDoubleDown />
+              </span>
+            </button>
+          </div>
+        )}
 
-                  <div className="flex-1 h-px bg-gray-300" />
-                </div>
-              )}
+        {editable && (
+          <>
+            {!showAddBox && (
+              <div className="mt-10 flex items-center justify-center gap-4">
+                <div className="flex-1 h-px bg-gray-300" />
 
-              {message && (
-                <div
-                  className={`
+                <button
+                  onClick={() => setShowAddBox(true)}
+                  title="Add description"
+                >
+                  <CiSquarePlus className="w-14 h-14 text-gray-400 hover:text-yellow-400 hover:scale-105 duration-200 transition" />
+                </button>
+
+                <div className="flex-1 h-px bg-gray-300" />
+              </div>
+            )}
+
+            {message && (
+              <div
+                className={`
                     mt-4 rounded-md px-4 py-2 text-md text-center font-medium
                     text-yellow-500 
                  `}
-                >
-                  {message}
-                </div>
-              )}
-            </>
-          )}
-        </div>
+              >
+                {message}
+              </div>
+            )}
+          </>
+        )}
 
         {editable && showAddBox && (
           <div
@@ -139,31 +161,6 @@ const ProductDescription = ({
                 Save
               </button>
             </div>
-          </div>
-        )}
-
-        {isOverflowing && !expanded && (
-          <div
-            className="pointer-events-none absolute bottom-4
-           left-0 h-24 w-full bg-gradient-to-t from-white to-transparent"
-          />
-        )}
-
-        {isOverflowing && (
-          <div className="mt-4 flex justify-center">
-            <button
-              onClick={() => setExpanded(!expanded)}
-              className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-yellow-400 transition"
-            >
-              {expanded ? "View less" : "View More"}
-              <span
-                className={`transition-transform ${
-                  expanded ? "rotate-180" : ""
-                }`}
-              >
-                <FaAngleDoubleDown />
-              </span>
-            </button>
           </div>
         )}
       </div>

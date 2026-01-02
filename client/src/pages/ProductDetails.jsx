@@ -1,11 +1,11 @@
-import ProductCarousel from "../components/ProductCarousel.jsx";
-import ProductTitle from "../components/ProductTitle.jsx";
-import DetailNavBar from "../components/DetailNavBar.jsx";
-import ProductDescription from "../components/ProductDescription.jsx";
+import ProductCarousel from "../components/details/ProductCarousel.jsx";
+import ProductTitle from "../components/details/ProductTitle.jsx";
+import DetailNavBar from "../components/details/DetailNavBar.jsx";
+import ProductDescription from "../components/details/ProductDescription.jsx";
 import { useEffect, useState, useCallback } from "react";
-import ProductBidPlace from "../components/ProductBidPlace.jsx";
-import BidHistory from "../components/BidHistory.jsx";
-import SimilarProducts from "../components/SimilarProducts.jsx";
+import ProductBidPlace from "../components/details/ProductBidPlace.jsx";
+import BidHistory from "../components/details/BidHistory.jsx";
+import SimilarProducts from "../components/details/SimilarProducts.jsx";
 import CommentSection from "@/components/CommentSection.jsx";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -16,6 +16,8 @@ import { Spinner } from "@/components/ui/spinner.jsx";
 import NotFoundPage from "./NotFoundPage.jsx";
 import { useProductPermission } from "@/hooks/useProductPermission.js";
 import { useAuth } from "@/context/AuthContext.jsx";
+import { getTimeRemaining } from "@/helper/getTimeRemaining.js";
+import ConfirmBid from "@/components/details/ConfirmBid.jsx";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -33,6 +35,10 @@ const ProductDetails = () => {
   const [parent, setParent] = useState(null);
   const [isWatched, setIsWatched] = useState(false);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
+  const [now, setNow] = useState(Date.now());
+  const [pendingBid, setPendingBid] = useState(null);
+  const [placingBid, setPlacingBid] = useState(false);
+  const [bidError, setBidError] = useState(null);
 
   const [loading, setLoading] = useState({
     product: true,
@@ -116,6 +122,14 @@ const ProductDetails = () => {
     AOS.init({ duration: 800, once: true });
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   if (loading.product) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center overflow-hidden">
@@ -152,6 +166,7 @@ const ProductDetails = () => {
           signal: controller.signal,
         }
       );
+
       console.log("p:", product);
       console.log("c", newComment.data.data);
 
@@ -219,6 +234,77 @@ const ProductDetails = () => {
     }
   };
 
+  const placeBid = async (bidValue) => {
+    try {
+      setPlacingBid(true);
+      setBidError(null);
+
+      await http.post("/bids", {
+        productId: product.id,
+        maxPrice: bidValue,
+      });
+
+      await handleBidSuccess();
+      setPendingBid(null);
+    } catch (err) {
+      setBidError(err.response?.data?.message || "Failed to place bid");
+    } finally {
+      setPlacingBid(false);
+    }
+  };
+
+  const start = new Date(product.startTime).getTime();
+  const end = new Date(product.endTime).getTime();
+
+  let auctionState;
+  if (product.sold || now >= end) auctionState = "ended";
+  else if (now < start) auctionState = "upcoming";
+  else auctionState = "live";
+
+  const countDownTarget =
+    auctionState === "upcoming" ? start : auctionState === "live" ? end : null;
+
+  const timeLeft = countDownTarget
+    ? getTimeRemaining(countDownTarget, now)
+    : null;
+
+  const auctionView = {
+    currentPrice: auction?.currentPrice,
+    highestBidder: auction?.highestBidder,
+    isWinner: auction?.isWinner ?? false,
+
+    state: auctionState,
+
+    time:
+      auctionState === "ended"
+        ? {
+            label: "Auction ended",
+            remainingText: null,
+            endAtText: null,
+          }
+        : auctionState === "upcoming"
+        ? {
+            label: "Starts in",
+            remainingText: `${timeLeft.days}days ${timeLeft.hours}hours ${timeLeft.minutes}mins`,
+            endAtText: new Date(start).toLocaleString("en-US", {
+              month: "long",
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+            }),
+          }
+        : {
+            label: "Ends in",
+            remainingText: `${timeLeft.days}days, ${timeLeft.hours}hours, ${timeLeft.minutes}mins`,
+            endAtText: new Date(end).toLocaleString("en-US", {
+              month: "long",
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+            }),
+          },
+  };
+
   return (
     <div className="overflow-hidden" data-aos="fade-up">
       <div className="p-10" data-aos="fade-down">
@@ -227,11 +313,7 @@ const ProductDetails = () => {
       <ProductTitle nameMain={product.productName} isSold={product.sold} />
 
       <div className="flex" data-aos="fade-up">
-        <div
-          className={`flex flex-col ${
-            canEditDescription ? "w-3/4 mx-auto" : "w-3/4"
-          }   `}
-        >
+        <div className="flex flex-col w-3/4">
           <DetailNavBar
             frame={curFrame}
             onFrameChange={setCurFrame}
@@ -253,21 +335,31 @@ const ProductDetails = () => {
             />
           )}
         </div>
-        {canBid && (
-          <ProductBidPlace
-            productId={product.id}
-            startTime={product.startTime}
-            endTime={product.endTime}
-            currentPrice={auction?.currentPrice}
-            buyNowPrice={product.buyNowPrice}
-            bidStep={product.bidStep}
-            seller={product.seller}
-            bidder={auction?.highestBidder}
-            onBidSuccess={handleBidSuccess}
-            isSold={product.sold}
-            isWatched={isWatched}
-            onToggleWatchlist={handleToggleWatchlist}
-            watchlistLoading={watchlistLoading}
+
+        <ProductBidPlace
+          product={{
+            id: product.id,
+            sold: product.sold,
+            buyNowPrice: product.buyNowPrice,
+            startingPrice: product.startingPrice,
+            bidStep: product.bidStep,
+            seller: product.seller,
+          }}
+          auction={auctionView}
+          watchlist={{ isWatched, loading: watchlistLoading }}
+          canBid={canBid}
+          // onBidSuccess={handleBidSuccess}
+          onToggleWatchlist={handleToggleWatchlist}
+          onRequestBid={(bidValue) => setPendingBid(bidValue)}
+        />
+
+        {pendingBid && (
+          <ConfirmBid
+            bidValue={pendingBid}
+            loading={placingBid}
+            error={bidError}
+            onCancel={() => setPendingBid(null)}
+            onConfirm={() => placeBid(pendingBid)}
           />
         )}
       </div>

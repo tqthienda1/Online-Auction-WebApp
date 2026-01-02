@@ -50,6 +50,8 @@ export const AuthProvider = ({ children }) => {
         .eq("supabaseId", user.id)
         .maybeSingle();
 
+      data.email = user.email;
+
       setUser((prev) => ({
         ...prev,
         data,

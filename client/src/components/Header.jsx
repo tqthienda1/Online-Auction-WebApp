@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { logOut } from "@/services/auth.service";
 import { useAuth } from "@/context/AuthContext";
+import AddProductButton from "./AddProductButton";
 
 const Header = () => {
   const { user, loading } = useAuth();
@@ -44,9 +45,16 @@ const Header = () => {
               </Link>
             </>
           ) : (
-            <>
-              <Link to="/user_profile" className="flex items-center py-3 px-9 ">
-                <CiUser size={36} className="cursor-pointer hover:text-brand" />
+            <div className="flex justify-center items-center gap-3">
+              {user.data?.role === "SELLER" && <AddProductButton />}
+              <Link
+                to="/user_profile"
+                className="flex items-center h-full px-7 gap-3 rounded-2xl border mr-3 hover:bg-brand hover:text-white transition-bg duration-300"
+              >
+                <CiUser size={36} className="cursor-pointer " />
+                <span className="font-playfair font-semibold">
+                  Hi, {user.data?.username}
+                </span>
               </Link>
 
               <Link
@@ -56,7 +64,7 @@ const Header = () => {
               >
                 Logout
               </Link>
-            </>
+            </div>
           )}
         </div>
       </div>

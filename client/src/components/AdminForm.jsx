@@ -7,6 +7,7 @@ const AdminForm = ({
   onClose,
   onSubmit,
   editingCategory,
+  initialValues = {},
 }) => {
   const {
     register,
@@ -14,6 +15,12 @@ const AdminForm = ({
     formState: { errors },
     reset,
   } = useForm();
+
+  React.useEffect(() => {
+    if (openForm) {
+      reset(initialValues);
+    }
+  }, [openForm, initialValues, reset]);
   return (
     <>
       {openForm && (
