@@ -140,6 +140,8 @@ export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
+    console.log(userId);
+    console.log(id);
 
     if (!id) {
       return res.status(400).json({ message: "Product id is require." });
