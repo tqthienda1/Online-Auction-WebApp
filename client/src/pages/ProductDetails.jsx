@@ -96,7 +96,6 @@ const ProductDetails = () => {
 
   useEffect(() => {
     fetchProduct();
-    console.log("refetch");
   }, [fetchProduct]);
 
   useEffect(() => {
@@ -135,6 +134,9 @@ const ProductDetails = () => {
   const handleBidSuccess = async () => {
     await Promise.all([fetchAuction(), fetchBidHistory()]);
   };
+
+  console.log(user);
+  console.log(product);
 
   const handleSubmit = async () => {
     const controller = new AbortController();
@@ -275,13 +277,14 @@ const ProductDetails = () => {
           comments={product.comments}
           setParent={setParent}
           onReply={handleSubmit}
-          user={user.data.role}
+          user={user?.data}
           replyText={text}
           setReplyText={setText}
           isLoading={isLoadingComment}
+          seller={product.seller.id}
         />
 
-        {user?.data.role === "BIDDER" && (
+        {user?.data?.id !== product.seller.id && (
           <QuestionBox
             onSubmit={handleSubmit}
             question={text}
