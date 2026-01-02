@@ -3,14 +3,17 @@ export const useProductPermission = (user, product) => {
     return {
       canBid: false,
       canEditDescription: false,
+      canBanBidder: false,
     };
   }
 
   const isSeller = user.data.role === "SELLER";
   const isOwner = product.seller?.id === user.data.id;
+  const isAuctionEnded = product.sold;
 
   return {
-    canBid: !(isSeller && isOwner), // Nếu là không phải seller hoặc không phải owner thì được quyền bid
+    canBid: !(isSeller && isOwner) && !isAuctionEnded,
     canEditDescription: isSeller && isOwner,
+    canBanBidder: isSeller && isOwner && !isAuctionEnded,
   };
 };

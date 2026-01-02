@@ -14,6 +14,7 @@ import {
   getProductAuction,
   getProductDescriptions,
   search,
+  rejectBidder,
 } from "../controllers/productController.js";
 import multer from "multer";
 
@@ -49,6 +50,12 @@ router.delete(
   authMiddleware,
   requireRole(["SELLER", "ADMIN"]),
   deleteProduct
+);
+router.post(
+  "/:id/reject-bidder",
+  authMiddleware,
+  requireRole(["BIDDER", "SELLER"]),
+  rejectBidder
 );
 
 export default router;

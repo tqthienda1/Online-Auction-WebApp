@@ -2,9 +2,20 @@ import prisma from "../prismaClient.js";
 
 export const placeBid = async ({ userId, productId, maxPrice }) => {
   return prisma.$transaction(async (tx) => {
+    const banned = await prisma.bannedBidder.findUnique({
+      where: {
+        productID_bidderID: {
+          productID: productId,
+          bidderID: userId,
+        },
+      },
+    });
+
+    if (banned) {
+      throw new Error("You are not allowed to bid on this product");
+    }
     const product = await tx.product.findUnique({
       where: { id: productId },
-      // lock: { mode: "ForUpdate" },
     });
 
     if (!product) {
@@ -12,7 +23,7 @@ export const placeBid = async ({ userId, productId, maxPrice }) => {
     }
 
     if (maxPrice < product.currentPrice + product.bidStep) {
-      throw { status: 400, message };
+      throw { status: 400, message: "Bid too low." };
     }
     const now = new Date();
 
@@ -32,8 +43,16 @@ export const placeBid = async ({ userId, productId, maxPrice }) => {
       },
     });
 
-    const topTwo = await tx.bid.findMany({
+    const bannedIds = await tx.bannedBidder.findMany({
       where: { productID: productId },
+      select: { bidderID: true },
+    });
+
+    const topTwo = await tx.bid.findMany({
+      where: {
+        productID: productId,
+        bidderID: { notIn: bannedIds.map((b) => b.bidderID) },
+      },
       orderBy: [{ maxPrice: "desc" }, { createdAt: "asc" }],
       take: 2,
     });
@@ -41,21 +60,28 @@ export const placeBid = async ({ userId, productId, maxPrice }) => {
     const highest = topTwo[0];
     const second = topTwo[1];
 
-    let currentPrice;
+    const highestChanged =
+      product.highestBidderID && highest.bidderID !== product.highestBidderID;
 
-    if (!second) {
-      currentPrice = product.startingPrice;
-    } else {
-      currentPrice = Math.min(
-        highest.maxPrice,
-        second.maxPrice + product.bidStep
-      );
+    let currentPrice = product.currentPrice;
+
+    if (highestChanged) {
+      if (!second) {
+        currentPrice = product.startingPrice;
+      } else {
+        currentPrice = Math.min(
+          highest.maxPrice,
+          second.maxPrice + product.bidStep
+        );
+      }
     }
 
-    if (
-      highest.bidderID !== product.highestBidderID ||
-      currentPrice !== product.currentPrice
-    ) {
+    const isFirstBid = !product.highestBidderID;
+    const priceChanged = currentPrice !== product.currentPrice;
+
+    const shouldWriteHistory = isFirstBid || priceChanged;
+
+    if (shouldWriteHistory) {
       await tx.bidHistory.create({
         data: {
           productID: productId,
@@ -75,15 +101,12 @@ export const placeBid = async ({ userId, productId, maxPrice }) => {
 
     const thresholdMs = systemParam.autoExtendThreshold * 60 * 1000;
 
-    const isMeaningfulBid =
-      highest.bidderID !== product.highestBidderID ||
-      currentPrice !== product.currentPrice;
+    let newEndTime = product.endTime;
 
-    if (isMeaningfulBid && remainingMs <= thresholdMs && product.autoExtend) {
-      product.endTime = new Date(
+    if (highestChanged && remainingMs <= thresholdMs && product.autoExtend) {
+      newEndTime = new Date(
         product.endTime.getTime() + systemParam.autoExtendTime * 60 * 1000
       );
-      console.log(product.endTime);
     }
 
     return tx.product.update({
@@ -91,7 +114,7 @@ export const placeBid = async ({ userId, productId, maxPrice }) => {
       data: {
         currentPrice,
         highestBidderID: highest.bidderID,
-        endTime: product.endTime,
+        endTime: newEndTime,
       },
     });
   });

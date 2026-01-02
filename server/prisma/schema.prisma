@@ -31,6 +31,7 @@ model User {
   givenRatings       Rating[]         @relation("GivenRatings")
   upgradeRequest     UpgradeRequest[] @relation("UserUpgradeRequest")
   watchList          WatchList[]      @relation("UserWatchList")
+  bannedProducts     BannedBidder[]
 }
 
 model Product {
@@ -62,6 +63,7 @@ model Product {
   productImages       ProductImage[]           @relation("ProductImages")
   rating              Rating[]
   inWatchList         WatchList[]              @relation("ProductWatchList")
+  bannedBidders       BannedBidder[]
 }
 
 model ProductDescription {
@@ -186,6 +188,19 @@ model BidHistory {
   User      User     @relation(fields: [bidderID], references: [id], onDelete: Cascade)
   Product   Product  @relation(fields: [productID], references: [id], onDelete: Cascade)
 }
+
+model BannedBidder {
+  id        String   @id @default(uuid())
+  productID String
+  bidderID  String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productID], references: [id], onDelete: Cascade)
+  bidder  User    @relation(fields: [bidderID], references: [id], onDelete: Cascade)
+
+  @@unique([productID, bidderID])
+}
+
 
 enum Role {
   BIDDER

@@ -6,10 +6,10 @@ import { useEffect, useState, useCallback } from "react";
 import ProductBidPlace from "../components/details/ProductBidPlace.jsx";
 import BidHistory from "../components/details/BidHistory.jsx";
 import SimilarProducts from "../components/details/SimilarProducts.jsx";
-import CommentSection from "@/components/CommentSection.jsx";
+import CommentSection from "@/components/details/CommentSection.jsx";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import QuestionBox from "@/components/QuestionBox.jsx";
+import QuestionBox from "@/components/details/QuestionBox.jsx";
 import { http } from "../lib/utils.js";
 import { useParams } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner.jsx";
@@ -25,11 +25,14 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const [auction, setAuction] = useState(null);
   const [bidHistory, setBidHistory] = useState([]);
-  const [question, setQuestion] = useState("");
+  // const [question, setQuestion] = useState("");
   const { user } = useAuth();
   const [curFrame, setCurFrame] = useState("description");
   const [isLoadingComment, setIsLoadingComment] = useState(false);
-  const { canBid, canEditDescription } = useProductPermission(user, product);
+  const { canBid, canEditDescription, canBanBidder } = useProductPermission(
+    user,
+    product
+  );
   const [descMessage, setDescMessage] = useState("");
   const [text, setText] = useState("");
   const [parent, setParent] = useState(null);
@@ -39,6 +42,8 @@ const ProductDetails = () => {
   const [pendingBid, setPendingBid] = useState(null);
   const [placingBid, setPlacingBid] = useState(false);
   const [bidError, setBidError] = useState(null);
+  const [banning, setBanning] = useState(false);
+  const [banError, setBanError] = useState(null);
 
   const [loading, setLoading] = useState({
     product: true,
@@ -253,6 +258,26 @@ const ProductDetails = () => {
     }
   };
 
+  const handleBanBidder = async (bidderId) => {
+    if (banning) return;
+
+    try {
+      setBanning(true);
+      setBanError(null);
+
+      await http.post(`/products/${product.id}/reject-bidder`, {
+        bidderId,
+      });
+
+      await handleBidSuccess();
+    } catch (err) {
+      console.error(err);
+      setBanError(err.response?.data?.message || "Failed to ban bidder");
+    } finally {
+      setBanning(false);
+    }
+  };
+
   const start = new Date(product.startTime).getTime();
   const end = new Date(product.endTime).getTime();
 
@@ -335,7 +360,6 @@ const ProductDetails = () => {
             />
           )}
         </div>
-
         <ProductBidPlace
           product={{
             id: product.id,
@@ -348,9 +372,11 @@ const ProductDetails = () => {
           auction={auctionView}
           watchlist={{ isWatched, loading: watchlistLoading }}
           canBid={canBid}
-          // onBidSuccess={handleBidSuccess}
           onToggleWatchlist={handleToggleWatchlist}
           onRequestBid={(bidValue) => setPendingBid(bidValue)}
+          onBanBidder={canBanBidder ? handleBanBidder : null}
+          banning={canBanBidder ? banning : false}
+          banError={canBanBidder ? banError : null}
         />
 
         {pendingBid && (

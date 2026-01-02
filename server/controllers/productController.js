@@ -198,8 +198,6 @@ export const getProductAuction = async (req, res) => {
 
     const auctionEnded = auction.sold || now >= new Date(auction.endTime);
 
-    console.log(auction.highestBidderID, userId);
-
     const isWinner =
       auctionEnded &&
       auction.highestBidderID &&
@@ -255,6 +253,25 @@ export const search = async (req, res) => {
     return res.status(200).json({ data, total: data.length });
   } catch (error) {
     console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const rejectBidder = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const { bidderId } = req.body;
+    const sellerId = req.user.id;
+
+    const result = await productService.rejectBidder(
+      productId,
+      bidderId,
+      sellerId
+    );
+
+    return res.status(200).json({ data: result });
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
