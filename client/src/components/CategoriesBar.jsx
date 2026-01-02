@@ -21,11 +21,13 @@ const CategoriesBar = ({ categories }) => {
           <Link to={`/categories`}>
             <h1
               className={
-                selected == "categories"
+                selected == "Categories"
                   ? "text-4xl text-yellow-400"
                   : "text-4xl hover:text-yellow-400 cursor-pointer"
               }
-              onClick={() => setSelected("categories")}
+              onClick={() => {
+                setSelected("Categories"), setChild("");
+              }}
             >
               Categories
             </h1>
@@ -51,9 +53,6 @@ const CategoriesBar = ({ categories }) => {
                 className="hover:text-yellow-400 py-2 block"
               >
                 {item.name}
-                {child && selected == item.name && (
-                  <div className="text-gray-400">/{child}</div>
-                )}
               </Link>
 
               {item.categoryChild && item.categoryChild.length > 0 && (
@@ -81,6 +80,12 @@ const CategoriesBar = ({ categories }) => {
             </li>
           ))}
         </ul>
+      </div>
+      <div className="flex gap-2 ml-5 mt-2">
+        {selected && (
+          <span className="font-semibold text-brand">{selected}</span>
+        )}
+        {child && <span className="font-semibold text-brand">/ {child}</span>}
       </div>
     </>
   );
