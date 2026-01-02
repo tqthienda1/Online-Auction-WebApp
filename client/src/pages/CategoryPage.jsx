@@ -7,7 +7,6 @@ import { http } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
 import AdminPagination from "@/components/AdminPagination";
 import { useAuth } from "@/context/AuthContext";
-import { useSearchParams } from "react-router-dom";
 
 const CategoryPage = () => {
   const { id } = useParams();
@@ -29,10 +28,10 @@ const CategoryPage = () => {
 
   const [filterTrigger, setFilterTrigger] = useState(0);
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParamS, setSearchParamS] = useSearchParams();
 
   useEffect(() => {
-    setSearchParams({
+    setSearchParamS({
       page: page.toString(),
       limit: limit.toString(),
       minPrice: minPrice.toString(),
