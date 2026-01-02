@@ -151,3 +151,29 @@ export const resetPassword = async (newPassword, accessToken) => {
 
   return { message: "Reset password successful." };
 };
+
+export const changePassword = async (email, oldPassword, newPassword) => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password: oldPassword,
+  });
+
+  if (error) {
+    console.log(error.message);
+    throw { status: 400, message: "Old password is incorrect." };
+  }
+
+  const { data: updateData, error: updateError } =
+    await supabase.auth.updateUser(
+      {
+        password: newPassword,
+      },
+      { accessToken: data.session.access_token }
+    );
+
+  if (updateError) {
+    throw { status: 400, message: updateError.message };
+  }
+
+  return { message: "Password changed successfully." };
+};
