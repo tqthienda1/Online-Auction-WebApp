@@ -70,3 +70,37 @@ export const getUserComments = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const createUser = async (req, res) => {
+  try {
+    const { supabaseId, username, role, dob, address } = req.body;
+    const user = await UserService.createUser({ supabaseId, username, role, dob, address });
+    return res.status(201).json({ data: user });
+  } catch (error) {
+    console.error("Create user failed:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const payload = req.body;
+    const user = await UserService.updateUserById(id, payload);
+    return res.status(200).json({ data: user });
+  } catch (error) {
+    console.error("Update user failed:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const id = req.params.id;
+    await UserService.deleteUserById(id);
+    return res.status(200).json({ message: "User deleted" });
+  } catch (error) {
+    console.error("Delete user failed:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

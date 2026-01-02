@@ -1,4 +1,5 @@
 import prisma from "../prismaClient.js";
+import { randomUUID } from "crypto";
 
 export const getUsers = async ({ page = 1, limit = 10 }) => {
   const skip = (page - 1) * limit;
@@ -116,4 +117,28 @@ export const updateExpiredSeller = async () => {
       role: "BIDDER",
     },
   });
+};
+
+export const createUser = async ({ supabaseId, username, role = "BIDDER", dob = null, address = null }) => {
+  const sid = supabaseId || randomUUID();
+  return await prisma.user.create({
+    data: {
+      supabaseId: sid,
+      username,
+      role,
+      dob,
+      address,
+      ratingPos: 0,
+      ratingNeg: 0,
+    },
+  });
+};
+
+export const updateUserById = async (id, payload) => {
+  const allowed = (({ username, role, dob, address }) => ({ username, role, dob, address }))(payload);
+  return await prisma.user.update({ where: { id }, data: allowed });
+};
+
+export const deleteUserById = async (id) => {
+  return await prisma.user.delete({ where: { id } });
 };
