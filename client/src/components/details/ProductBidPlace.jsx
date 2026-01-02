@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import InputPrice from "./InputPrice";
+import InputPrice from "../InputPrice";
 import SellerInformation from "./SellerInformation";
-import { http } from "../lib/utils.js";
+import { http } from "../../lib/utils.js";
 import { FaRegHeart } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -11,13 +11,17 @@ const ProductBidPlace = ({
   auction,
   watchlist,
   canBid,
-  onBidSuccess,
+  // onBidSuccess,
   onToggleWatchlist,
+  onRequestBid,
 }) => {
-  const [bidValue, setBidValue] = useState("");
+  const [bidValue, setBidValue] = useState(
+    `${auction.currentPrice + product.bidStep}`
+  );
   const [validationError, setValidationError] = useState(null);
   const [submitError, setSubmitError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,23 +49,7 @@ const ProductBidPlace = ({
 
   const handlePlaceBid = async () => {
     if (validationError || !bidValue) return;
-
-    try {
-      setIsSubmitting(true);
-      setSubmitError(null);
-
-      await http.post("/bids", {
-        productId: product.id,
-        maxPrice: Number(bidValue),
-      });
-
-      setBidValue("");
-      onBidSuccess?.();
-    } catch (err) {
-      setSubmitError(err.response?.data?.message || "Failed to place bid");
-    } finally {
-      setIsSubmitting(false);
-    }
+    onRequestBid?.(Number(bidValue));
   };
 
   {
@@ -185,20 +173,20 @@ const ProductBidPlace = ({
 
             <div className="flex flex-row w-[90%] justify-between items-center">
               <p className="text-lg font-medium">Choose your maximum bid</p>
-              <a className="text-sm font-extralight italic underline">
+              {/* <a className="text-sm font-extralight italic underline">
                 How bidding works
-              </a>
+              </a> */}
             </div>
 
             <InputPrice value={bidValue} onChange={setBidValue} />
 
-            <div className="flex w-[90%] text-end">
+            {/* <div className="flex w-[90%] text-end">
               <p className="text-xs font-extralight">
                 This amount excludes shipping fees, applicable taxes, and will
                 have a Buyer's Premium based on the hammer price of the lot:{" "}
                 <span className="underline font-medium">Buyer's Premium.</span>
               </p>
-            </div>
+            </div> */}
 
             <div className="flex flex-col w-full justify-center items-center gap-2">
               <button

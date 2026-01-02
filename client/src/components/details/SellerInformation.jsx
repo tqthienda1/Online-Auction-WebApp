@@ -18,9 +18,9 @@ const SellerInformation = ({ seller, bidder }) => {
           <p className="text-gray-700 mt-2">
             Rating Negative: {seller.ratingNeg}
           </p>
-          <button className="bg-brand text-white uppercase font-semibold py-2 px-6 mt-4 rounded hover:bg-neutral-500 transition">
+          {/* <button className="bg-brand text-white uppercase font-semibold py-2 px-6 mt-4 rounded hover:bg-neutral-500 transition">
             View more items
-          </button>
+          </button> */}
         </div>
 
         {/* <div className="w-28 h-28 bg-white rounded-full border border-gray-300"></div> */}

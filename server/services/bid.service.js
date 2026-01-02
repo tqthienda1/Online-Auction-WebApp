@@ -4,14 +4,20 @@ export const placeBid = async ({ userId, productId, maxPrice }) => {
   return prisma.$transaction(async (tx) => {
     const product = await tx.product.findUnique({
       where: { id: productId },
+      // lock: { mode: "ForUpdate" },
     });
 
     if (!product) {
       throw { status: 400, message: "Product not found." };
     }
 
-    if (maxPrice < product.currentPrice) {
+    if (maxPrice < product.currentPrice + product.bidStep) {
       throw { status: 400, message };
+    }
+    const now = new Date();
+
+    if (product.endTime <= now) {
+      throw { status: 400, message: "Auction has ended." };
     }
 
     await tx.bid.create({
@@ -59,11 +65,33 @@ export const placeBid = async ({ userId, productId, maxPrice }) => {
       });
     }
 
+    const systemParam = await tx.systemParameter.findFirst();
+
+    if (!systemParam) {
+      throw new Error("System parameters not configured");
+    }
+
+    const remainingMs = product.endTime.getTime() - now.getTime();
+
+    const thresholdMs = systemParam.autoExtendThreshold * 60 * 1000;
+
+    const isMeaningfulBid =
+      highest.bidderID !== product.highestBidderID ||
+      currentPrice !== product.currentPrice;
+
+    if (isMeaningfulBid && remainingMs <= thresholdMs && product.autoExtend) {
+      product.endTime = new Date(
+        product.endTime.getTime() + systemParam.autoExtendTime * 60 * 1000
+      );
+      console.log(product.endTime);
+    }
+
     return tx.product.update({
       where: { id: productId },
       data: {
         currentPrice,
         highestBidderID: highest.bidderID,
+        endTime: product.endTime,
       },
     });
   });

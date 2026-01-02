@@ -1,11 +1,11 @@
-import ProductCarousel from "../components/ProductCarousel.jsx";
-import ProductTitle from "../components/ProductTitle.jsx";
-import DetailNavBar from "../components/DetailNavBar.jsx";
-import ProductDescription from "../components/ProductDescription.jsx";
+import ProductCarousel from "../components/details/ProductCarousel.jsx";
+import ProductTitle from "../components/details/ProductTitle.jsx";
+import DetailNavBar from "../components/details/DetailNavBar.jsx";
+import ProductDescription from "../components/details/ProductDescription.jsx";
 import { useEffect, useState, useCallback } from "react";
-import ProductBidPlace from "../components/ProductBidPlace.jsx";
-import BidHistory from "../components/BidHistory.jsx";
-import SimilarProducts from "../components/SimilarProducts.jsx";
+import ProductBidPlace from "../components/details/ProductBidPlace.jsx";
+import BidHistory from "../components/details/BidHistory.jsx";
+import SimilarProducts from "../components/details/SimilarProducts.jsx";
 import CommentSection from "@/components/CommentSection.jsx";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -17,6 +17,7 @@ import NotFoundPage from "./NotFoundPage.jsx";
 import { useProductPermission } from "@/hooks/useProductPermission.js";
 import { useAuth } from "@/context/AuthContext.jsx";
 import { getTimeRemaining } from "@/helper/getTimeRemaining.js";
+import ConfirmBid from "@/components/details/ConfirmBid.jsx";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -35,6 +36,9 @@ const ProductDetails = () => {
   const [isWatched, setIsWatched] = useState(false);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
   const [now, setNow] = useState(Date.now());
+  const [pendingBid, setPendingBid] = useState(null);
+  const [placingBid, setPlacingBid] = useState(false);
+  const [bidError, setBidError] = useState(null);
 
   const [loading, setLoading] = useState({
     product: true,
@@ -228,6 +232,25 @@ const ProductDetails = () => {
     }
   };
 
+  const placeBid = async (bidValue) => {
+    try {
+      setPlacingBid(true);
+      setBidError(null);
+
+      await http.post("/bids", {
+        productId: product.id,
+        maxPrice: bidValue,
+      });
+
+      await handleBidSuccess();
+      setPendingBid(null);
+    } catch (err) {
+      setBidError(err.response?.data?.message || "Failed to place bid");
+    } finally {
+      setPlacingBid(false);
+    }
+  };
+
   const start = new Date(product.startTime).getTime();
   const end = new Date(product.endTime).getTime();
 
@@ -323,9 +346,20 @@ const ProductDetails = () => {
           auction={auctionView}
           watchlist={{ isWatched, loading: watchlistLoading }}
           canBid={canBid}
-          onBidSuccess={handleBidSuccess}
+          // onBidSuccess={handleBidSuccess}
           onToggleWatchlist={handleToggleWatchlist}
+          onRequestBid={(bidValue) => setPendingBid(bidValue)}
         />
+
+        {pendingBid && (
+          <ConfirmBid
+            bidValue={pendingBid}
+            loading={placingBid}
+            error={bidError}
+            onCancel={() => setPendingBid(null)}
+            onConfirm={() => placeBid(pendingBid)}
+          />
+        )}
       </div>
       <div data-aos="zoom-in">
         <CommentSection

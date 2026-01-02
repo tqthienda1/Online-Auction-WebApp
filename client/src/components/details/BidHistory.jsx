@@ -1,6 +1,6 @@
 import { maskUsername } from "@/helper/maskUser";
-import { formattedDate } from "../helper/formatDate";
-import { Spinner } from "./ui/spinner";
+import { formattedDate } from "../../helper/formatDate";
+import { Spinner } from "../ui/spinner";
 import { PiEmptyFill } from "react-icons/pi";
 import { PiEmptyLight } from "react-icons/pi";
 
