@@ -2,7 +2,6 @@ import React from "react";
 import { LuUser } from "react-icons/lu";
 import { useState, useEffect } from "react";
 import Modal from "./Modal";
-import { useAuth } from "@/context/AuthContext";
 
 const ProfileInfo = ({ info, setInfo }) => {
   const [showModal, setShowModal] = useState(false);

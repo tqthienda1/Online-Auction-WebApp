@@ -51,7 +51,7 @@ const Header = () => {
               >
                 <CiUser size={36} className="cursor-pointer " />
                 <span className="font-playfair font-semibold">
-                  Hi, {user.data.username}
+                  Hi, {user.data?.username}
                 </span>
               </Link>
 
