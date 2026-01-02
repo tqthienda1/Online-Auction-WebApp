@@ -396,6 +396,99 @@ export const closeExpiredAuctions = async () => {
   }
 };
 
+export const rejectBidder = async (productId, bidderId, sellerId) => {
+  return prisma.$transaction(async (tx) => {
+    const product = await tx.product.findUnique({ where: { id: productId } });
+
+    if (!product) throw new Error("Product not found");
+    if (product.sellerID !== sellerId) throw new Error("Forbidden");
+
+    const alreadyBanned = await tx.bannedBidder.findUnique({
+      where: {
+        productID_bidderID: {
+          productID: productId,
+          bidderID: bidderId,
+        },
+      },
+    });
+
+    if (alreadyBanned) {
+      return;
+    }
+
+    await tx.bannedBidder.create({
+      data: {
+        productID: productId,
+        bidderID: bidderId,
+      },
+    });
+
+    await tx.bid.deleteMany({
+      where: {
+        productID: productId,
+        bidderID: bidderId,
+      },
+    });
+
+    const bannedIds = (
+      await tx.bannedBidder.findMany({
+        where: { productID: productId },
+        select: { bidderID: true },
+      })
+    ).map((b) => b.bidderID);
+
+    const bids = await tx.bid.findMany({
+      where: {
+        productID: productId,
+        bidderID: { notIn: bannedIds },
+      },
+      orderBy: [{ maxPrice: "desc" }, { createdAt: "asc" }],
+      take: 2,
+    });
+
+    const highestBid = bids[0] ?? null;
+    const secondHighestBid = bids[1] ?? null;
+
+    let currentPrice;
+    let highestBidderID = highestBid?.bidderID ?? null;
+
+    if (!highestBid) {
+      currentPrice = product.startingPrice;
+    } else if (!secondHighestBid) {
+      currentPrice = product.startingPrice;
+    } else {
+      currentPrice = Math.min(
+        highestBid.maxPrice,
+        secondHighestBid.maxPrice + product.bidStep
+      );
+    }
+
+    const priceChanged = currentPrice !== product.currentPrice;
+    const highestChanged = highestBidderID !== product.highestBidderID;
+
+    const shouldWriteHistory =
+      highestBidderID && (priceChanged || highestChanged);
+
+    if (shouldWriteHistory) {
+      await tx.bidHistory.create({
+        data: {
+          productID: productId,
+          bidderID: highestBidderID,
+          price: currentPrice,
+        },
+      });
+    }
+
+    await tx.product.update({
+      where: { id: productId },
+      data: {
+        highestBidderID,
+        currentPrice,
+      },
+    });
+  });
+};
+
 export const fullTextSearch = async (
   keyword,
   minPrice,

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { MdComment } from "react-icons/md";
-import { Spinner } from "./ui/spinner";
+import { Spinner } from "../ui/spinner";
 
 const QuestionBox = ({ onSubmit, question, setQuestion, isLoading }) => {
   const handleSubmit = (e) => {

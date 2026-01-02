@@ -5,6 +5,7 @@ import { http } from "../../lib/utils.js";
 import { FaRegHeart } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import SellerPanel from "./SellerPanel.jsx";
 
 const ProductBidPlace = ({
   product,
@@ -14,6 +15,9 @@ const ProductBidPlace = ({
   // onBidSuccess,
   onToggleWatchlist,
   onRequestBid,
+  onBanBidder,
+  banning,
+  banError,
 }) => {
   const [bidValue, setBidValue] = useState(
     `${auction.currentPrice + product.bidStep}`
@@ -110,6 +114,9 @@ const ProductBidPlace = ({
         <SellerInformation
           seller={product.seller}
           bidder={auction.highestBidder}
+          onBanBidder={onBanBidder}
+          banning={banning}
+          banError={banError}
         />
       </div>
     );
@@ -117,7 +124,7 @@ const ProductBidPlace = ({
 
   return (
     <div className="flex flex-col w-1/3 items-center ">
-      {canBid && (
+      {canBid ? (
         <>
           <div className=" h-12 mt-10 flex justify-center items-center">
             <p className="text-2xl font-medium font-playfair">Place your bid</p>
@@ -194,8 +201,8 @@ const ProductBidPlace = ({
                 disabled={!!validationError || !bidValue || isSubmitting}
                 onClick={handlePlaceBid}
                 className="w-[90%] h-10 bg-brand uppercase text-yellow-400 text-xl font-bold
-             hover:bg-yellow-400 hover:text-brand transition
-             disabled:opacity-50 disabled:cursor-not-allowed"
+                      hover:bg-yellow-400 hover:text-brand transition
+                      disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting && (
                   <span className="inset-x-0 bottom-0 h-1 bg-yellow-400 animate-pulse" />
@@ -232,10 +239,22 @@ const ProductBidPlace = ({
               </button>
             </div>
           </div>
+          <SellerInformation
+            seller={product.seller}
+            bidder={auction.highestBidder}
+            onBanBidder={onBanBidder}
+            banning={banning}
+            banError={banError}
+          />
         </>
+      ) : (
+        <SellerPanel
+          product={product}
+          auction={auction}
+          onBanBidder={onBanBidder}
+          banning={banning}
+        />
       )}
-
-      <SellerInformation seller={product.seller} bidder={auction.bidder} />
     </div>
   );
 };

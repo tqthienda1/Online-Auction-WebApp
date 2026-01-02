@@ -4,7 +4,7 @@ import { MdOutlineComment } from "react-icons/md";
 import { FaRegFlag } from "react-icons/fa6";
 import { HiArrowTurnDownRight } from "react-icons/hi2";
 import { useState } from "react";
-import { Spinner } from "./ui/spinner";
+import { Spinner } from "../ui/spinner";
 
 const CommentSection = ({
   comments,
