@@ -150,6 +150,7 @@ const UserProfile = () => {
 
   const [wishlistItems, setWishlistItems] = useState([]);
   const [wonAuctions, setWonAuctions] = useState([]);
+  const [sellingItems, setSellingItems] = useState([]);
   const biddingItems = MOCK_PRODUCTS.slice(2, 4);
 
   useEffect(() => {
@@ -203,13 +204,75 @@ const UserProfile = () => {
       }
     };
 
+    // const loadSellingItems = async () => {
+    //   try {
+    //     // determine user id from available places
+    //     const userId = user?.id || user?.data?.id || info?.id;
+    //     if (!userId) {
+    //       setSellingItems([]);
+    //       return;
+    //     }
+
+    //     const res = await http.get(`/products?sellerID=${userId}`);
+
+    //     // API may return { data: products } or an array directly
+    //     const products = res.data?.data || res.data || [];
+
+    //     // filter for unsold and not expired
+    //     const now = Date.now();
+    //     const active = (products || []).filter(
+    //       (p) => p && !p.sold && new Date(p.endTime).getTime() > now
+    //     );
+
+    //     setSellingItems(active);
+    //   } catch (err) {
+    //     const isCanceled = err?.code === "ERR_CANCELED" || /canceled/i.test(err?.message || "");
+    //     if (isCanceled) return;
+    //     console.error("Failed to load selling items:", err?.response?.data || err.message || err);
+    //     setSellingItems([]);
+    //   }
+    // };
+
+    const loadSellingItems = async () => {
+  try {
+    // Ưu tiên lấy info.id hoặc user.id (đây là Primary Key trong DB của bạn)
+    // Thay vì lấy user.id chung chung có thể bị nhầm với supabaseId từ AuthContext
+    const userId = info?.id || user?.id || user?.data?.id;
+
+    if (!userId) {
+      console.warn("No UserID found to fetch selling items");
+      return;
+    }
+
+    console.debug("Fetching products for Seller ID:", userId);
+
+    const res = await http.get(`/products`, {
+      params: {
+        sellerId: userId, // Truyền UserID thực tế vào đây
+        sortBy: "startTime",
+        order: "desc",
+      }
+    });
+
+    const products = res.data?.data || [];
+    const now = Date.now();
+    const active = products.filter(
+      (p) => p && !p.sold && new Date(p.endTime).getTime() > now
+    );
+
+    setSellingItems(active);
+  } catch (err) {
+    console.error("Failed to load selling items:", err);
+  }
+};
     loadWatchlist();
     loadWonAuctions();
+    loadSellingItems();
 
     return () => {
       mounted = false;
     };
-  }, [loading, user]);
+  }, [loading, user, info]);
 
   return (
     <>
@@ -232,12 +295,16 @@ const UserProfile = () => {
           <ProfileTab tab={tab} setTab={setTab} />
           <div className="my-10 w-3/4 ">
             <ProductList
-              showType={tab === "love" ? 2 : tab === "bidding" ? 3 : 4}
+              showType={
+                tab === "love" ? 2 : tab === "bidding" ? 3 : tab === "selling" ? 2 : 4
+              }
               products={
                 tab === "love"
                   ? wishlistItems
                   : tab === "bidding"
                   ? biddingItems
+                  : tab === "selling"
+                  ? sellingItems
                   : wonAuctions
               }
             />
