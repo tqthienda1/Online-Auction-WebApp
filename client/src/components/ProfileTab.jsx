@@ -51,6 +51,17 @@ const ProfileTab = ({ tab, setTab }) => {
         <AiOutlineShop className="text-sm h-full" />
         Selling
       </button>
+      <button
+        className={`w-30 cursor-pointer border px-3 py-1 font-semibold text-md rounded-lg flex items-center gap-1 justify-center ${
+          tab === "sold"
+            ? "text-white bg-brand hover:bg-gray-500"
+            : "text-brand hover:bg-gray-50"
+        }`}
+        onClick={() => setTab("sold")}
+      >
+        <AiOutlineShop className="text-sm h-full" />
+        Sold
+      </button>
     </div>
   );
 };

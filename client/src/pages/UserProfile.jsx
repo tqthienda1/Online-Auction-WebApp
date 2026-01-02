@@ -151,7 +151,8 @@ const UserProfile = () => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [wonAuctions, setWonAuctions] = useState([]);
   const [sellingItems, setSellingItems] = useState([]);
-  const biddingItems = MOCK_PRODUCTS.slice(2, 4);
+  const [soldItems, setSoldItems] = useState([]);
+  const [biddingItems, setBiddingItems] = useState([]);
 
   useEffect(() => {
     if (loading || !user?.id) return; // wait for auth
@@ -252,11 +253,12 @@ const UserProfile = () => {
       return;
     }
 
-    console.debug("Fetching products for Seller ID:", userId);
+    console.debug("Fetching selling products for Seller ID:", userId);
 
     const res = await http.get(`/products`, {
       params: {
-        sellerId: userId, // Truyền UserID thực tế vào đây
+        sellerId: userId,
+        sold: false, // Explicitly request unsold products
         sortBy: "startTime",
         order: "desc",
       }
@@ -268,14 +270,68 @@ const UserProfile = () => {
       (p) => p && !p.sold && new Date(p.endTime).getTime() > now
     );
 
-    setSellingItems(active);
+    console.debug("Active selling items count:", active.length);
+    if (mounted) setSellingItems(active);
   } catch (err) {
     console.error("Failed to load selling items:", err);
+    if (mounted) setSellingItems([]);
+  }
+};
+
+const loadSoldItems = async () => {
+  try {
+    const userId = info?.id || user?.id || user?.data?.id;
+
+    if (!userId) {
+      console.warn("No UserID found to fetch sold items");
+      return;
+    }
+
+    console.debug("Fetching sold products for Seller ID:", userId);
+
+    const res = await http.get(`/products`, {
+      params: {
+        sellerId: userId,
+        sold: true, // Explicitly request sold products only
+      }
+    });
+
+    const products = res.data?.data || [];
+    console.debug("Sold items count:", products.length);
+    if (mounted) setSoldItems(products);
+  } catch (err) {
+    console.error("Failed to load sold items:", err);
+    if (mounted) setSoldItems([]);
+  }
+};
+
+const loadBiddingItems = async () => {
+  try {
+    const userId = info?.id || user?.id || user?.data?.id;
+
+    if (!userId) {
+      console.warn("No UserID found to fetch bidding items");
+      return;
+    }
+
+    console.debug("Fetching bidding products for User ID:", userId);
+
+    // Fetch products where user has placed bids
+    const res = await http.get(`/bids/bidding`);
+
+    const products = res.data?.data || [];
+    console.debug("Active bidding items count:", products.length);
+    if (mounted) setBiddingItems(products);
+  } catch (err) {
+    console.error("Failed to load bidding items:", err);
+    if (mounted) setBiddingItems([]);
   }
 };
     loadWatchlist();
     loadWonAuctions();
     loadSellingItems();
+    loadSoldItems();
+    loadBiddingItems();
 
     return () => {
       mounted = false;
@@ -304,7 +360,7 @@ const UserProfile = () => {
           <div className="my-10 w-3/4 ">
             <ProductList
   showType={
-    tab === "watchList" || tab === "selling" ? 2 : tab === "bidding" ? 3 : 4
+    tab === "watchList" || tab === "selling" || tab === "sold" ? 2 : tab === "bidding" ? 3 : 4
   }
   products={
     tab === "watchList"
@@ -313,6 +369,8 @@ const UserProfile = () => {
       ? biddingItems
       : tab === "selling"
       ? sellingItems
+      : tab === "sold"
+      ? soldItems
       : wonAuctions
   }
 />
