@@ -48,6 +48,7 @@ export const getProducts = async (req, res) => {
 
     const user = req.user?.id;
 
+
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
     const soldValue =
@@ -219,5 +220,19 @@ export const getProductDescriptions = async (req, res) => {
     return res
       .status(err.status || 500)
       .json({ message: err.message || "Internal server error" });
+  }
+};
+
+export const search = async (req, res) => {
+  try {
+    const { keyword } = req.params;
+
+    const data = await productService.fullTextSearch(keyword);
+    console.log(data);
+
+    return res.status(200).json({ data });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -95,7 +95,7 @@ export const optionalAuthMiddleware = async (req, res, next) => {
       supabaseId: supabaseUser.id,
       role: dbUser.role,
       email: supabaseUser.email,
-    };
+    };z
 
     next();
   } catch (err) {

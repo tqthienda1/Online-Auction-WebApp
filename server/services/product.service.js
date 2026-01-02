@@ -391,3 +391,47 @@ export const closeExpiredAuctions = async () => {
     });
   }
 };
+
+export const fullTextSearch = async (keyword) => {
+  return await prisma.$queryRaw`
+    WITH ranked_products AS (
+      SELECT
+        p.id,
+        p."sellerID",
+        p."highestBidderID",
+        p."productName",
+        p."productAvt",
+        p."categoryID",
+        p."startingPrice",
+        p."bidStep",
+        p."buyNowPrice",
+        p."currentPrice",
+        p."startTime",
+        p."endTime",
+        p."autoExtend",
+        p."sold",
+        p."ratingRequired",
+        ts_rank(p.search_vector, q) AS rank
+      FROM "Product" p
+      CROSS JOIN plainto_tsquery('english', ${keyword}::text) q
+      WHERE
+        p.search_vector @@ q
+        AND p.sold = false
+        AND p."endTime" > now()
+    )
+    SELECT
+      rp.*,
+      c.name AS category_name,
+      u.id AS highest_bidder_id,
+      u.username AS highest_bidder_username,
+      (
+        SELECT COUNT(*)::int
+        FROM "Bid" b
+        WHERE b."productID" = rp.id
+      ) AS bid_count
+    FROM ranked_products rp
+    LEFT JOIN "Category" c ON c.id = rp."categoryID"
+    LEFT JOIN "User" u ON u.id = rp."highestBidderID"
+    ORDER BY rp.rank DESC
+  `;
+};
