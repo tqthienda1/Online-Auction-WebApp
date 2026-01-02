@@ -11,7 +11,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import QuestionBox from "@/components/details/QuestionBox.jsx";
 import { http } from "../lib/utils.js";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner.jsx";
 import NotFoundPage from "./NotFoundPage.jsx";
 import { useProductPermission } from "@/hooks/useProductPermission.js";
@@ -44,7 +44,7 @@ const ProductDetails = () => {
   const [bidError, setBidError] = useState(null);
   const [banning, setBanning] = useState(false);
   const [banError, setBanError] = useState(null);
-
+  const navigate = useNavigate();
   const [loading, setLoading] = useState({
     product: true,
     auction: true,
@@ -154,9 +154,6 @@ const ProductDetails = () => {
     await Promise.all([fetchAuction(), fetchBidHistory()]);
   };
 
-  console.log(user);
-  console.log(product);
-
   const handleSubmit = async () => {
     const controller = new AbortController();
     try {
@@ -221,6 +218,12 @@ const ProductDetails = () => {
 
   const handleToggleWatchlist = async () => {
     if (watchlistLoading) return;
+
+    if (!user) {
+      navigate("/login");
+
+      return;
+    }
 
     try {
       setWatchlistLoading(true);
@@ -372,6 +375,8 @@ const ProductDetails = () => {
           auction={auctionView}
           watchlist={{ isWatched, loading: watchlistLoading }}
           canBid={canBid}
+          canEdit={canEditDescription}
+          user={user}
           onToggleWatchlist={handleToggleWatchlist}
           onRequestBid={(bidValue) => setPendingBid(bidValue)}
           onBanBidder={canBanBidder ? handleBanBidder : null}

@@ -4,14 +4,17 @@ import SellerInformation from "./SellerInformation";
 import { http } from "../../lib/utils.js";
 import { FaRegHeart } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import SellerPanel from "./SellerPanel.jsx";
+import { toast } from "sonner";
 
 const ProductBidPlace = ({
   product,
   auction,
   watchlist,
   canBid,
+  canEdit,
+  user,
   // onBidSuccess,
   onToggleWatchlist,
   onRequestBid,
@@ -25,7 +28,6 @@ const ProductBidPlace = ({
   const [validationError, setValidationError] = useState(null);
   const [submitError, setSubmitError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,6 +55,12 @@ const ProductBidPlace = ({
 
   const handlePlaceBid = async () => {
     if (validationError || !bidValue) return;
+
+    if (!user) {
+      navigate("/login");
+
+      return;
+    }
     onRequestBid?.(Number(bidValue));
   };
 
@@ -124,7 +132,14 @@ const ProductBidPlace = ({
 
   return (
     <div className="flex flex-col w-1/3 items-center ">
-      {canBid ? (
+      {canEdit ? (
+        <SellerPanel
+          product={product}
+          auction={auction}
+          onBanBidder={onBanBidder}
+          banning={banning}
+        />
+      ) : (
         <>
           <div className=" h-12 mt-10 flex justify-center items-center">
             <p className="text-2xl font-medium font-playfair">Place your bid</p>
@@ -247,13 +262,6 @@ const ProductBidPlace = ({
             banError={banError}
           />
         </>
-      ) : (
-        <SellerPanel
-          product={product}
-          auction={auction}
-          onBanBidder={onBanBidder}
-          banning={banning}
-        />
       )}
     </div>
   );
