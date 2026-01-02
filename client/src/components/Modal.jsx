@@ -7,6 +7,7 @@ import { http } from "@/lib/utils";
 import { Spinner } from "./ui/spinner";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import { IoIosCloseCircleOutline } from "react-icons/io";
+import { changePassword } from "@/services/auth.service";
 
 const Modal = ({ info, setInfo, type, onClose }) => {
   const changeInfoSchema = z.object({
@@ -69,12 +70,15 @@ const Modal = ({ info, setInfo, type, onClose }) => {
         case "changeInfo":
           res = await http.patch("/user/", data);
           console.log(res);
-          setInfo(res.data.updatedUser.username, res.data.updatedUser.address);
+          setInfo((prev) => ({
+            ...prev,
+            username: res.data.updatedUser.username,
+            address: res.data.updatedUser.address,
+          }));
 
           break;
         case "changePass":
-          console.log(data);
-          res = await http.patch("/auth/change-password", data);
+          await changePassword(info.email, data.curPass, data.newPass);
           break;
         case "upgrade":
           res = await http.post("/upgrade/");

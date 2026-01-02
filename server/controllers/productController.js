@@ -140,6 +140,8 @@ export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
+    console.log(userId);
+    console.log(id);
 
     if (!id) {
       return res.status(400).json({ message: "Product id is require." });
@@ -186,17 +188,33 @@ export const getProductBidHistory = async (req, res) => {
 export const getProductAuction = async (req, res) => {
   try {
     const productId = req.params.id;
+    const userId = req.user.supabaseId;
 
-    const { currentPrice, highestBidder } = await productService.getAuction(
-      productId
-    );
+    const auction = await productService.getAuction(productId);
+
+    if (!auction) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const now = new Date();
+
+    const auctionEnded = auction.sold || now >= new Date(auction.endTime);
+
+    console.log(auction.highestBidderID, userId);
+
+    const isWinner =
+      auctionEnded &&
+      auction.highestBidderID &&
+      userId &&
+      auction.highestBidderID == userId;
 
     return res.status(200).json({
-      currentPrice,
-      highestBidder,
+      currentPrice: auction.currentPrice,
+      highestBidder: auction.highestBidder,
+      isWinner,
     });
   } catch (err) {
-    console.log("Get product auction failed", err.message);
+    console.log("Get product auction failed:", err.message);
     return res
       .status(err.status || 500)
       .json({ message: err.message || "Internal server error" });
@@ -217,5 +235,28 @@ export const getProductDescriptions = async (req, res) => {
     return res
       .status(err.status || 500)
       .json({ message: err.message || "Internal server error" });
+  }
+};
+
+export const search = async (req, res) => {
+  try {
+    const { keyword } = req.params;
+    const { page, limit, minPrice, maxPrice, order, sortBy } = req.query;
+
+    const data = await productService.fullTextSearch(
+      keyword,
+      Number(minPrice),
+      Number(maxPrice),
+      sortBy,
+      order,
+      Number(page),
+      Number(limit)
+    );
+    console.log(data);
+
+    return res.status(200).json({ data, total: data.length });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

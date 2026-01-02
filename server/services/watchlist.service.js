@@ -1,4 +1,4 @@
-import prisma from '../prismaClient.js';
+import prisma from "../prismaClient.js";
 
 export const getWatchlist = async (userId, page = 1, limit = 10) => {
   try {
@@ -24,27 +24,27 @@ export const getWatchlist = async (userId, page = 1, limit = 10) => {
               sold: true,
               sellerID: true,
               highestBidderID: true,
-            }
-          }
+            },
+          },
         },
         orderBy: {
-            createdAt: 'desc'
-        }
+          createdAt: "desc",
+        },
       }),
-      prisma.watchList.count({ where: { userID: userId } })
+      prisma.watchList.count({ where: { userID: userId } }),
     ]);
 
     return {
-      products: products.map(item => ({
+      products: products.map((item) => ({
         ...item.product,
-        addedToWatchlistAt: item.createdAt
+        addedToWatchlistAt: item.createdAt,
       })),
-      total
+      total,
     };
   } catch (error) {
     throw {
       status: 500,
-      message: error.message || 'Failed to fetch watchlist'
+      message: error.message || "Failed to fetch watchlist",
     };
   }
 };
@@ -53,13 +53,13 @@ export const addToWatchlist = async (userId, productId) => {
   try {
     // Check if product exists
     const product = await prisma.product.findUnique({
-      where: { id: productId }
+      where: { id: productId },
     });
 
     if (!product) {
       throw {
         status: 404,
-        message: 'Product not found'
+        message: "Product not found",
       };
     }
 
@@ -68,15 +68,15 @@ export const addToWatchlist = async (userId, productId) => {
       where: {
         userID_productID: {
           userID: userId,
-          productID: productId
-        }
-      }
+          productID: productId,
+        },
+      },
     });
 
     if (existingEntry) {
       throw {
         status: 409,
-        message: 'Product is already in your watchlist'
+        message: "Product is already in your watchlist",
       };
     }
 
@@ -84,7 +84,7 @@ export const addToWatchlist = async (userId, productId) => {
     const watchlistEntry = await prisma.watchList.create({
       data: {
         userID: userId,
-        productID: productId
+        productID: productId,
       },
       include: {
         product: {
@@ -98,10 +98,10 @@ export const addToWatchlist = async (userId, productId) => {
             buyNowPrice: true,
             startTime: true,
             endTime: true,
-            sold: true
-          }
-        }
-      }
+            sold: true,
+          },
+        },
+      },
     });
 
     return watchlistEntry;
@@ -111,7 +111,7 @@ export const addToWatchlist = async (userId, productId) => {
     }
     throw {
       status: 500,
-      message: error.message || 'Failed to add product to watchlist'
+      message: error.message || "Failed to add product to watchlist",
     };
   }
 };
@@ -123,15 +123,15 @@ export const removeFromWatchlist = async (userId, productId) => {
       where: {
         userID_productID: {
           userID: userId,
-          productID: productId
-        }
-      }
+          productID: productId,
+        },
+      },
     });
 
     if (!existingEntry) {
       throw {
         status: 404,
-        message: 'Product not found in your watchlist'
+        message: "Product not found in your watchlist",
       };
     }
 
@@ -140,9 +140,9 @@ export const removeFromWatchlist = async (userId, productId) => {
       where: {
         userID_productID: {
           userID: userId,
-          productID: productId
-        }
-      }
+          productID: productId,
+        },
+      },
     });
 
     return true;
@@ -152,7 +152,7 @@ export const removeFromWatchlist = async (userId, productId) => {
     }
     throw {
       status: 500,
-      message: error.message || 'Failed to remove product from watchlist'
+      message: error.message || "Failed to remove product from watchlist",
     };
   }
 };
@@ -163,16 +163,18 @@ export const checkWatchlist = async (userId, productId) => {
       where: {
         userID_productID: {
           userID: userId,
-          productID: productId
-        }
-      }
+          productID: productId,
+        },
+      },
     });
+
+    console.log(userId);
 
     return !!entry; // Return true if exists, false otherwise
   } catch (error) {
     throw {
       status: 500,
-      message: error.message || 'Failed to check watchlist'
+      message: error.message || "Failed to check watchlist",
     };
   }
 };
