@@ -89,3 +89,52 @@ export const getByProduct = async (productId, order = [], db = prisma) => {
     orderBy: order,
   });
 };
+
+export const getBiddingProducts = async (userId, db = prisma) => {
+  const now = new Date();
+
+  // Get all bids placed by the user
+  const userBids = await db.bid.findMany({
+    where: {
+      bidderID: userId,
+    },
+    select: {
+      productID: true,
+    },
+  });
+
+  // Get unique product IDs
+  const productIds = [...new Set(userBids.map((bid) => bid.productID))];
+
+  if (productIds.length === 0) {
+    return [];
+  }
+
+  // Get all products where user has bid, still active (not expired, not sold)
+  const products = await db.product.findMany({
+    where: {
+      id: {
+        in: productIds,
+      },
+      sold: false,
+      endTime: {
+        gt: now,
+      },
+    },
+    include: {
+      _count: { select: { bids: true } },
+      category: { select: { name: true } },
+      highestBidder: { select: { id: true, username: true } },
+    },
+    orderBy: {
+      endTime: "asc",
+    },
+  });
+
+  return products.map((p) => ({
+    ...p,
+    category: p.category?.name ?? null,
+    totalBid: p._count.bids,
+    _count: undefined,
+  }));
+};

@@ -84,3 +84,26 @@ export const placeBid = async (req, res) => {
       .json({ message: err.message || "Internal server error" });
   }
 };
+
+export const getBiddingProducts = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required." });
+    }
+
+    const products = await BidServices.getBiddingProducts(userId);
+
+    return res.status(200).json({
+      success: true,
+      data: products,
+      total: products.length,
+    });
+  } catch (err) {
+    console.log("Get bidding products failed:", err.message);
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch bidding products" });
+  }
+};
