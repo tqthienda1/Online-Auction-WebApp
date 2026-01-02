@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { RiAuctionLine } from "react-icons/ri";
 import { BsFillCartCheckFill } from "react-icons/bs";
 import { maskUsername } from "@/helper/maskUser";
@@ -6,14 +6,17 @@ import { formattedDate } from "@/helper/formatDate";
 import { FaRegHeart } from "react-icons/fa6";
 import { FaHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { Spinner } from "./ui/spinner";
 
-const RECENTLY_ADDED_MINUTES = 1;
+const RECENTLY_ADDED_DAYS = 1;
 
 const ProductCard = ({
   product,
   showType,
   onAddToWatchList,
   onRemoveFromWatchList,
+  isLoading,
+  loadingItem,
 }) => {
   const checkIsRecent = (timestamp) => {
     if (!timestamp) return false;
@@ -25,8 +28,33 @@ const ProductCard = ({
     const diffHours = diffMs / (1000 * 60 * 60);
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
 
-    return diffDays < RECENTLY_ADDED_MINUTES;
+    return diffDays < RECENTLY_ADDED_DAYS;
   };
+
+  const calculateTimeLeft = () => {
+    const now = new Date();
+    const end = new Date(product.endTime);
+    const diff = end - now;
+
+    if (diff <= 0) return null;
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    return { days, hours, minutes, seconds };
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [product.endTime]);
 
   const isRecentlyAdded = product.startTime
     ? checkIsRecent(product.startTime)
@@ -44,20 +72,26 @@ const ProductCard = ({
                 </span>
               )}
             </div>
-            {product.isLiked === true ? (
-              <button
-                className="h-full cursor-pointer"
-                onClick={() => onRemoveFromWatchList(product.id)}
-              >
-                <FaHeart className="text-2xl text-red-500 hover:text-red-600" />
-              </button>
+            {isLoading && loadingItem === product.id ? (
+              <Spinner className="size-6 text-yellow-500" />
             ) : (
-              <button
-                className="h-full cursor-pointer"
-                onClick={() => onAddToWatchList(product.id)}
-              >
-                <FaRegHeart className="text-2xl text-red-500 hover:text-red-600" />
-              </button>
+              <>
+                {product.isLiked === true ? (
+                  <button
+                    className="h-full cursor-pointer"
+                    onClick={() => onRemoveFromWatchList(product.id)}
+                  >
+                    <FaHeart className="text-2xl text-red-500 hover:text-red-600" />
+                  </button>
+                ) : (
+                  <button
+                    className="h-full cursor-pointer"
+                    onClick={() => onAddToWatchList(product.id)}
+                  >
+                    <FaRegHeart className="text-2xl text-red-500 hover:text-red-600" />
+                  </button>
+                )}
+              </>
             )}
           </div>
           <div className="w-full">
@@ -100,9 +134,9 @@ const ProductCard = ({
                 </span>
               </p>
               <p className="flex justify-between text-gray-500">
-                <span>End:</span>
+                <span>Start date:</span>
                 <span>
-                  {new Date(product.endTime).toLocaleString("en-GB", {
+                  {new Date(product.startTime).toLocaleString("en-GB", {
                     hour: "2-digit",
                     minute: "2-digit",
                     day: "2-digit",
@@ -110,6 +144,19 @@ const ProductCard = ({
                     year: "numeric",
                     hour12: false,
                   })}
+                </span>
+              </p>
+              <p className="flex justify-between text-gray-500">
+                <span>End in:</span>
+                <span className="font-semibold">
+                  {timeLeft
+                    ? `${timeLeft.days > 0 ? timeLeft.days + "d " : ""}${String(
+                        timeLeft.hours
+                      ).padStart(2, "0")}:${String(timeLeft.minutes).padStart(
+                        2,
+                        "0"
+                      )}:${String(timeLeft.seconds).padStart(2, "0")}`
+                    : "Ended"}
                 </span>
               </p>
             </div>
@@ -227,7 +274,7 @@ const ProductCard = ({
               <p className="flex gap-1 text-gray-600 justify-between items-center">
                 <span className="text-sm ">Seller:</span>
                 <span className="text-sm font-semibold">
-                 {product.sellerName}
+                  {product.sellerName}
                 </span>
               </p>
 
