@@ -91,3 +91,28 @@ export const getUserComments = async (userId) => {
     },
   });
 };
+
+export const updateExpiredSeller = async () => {
+  const now = new Date();
+
+  const expireSellers = await prisma.upgradeRequest.findMany({
+    where: {
+      status: "ACCEPT",
+      decidedTime: { lte: now },
+    },
+    select: {
+      userID: true,
+    },
+  });
+
+  const formatExpireSellers = expireSellers.map((user) => (user = user.userID));
+
+  await prisma.user.updateMany({
+    where: {
+      id: { in: formatExpireSellers },
+    },
+    data: {
+      role: "BIDDER",
+    },
+  });
+};
