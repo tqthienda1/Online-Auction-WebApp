@@ -45,7 +45,7 @@ router.put("/:id", authMiddleware, requireRole(["SELLER"]), updateProduct);
 router.delete(
   "/:id",
   authMiddleware,
-  requireRole(["SELLER, ADMIN"]),
+  requireRole(["SELLER", "ADMIN"]),
   deleteProduct
 );
 

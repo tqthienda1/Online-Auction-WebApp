@@ -4,6 +4,7 @@ import { MdOutlineComment } from "react-icons/md";
 import { FaRegFlag } from "react-icons/fa6";
 import { HiArrowTurnDownRight } from "react-icons/hi2";
 import { useState } from "react";
+import { Spinner } from "./ui/spinner";
 
 const CommentSection = ({
   comments,
@@ -12,6 +13,7 @@ const CommentSection = ({
   user,
   replyText,
   setReplyText,
+  isLoading,
 }) => {
   const mainComments = comments.filter((c) => !c.parentID);
   const replies = comments.filter((c) => c.parentID);
@@ -57,7 +59,11 @@ const CommentSection = ({
                 </div>
 
                 {showBox.id == c.id && (
-                  <div className="border border-yellow-400 rounded-lg p-3 flex flex-col items-start w-full">
+                  <div
+                    className={`border border-yellow-400 rounded-lg p-3 flex flex-col items-start w-full ${
+                      isLoading ? "bg-gray-100 pointer-events-none" : ""
+                    }`}
+                  >
                     <div className="w-full">
                       <h2 className="text-lg font-semibold mb-2 flex justify-center items-center text-brand">
                         Replying to:
@@ -73,21 +79,27 @@ const CommentSection = ({
                         rows={4}
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
-                        className="w-full px-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 bg-background text-foreground resize-none"
+                        className="w-full px-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground resize-none"
                       ></textarea>
                       <div className="flex w-full justify-center gap-7 items-center mt-3">
-                        <button
-                          className="bg-gray-200 hover:bg-gray-300 py-2 px-5 rounded-lg font-semibold cursor-pointer"
-                          onClick={() => setShowBox({ id: null, name: "" })}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          className="bg-yellow-400 hover:bg-yellow-500 py-2 px-5 rounded-lg font-semibold cursor-pointer"
-                          onClick={() => onReply(showBox.id)}
-                        >
-                          Submit
-                        </button>
+                        {isLoading ? (
+                          <Spinner className="size-8 w-full text-yellow-500" />
+                        ) : (
+                          <>
+                            <button
+                              className="bg-gray-200 hover:bg-gray-300 py-2 px-5 rounded-lg font-semibold cursor-pointer"
+                              onClick={() => setShowBox({ id: null, name: "" })}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              className="bg-yellow-400 hover:bg-yellow-500 py-2 px-5 rounded-lg font-semibold cursor-pointer text-white"
+                              onClick={() => onReply(showBox.id)}
+                            >
+                              Submit
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>

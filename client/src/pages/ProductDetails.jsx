@@ -96,8 +96,12 @@ const ProductDetails = () => {
 
   useEffect(() => {
     fetchProduct();
+    console.log("refetch");
+  }, [fetchProduct]);
+
+  useEffect(() => {
     fetchAuction();
-  }, [fetchProduct, fetchAuction]);
+  }, [fetchAuction]);
 
   useEffect(() => {
     if (curFrame === "bidhistory" && bidHistory.length === 0) {
@@ -146,8 +150,19 @@ const ProductDetails = () => {
           signal: controller.signal,
         }
       );
-      const res = await http.get(`/products/${id}`);
-      setProduct(res.data.data);
+      console.log("p:", product);
+      console.log("c", newComment.data.data);
+
+      setProduct((prev) => {
+        if (!prev) return prev;
+
+        return {
+          ...prev,
+          comments: [newComment.data.data, ...prev.comments],
+        };
+      });
+
+      console.log("np:", product);
     } catch (error) {
       console.error(error);
       setError(error);
@@ -255,28 +270,23 @@ const ProductDetails = () => {
         )}
       </div>
       <div data-aos="zoom-in">
-        {isLoadingComment ? (
-          <div className="min-h-screen flex flex-col items-center justify-center">
-            <Spinner className="size-8 text-yellow-500" />
-            <p className="mt-4 font-medium">Loading</p>
-          </div>
-        ) : (
-          <CommentSection
-            type="ask"
-            comments={product.comments}
-            setParent={setParent}
-            onReply={handleSubmit}
-            user={user.data.role}
-            replyText={text}
-            setReplyText={setText}
-          />
-        )}
+        <CommentSection
+          type="ask"
+          comments={product.comments}
+          setParent={setParent}
+          onReply={handleSubmit}
+          user={user.data.role}
+          replyText={text}
+          setReplyText={setText}
+          isLoading={isLoadingComment}
+        />
 
         {user?.data.role === "BIDDER" && (
           <QuestionBox
             onSubmit={handleSubmit}
             question={text}
             setQuestion={setText}
+            isLoading={isLoadingComment}
           />
         )}
       </div>

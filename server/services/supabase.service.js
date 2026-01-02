@@ -30,3 +30,17 @@ export const uploadFilesToSupabase = async (files) => {
 
   return urls;
 };
+
+export async function generateMagicLink(email, productId) {
+  const { data, error } = await supabase.auth.admin.generateLink({
+    type: "magiclink",
+    email,
+    options: {
+      redirectTo: `${process.env.FRONTEND_URL}/products/${productId}`,
+    },
+  });
+
+  if (error) throw error;
+
+  return data.properties.action_link;
+}

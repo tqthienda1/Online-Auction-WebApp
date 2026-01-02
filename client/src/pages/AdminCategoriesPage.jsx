@@ -83,11 +83,12 @@ const AdminCategoriesPage = () => {
         { signal: controller.signal }
       );
 
-      const res = await http.get("categories/tree", {
+      const res = await http.get("categories/categories", {
         signal: controller.signal,
       });
-      setCategories(res.data.data);
-      console.log(categories);
+
+      console.log(res.data.data);
+      setCategories(res.data.data.data);
     } catch (error) {
       if (error?.response?.data?.message === "Category already exists") {
         setWarning("Category has already exists");
@@ -113,10 +114,11 @@ const AdminCategoriesPage = () => {
         { signal: controller.signal }
       );
 
-      const res = await http.get("categories/tree", {
+      const res = await http.get("categories/categories ", {
         signal: controller.signal,
       });
-      setCategories(res.data.data);
+      console.log(res.data.data);
+      setCategories(res.data.data.data);
     } catch (error) {
       console.error(error);
       setError(error);
@@ -140,11 +142,12 @@ const AdminCategoriesPage = () => {
         { signal: controller.signal }
       );
 
-      const res = await http.get("categories/tree", {
+      const res = await http.get("categories/categories", {
         signal: controller.signal,
       });
-      console.log(res.data);
-      setCategories(res.data.data);
+
+      setCategories(res.data.data.data);
+      console.log(categories);
     } catch (error) {
       console.error(error);
       setError(error);
@@ -171,6 +174,7 @@ const AdminCategoriesPage = () => {
             categoryChild: c.categoryChild?.filter((child) => child.id !== id),
           }))
       );
+      console.log(categories);
 
       setConfirm(null);
     } catch (error) {

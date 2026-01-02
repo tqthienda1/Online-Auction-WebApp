@@ -79,7 +79,6 @@ const CategoryPage = () => {
   };
 
   const handleDeleteFromWatchList = async (id) => {
-    console.log(id);
     const controller = new AbortController();
     try {
       setIsLoading(true);
@@ -97,7 +96,6 @@ const CategoryPage = () => {
   };
 
   const handleAddToWatchList = async (id) => {
-    console.log(id);
     const controller = new AbortController();
     try {
       setIsLoading(true);
@@ -110,7 +108,6 @@ const CategoryPage = () => {
       setProducts((prev) =>
         prev.map((p) => (p.id === id ? { ...p, isLiked: true } : p))
       );
-      console.log(products);
     } catch (error) {
       console.error(error);
       setError(error);
@@ -123,7 +120,7 @@ const CategoryPage = () => {
     <>
       {!error && (
         <div>
-          <main className="grid grid-cols-10 gap-8 px-5 py-10 mt-10">
+          <main className="grid grid-cols-10 gap-8 px-5 py-10">
             <div className="col-span-2">
               <Sidebar
                 onPriceChange={handlePriceChange}

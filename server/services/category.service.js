@@ -117,6 +117,8 @@ export const CategoryService = {
       })),
     }));
 
+    console.log(formattedData);
+
     return {
       data: formattedData,
       page,

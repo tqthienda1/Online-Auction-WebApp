@@ -63,7 +63,7 @@ export const createComment = async (req, res) => {
       parentID,
     });
 
-    return res.status(201).json(comment);
+    return res.status(201).json({ data: comment });
   } catch (error) {
     console.error("Create comment failed:", error);
     return res.status(500).json({ message: "A system error occurred." });
