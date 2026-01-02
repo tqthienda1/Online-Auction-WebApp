@@ -168,8 +168,6 @@ export const checkWatchlist = async (userId, productId) => {
       },
     });
 
-    console.log(userId);
-
     return !!entry; // Return true if exists, false otherwise
   } catch (error) {
     throw {

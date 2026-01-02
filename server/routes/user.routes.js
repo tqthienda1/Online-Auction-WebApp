@@ -9,6 +9,28 @@ const router = express.Router();
 
 router.get("/", UserController.getUsers);
 
+// Admin CRUD for users
+router.post(
+  "/",
+  authMiddleware,
+  requireRole(["ADMIN"]),
+  UserController.createUser
+);
+
+router.put(
+  "/:id",
+  authMiddleware,
+  requireRole(["ADMIN"]),
+  UserController.updateUser
+);
+
+router.delete(
+  "/:id",
+  authMiddleware,
+  requireRole(["ADMIN"]),
+  UserController.deleteUser
+);
+
 router.get(
   "/me/ratings",
   authMiddleware,

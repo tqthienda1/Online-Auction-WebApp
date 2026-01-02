@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 const CategoriesBar = ({ categories }) => {

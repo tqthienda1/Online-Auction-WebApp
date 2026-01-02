@@ -14,6 +14,7 @@ const CommentSection = ({
   replyText,
   setReplyText,
   isLoading,
+  seller,
 }) => {
   const mainComments = comments.filter((c) => !c.parentID);
   const replies = comments.filter((c) => c.parentID);
@@ -43,7 +44,7 @@ const CommentSection = ({
                   </p>
                   <p className="text-md text-brand">{c.content}</p>
                   <div className="w-full flex justify-end items-center">
-                    {user === "SELLER" && (
+                    {user === "SELLER" && seller === user && (
                       <button
                         className="rounded-lg bg-yellow-400 text-white px-3 py-1 font-semibold cursor-pointer"
                         onClick={() => {
