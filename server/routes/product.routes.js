@@ -13,6 +13,7 @@ import {
   getProductBidHistory,
   getProductAuction,
   getProductDescriptions,
+  search,
 } from "../controllers/productController.js";
 import multer from "multer";
 
@@ -27,6 +28,7 @@ const mockUser = (req, res, next) => {
 
 // public;
 router.get("/", optionalAuthMiddleware, getProducts);
+router.get("/search/:keyword", search);
 router.get("/:id", getProductById);
 router.get("/:id/bid-history", getProductBidHistory);
 router.get("/:id/auction", getProductAuction);
