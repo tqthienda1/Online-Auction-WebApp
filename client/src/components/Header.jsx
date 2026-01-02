@@ -44,9 +44,15 @@ const Header = () => {
               </Link>
             </>
           ) : (
-            <>
-              <Link to="/user_profile" className="flex items-center py-3 px-9 ">
-                <CiUser size={36} className="cursor-pointer hover:text-brand" />
+            <div className="flex justify-center items-center">
+              <Link
+                to="/user_profile"
+                className="flex items-center py-3 px-7 gap-3 rounded-2xl border mr-3 hover:bg-brand hover:text-white transition-bg duration-300"
+              >
+                <CiUser size={36} className="cursor-pointer " />
+                <span className="font-playfair font-semibold">
+                  Hi, {user.data.username}
+                </span>
               </Link>
 
               <Link
@@ -56,7 +62,7 @@ const Header = () => {
               >
                 Logout
               </Link>
-            </>
+            </div>
           )}
         </div>
       </div>
