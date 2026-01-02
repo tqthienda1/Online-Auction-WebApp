@@ -46,7 +46,7 @@ export const getProducts = async ({
   const where = {
     name: search ? { contains: search, mode: "insensitive" } : undefined,
     categoryID: categoryCondition,
-    sellerId: sellerId || undefined,
+    sellerID: sellerId || undefined,
     currentPrice:
       minPrice || maxPrice
         ? {
