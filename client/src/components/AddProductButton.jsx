@@ -6,7 +6,7 @@ const AddProductButton = () => {
   return (
     <Link
       to="/add-products"
-      className=" flex gap-3 bg-yellow-400 text-white rounded-lg p-2 font-semibold shadow-xl/20 cursor-pointer hover:bg-yellow-500 pl-5 items-center"
+      className=" flex gap-3 bg-yellow-400 text-white rounded-2xl px-7 h-full font-semibold cursor-pointer hover:bg-yellow-500 items-center"
     >
       <FaPlus className="text-2xl" />
       <button>Add Product</button>

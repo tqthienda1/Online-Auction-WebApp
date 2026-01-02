@@ -6,7 +6,6 @@ import ColorFilter from "./ColorFilter";
 import ConditionsFilter from "./ConditionsFilter";
 import { useState } from "react";
 import OrderBy from "./OrderBy";
-import AddProductButton from "./AddProductButton";
 import { useAuth } from "@/context/AuthContext";
 
 const SideBar = ({
@@ -44,7 +43,6 @@ const SideBar = ({
         />
 
         {/* {user?.data.role === "SELLER" && <AddProductButton />} */}
-        <AddProductButton />
       </aside>
     </>
   );
