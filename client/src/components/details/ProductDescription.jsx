@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FaAngleDoubleDown } from "react-icons/fa";
 
 import { CiSquarePlus } from "react-icons/ci";
-import RichTextEditor from "./RichTextEditor";
+import RichTextEditor from "../RichTextEditor";
 import { formattedDate } from "@/helper/formatDate";
 
 const COLLAPSED_HEIGHT = 800;

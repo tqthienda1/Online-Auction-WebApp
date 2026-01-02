@@ -188,7 +188,7 @@ export const getProductBidHistory = async (req, res) => {
 export const getProductAuction = async (req, res) => {
   try {
     const productId = req.params.id;
-    const userId = req.user.supabaseId;
+    const userId = req.user?.id;
 
     const auction = await productService.getAuction(productId);
 
