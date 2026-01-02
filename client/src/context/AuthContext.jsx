@@ -1,7 +1,6 @@
 // contexts/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { setAccessToken, clearAccessToken } from "@/lib/authToken";
 
 const AuthContext = createContext(null);
 
@@ -16,25 +15,23 @@ export const AuthProvider = ({ children }) => {
       if (!session) {
         setUser(null);
         setLoading(false);
-        clearAccessToken();
         return;
       }
+
+      console.log(event);
+
       if (event === "INITIAL_SESSION") {
-        setAccessToken(session.access_token);
         setUser(session.user);
       }
 
       // 🔴 LOGOUT
       if (event === "SIGNED_OUT") {
-        console.log(event);
-        clearAccessToken();
         setUser(null);
         return;
       }
 
       // 🟢 LOGIN
       if (event === "SIGNED_IN") {
-        setAccessToken(session.access_token);
         setUser((prev) => prev ?? session.user);
       }
     });
