@@ -48,24 +48,21 @@ const guestRoutes = [
 
 const userRoutes = [
   { path: "/user_profile", component: UserProfile, layout: UserProfileLayout },
-];
-
-const bidderRoutes = [
   {
     path: "/buyer/payment/:productID",
     component: BuyerPaymentPage,
     layout: MainLayout,
   },
-
-];
-
-const sellerRoutes = [
   {
     path: "/seller/payment/:productID",
     component: SellerPaymentPage,
     layout: MainLayout,
   },
+];
 
+const bidderRoutes = [];
+
+const sellerRoutes = [
   { path: "/add-products", component: AddProductsPage, layout: MainLayout },
 ];
 
