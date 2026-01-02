@@ -4,7 +4,7 @@ import { RiAuctionLine } from "react-icons/ri";
 import { LuTrophy } from "react-icons/lu";
 import { AiOutlineShop } from "react-icons/ai";
 
-const ProfileTab = ({ tab, setTab }) => {
+const ProfileTab = ({ tab, setTab, isSeller = false }) => {
   return (
     <div className="border-b-brand flex gap-5 items-center w-3/4">
       <button
@@ -40,28 +40,32 @@ const ProfileTab = ({ tab, setTab }) => {
         <LuTrophy className="text-sm h-full" />
         Won
       </button>
-      <button
-        className={`w-30 cursor-pointer border px-3 py-1 font-semibold text-md rounded-lg flex items-center gap-1 justify-center ${
-          tab === "selling"
-            ? "text-white bg-brand hover:bg-gray-500"
-            : "text-brand hover:bg-gray-50"
-        }`}
-        onClick={() => setTab("selling")}
-      >
-        <AiOutlineShop className="text-sm h-full" />
-        Selling
-      </button>
-      <button
-        className={`w-30 cursor-pointer border px-3 py-1 font-semibold text-md rounded-lg flex items-center gap-1 justify-center ${
-          tab === "sold"
-            ? "text-white bg-brand hover:bg-gray-500"
-            : "text-brand hover:bg-gray-50"
-        }`}
-        onClick={() => setTab("sold")}
-      >
-        <AiOutlineShop className="text-sm h-full" />
-        Sold
-      </button>
+      {isSeller && (
+        <>
+          <button
+            className={`w-30 cursor-pointer border px-3 py-1 font-semibold text-md rounded-lg flex items-center gap-1 justify-center ${
+              tab === "selling"
+                ? "text-white bg-brand hover:bg-gray-500"
+                : "text-brand hover:bg-gray-50"
+            }`}
+            onClick={() => setTab("selling")}
+          >
+            <AiOutlineShop className="text-sm h-full" />
+            Selling
+          </button>
+          <button
+            className={`w-30 cursor-pointer border px-3 py-1 font-semibold text-md rounded-lg flex items-center gap-1 justify-center ${
+              tab === "sold"
+                ? "text-white bg-brand hover:bg-gray-500"
+                : "text-brand hover:bg-gray-50"
+            }`}
+            onClick={() => setTab("sold")}
+          >
+            <AiOutlineShop className="text-sm h-full" />
+            Sold
+          </button>
+        </>
+      )}
     </div>
   );
 };
