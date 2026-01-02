@@ -81,11 +81,17 @@ const CategoriesBar = ({ categories }) => {
           ))}
         </ul>
       </div>
-      <div className="flex gap-2 ml-5 mt-2">
+      <div className="w-[18%] py-2 mt-4 text-center overflow-hidden">
         {selected && (
-          <span className="font-semibold text-brand">{selected}</span>
+          <span className="font-semibold text-2xl font-playfair text-brand">
+            {selected}
+          </span>
         )}
-        {child && <span className="font-semibold text-brand">/ {child}</span>}
+        {child && (
+          <span className="font-semibold text-2xl font-playfair text-brand">
+            / {child}
+          </span>
+        )}
       </div>
     </>
   );
