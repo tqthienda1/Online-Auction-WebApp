@@ -118,7 +118,7 @@ const MOCK_PRODUCTS = [
 ];
 
 const UserProfile = () => {
-  const [tab, setTab] = useState("love");
+  const [tab, setTab] = useState("watchList");
   const [info, setInfo] = useState(null);
   const { user, loading } = useAuth();
   const [loadUpgrade, setLoadUpgrade] = useState(true);
@@ -167,13 +167,17 @@ const UserProfile = () => {
         if (mounted) setWishlistItems(res.data?.data || []);
       } catch (err) {
         // If request was cancelled by axios it has code 'ERR_CANCELED' or message 'canceled'
-        const isCanceled = err?.code === "ERR_CANCELED" || /canceled/i.test(err?.message || "");
+        const isCanceled =
+          err?.code === "ERR_CANCELED" || /canceled/i.test(err?.message || "");
         if (isCanceled) {
           console.debug("Watchlist request canceled");
           return;
         }
 
-        console.error("Failed to load watchlist:", err?.response?.data || err.message || err);
+        console.error(
+          "Failed to load watchlist:",
+          err?.response?.data || err.message || err
+        );
 
         // If unauthorized or forbidden, ensure empty list and optionally show UI later
         if (mounted) setWishlistItems([]);
@@ -190,13 +194,17 @@ const UserProfile = () => {
         if (mounted) setWonAuctions(res.data?.orders || []);
       } catch (err) {
         // If request was cancelled by axios it has code 'ERR_CANCELED' or message 'canceled'
-        const isCanceled = err?.code === "ERR_CANCELED" || /canceled/i.test(err?.message || "");
+        const isCanceled =
+          err?.code === "ERR_CANCELED" || /canceled/i.test(err?.message || "");
         if (isCanceled) {
           console.debug("Won auctions request canceled");
           return;
         }
 
-        console.error("Failed to load won auctions:", err?.response?.data || err.message || err);
+        console.error(
+          "Failed to load won auctions:",
+          err?.response?.data || err.message || err
+        );
 
         // If unauthorized or forbidden, ensure empty list and optionally show UI later
         if (mounted) setWonAuctions([]);
@@ -232,9 +240,9 @@ const UserProfile = () => {
           <ProfileTab tab={tab} setTab={setTab} />
           <div className="my-10 w-3/4 ">
             <ProductList
-              showType={tab === "love" ? 2 : tab === "bidding" ? 3 : 4}
+              showType={tab === "watchList" ? 2 : tab === "bidding" ? 3 : 4}
               products={
-                tab === "love"
+                tab === "watchList"
                   ? wishlistItems
                   : tab === "bidding"
                   ? biddingItems

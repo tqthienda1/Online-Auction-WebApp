@@ -48,7 +48,6 @@ export const getProducts = async (req, res) => {
 
     const user = req.user?.id;
 
-
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
     const soldValue =
@@ -189,17 +188,33 @@ export const getProductBidHistory = async (req, res) => {
 export const getProductAuction = async (req, res) => {
   try {
     const productId = req.params.id;
+    const userId = req.user.supabaseId;
 
-    const { currentPrice, highestBidder } = await productService.getAuction(
-      productId
-    );
+    const auction = await productService.getAuction(productId);
+
+    if (!auction) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const now = new Date();
+
+    const auctionEnded = auction.sold || now >= new Date(auction.endTime);
+
+    console.log(auction.highestBidderID, userId);
+
+    const isWinner =
+      auctionEnded &&
+      auction.highestBidderID &&
+      userId &&
+      auction.highestBidderID == userId;
 
     return res.status(200).json({
-      currentPrice,
-      highestBidder,
+      currentPrice: auction.currentPrice,
+      highestBidder: auction.highestBidder,
+      isWinner,
     });
   } catch (err) {
-    console.log("Get product auction failed", err.message);
+    console.log("Get product auction failed:", err.message);
     return res
       .status(err.status || 500)
       .json({ message: err.message || "Internal server error" });

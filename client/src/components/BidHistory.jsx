@@ -30,7 +30,7 @@ const BidHistory = ({ data, loading, error }) => {
       </div>
     );
   return (
-    <div className="flex mt-10 justify-center items-center max-h-[800px] overflow-y-auto">
+    <div className="flex mt-10 justify-center items-center max-h-[800px] overflow-y-auto w-full">
       <div className="flex flex-col w-[90%] ">
         {data.map((b, index) => (
           <div
