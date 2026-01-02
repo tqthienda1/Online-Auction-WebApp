@@ -390,7 +390,7 @@ export const closeExpiredAuctions = async () => {
 
       await tx.product.update({
         where: { id: product.id, sold: false }, // tránh race condition
-        data: { sold: true },
+        data: { sold: product.highestBidderID ? true : false },
       });
     });
   }
