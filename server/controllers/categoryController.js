@@ -59,6 +59,8 @@ export const CategoryController = {
           .json({ success: false, message: "Category already exists" });
       }
 
+      await CategoryService.create(newCategory);
+
       return res
         .status(201)
         .json({ data: newCategory, message: "Category created" });
