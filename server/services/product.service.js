@@ -1,4 +1,5 @@
 import prisma from "../prismaClient.js";
+import { Prisma } from "@prisma/client";
 import { addDescription } from "./productDescription.service.js";
 import { addProductImages } from "./productImages.service.js";
 import { uploadFilesToSupabase } from "../services/supabase.service.js";
@@ -395,7 +396,25 @@ export const closeExpiredAuctions = async () => {
   }
 };
 
-export const fullTextSearch = async (keyword) => {
+export const fullTextSearch = async (
+  keyword,
+  minPrice,
+  maxPrice,
+  sortBy = "rank",
+  order = "desc",
+  page = 1,
+  limit = 10
+) => {
+  const offset = (page - 1) * limit;
+  const orderByField =
+    sortBy === "price"
+      ? Prisma.sql`rp."currentPrice"`
+      : sortBy === "startTime"
+      ? Prisma.sql`rp."startTime"`
+      : Prisma.sql`rp.rank`;
+
+  const orderDirection = order === "asc" ? Prisma.sql`ASC` : Prisma.sql`DESC`;
+
   return await prisma.$queryRaw`
     WITH ranked_products AS (
       SELECT
@@ -421,6 +440,8 @@ export const fullTextSearch = async (keyword) => {
         p.search_vector @@ q
         AND p.sold = false
         AND p."endTime" > now()
+        AND (${minPrice}::int IS NULL OR p."currentPrice" >= ${minPrice})
+        AND (${maxPrice}::int IS NULL OR p."currentPrice" <= ${maxPrice})
     )
     SELECT
       rp.*,
@@ -435,6 +456,8 @@ export const fullTextSearch = async (keyword) => {
     FROM ranked_products rp
     LEFT JOIN "Category" c ON c.id = rp."categoryID"
     LEFT JOIN "User" u ON u.id = rp."highestBidderID"
-    ORDER BY rp.rank DESC
+    ORDER BY ${orderByField} ${orderDirection}
+    LIMIT ${limit}
+    OFFSET ${offset}
   `;
 };
