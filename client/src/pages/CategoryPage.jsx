@@ -7,11 +7,13 @@ import { http } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
 import AdminPagination from "@/components/AdminPagination";
 import { useAuth } from "@/context/AuthContext";
+import { useSearchParams } from "react-router-dom";
 
 const CategoryPage = () => {
   const { id } = useParams();
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingSide, setIsLoadingSide] = useState(false);
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -24,6 +26,19 @@ const CategoryPage = () => {
   const [sort, setSort] = useState("startTime");
 
   const [filterTrigger, setFilterTrigger] = useState(0);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    setSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      minPrice: minPrice.toString(),
+      maxPrice: maxPrice.toString(),
+      order: order,
+      sortBy: sort,
+    });
+  }, [id, page, limit, minPrice, maxPrice, order, sort]);
 
   useEffect(() => {
     const getProductsData = async () => {
@@ -81,7 +96,7 @@ const CategoryPage = () => {
   const handleDeleteFromWatchList = async (id) => {
     const controller = new AbortController();
     try {
-      setIsLoading(true);
+      setIsLoadingSide(true);
       await http.delete(`/watchlist/${id}`, { signal: controller.signal });
 
       setProducts((prev) =>
@@ -91,14 +106,14 @@ const CategoryPage = () => {
       console.error(error);
       setError(error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingSide(false);
     }
   };
 
   const handleAddToWatchList = async (id) => {
     const controller = new AbortController();
     try {
-      setIsLoading(true);
+      setIsLoadingSide(true);
       await http.post(
         `/watchlist`,
         { productId: id },
@@ -112,7 +127,7 @@ const CategoryPage = () => {
       console.error(error);
       setError(error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingSide(false);
     }
   };
 
@@ -144,6 +159,7 @@ const CategoryPage = () => {
                       products={products}
                       onRemoveFromWatchList={handleDeleteFromWatchList}
                       onAddToWatchList={handleAddToWatchList}
+                      isLoading={isLoadingSide}
                     />
                   </div>
 
