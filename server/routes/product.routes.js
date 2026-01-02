@@ -31,7 +31,7 @@ router.get("/", optionalAuthMiddleware, getProducts);
 router.get("/search/:keyword", search);
 router.get("/:id", getProductById);
 router.get("/:id/bid-history", getProductBidHistory);
-router.get("/:id/auction", getProductAuction);
+router.get("/:id/auction", optionalAuthMiddleware, getProductAuction);
 router.get(":id/descriptions", getProductDescriptions);
 // router.get("/search");
 

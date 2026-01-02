@@ -341,6 +341,9 @@ export const getAuction = async (productId) => {
     where: { id: productId },
     select: {
       currentPrice: true,
+      sold: true,
+      endTime: true,
+      highestBidderID: true,
       highestBidder: {
         select: {
           id: true,
