@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ProductCard from "./ProductCard";
 import { Link } from "react-router-dom";
 
@@ -7,8 +7,10 @@ const ProductList = ({
   showType,
   onAddToWatchList,
   onRemoveFromWatchList,
+  isLoading,
 }) => {
   const isHorizontal = products && products.length > 4;
+  const [loadingItem, setLoadingItem] = useState(null);
 
   if (!products || products.length === 0) {
     return (
@@ -20,10 +22,12 @@ const ProductList = ({
 
   const handleRemoveFromWatchList = (id) => {
     onRemoveFromWatchList(id);
+    setLoadingItem(id);
   };
 
   const handleAddToWatchList = (id) => {
     onAddToWatchList(id);
+    setLoadingItem(id);
   };
 
   return (
@@ -49,6 +53,8 @@ const ProductList = ({
             showType={showType}
             onAddToWatchList={handleAddToWatchList}
             onRemoveFromWatchList={handleRemoveFromWatchList}
+            isLoading={isLoading}
+            loadingItem={loadingItem}
           />
         ))}
       </div>

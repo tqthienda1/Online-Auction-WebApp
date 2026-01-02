@@ -5,6 +5,11 @@ import { addProductImages } from "./productImages.service.js";
 import { uploadFilesToSupabase } from "../services/supabase.service.js";
 import { checkWatchlist } from "./watchlist.service.js";
 import { createOrder } from "./order.service.js";
+import { supabase } from "../libs/client.js";
+import { generateMagicLink } from "../services/supabase.service.js";
+import sgMail from "@sendgrid/mail";
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const getProducts = async ({
   page,
@@ -372,27 +377,108 @@ export const closeExpiredAuctions = async () => {
       endTime: { lte: now },
       sold: false,
     },
+    include: {
+      seller: true,
+    },
   });
 
   for (const product of products) {
+    console.log(product.id);
     await prisma.$transaction(async (tx) => {
       const existingOrder = await tx.order.findUnique({
         where: { productID: product.id },
       });
 
-      if (!existingOrder && product.highestBidderID)
+      if (!existingOrder && product.highestBidderID) {
         await createOrder({
           db: tx,
           productID: product.id,
           sellerID: product.sellerID,
           buyerID: product.highestBidderID,
         });
+      }
 
       await tx.product.update({
         where: { id: product.id, sold: false }, // tránh race condition
         data: { sold: product.highestBidderID ? true : false },
       });
     });
+
+    const sendMailTo = async (email, subject, html) => {
+      const magicLink = await generateMagicLink(email, product.id);
+      const msg = {
+        to: email,
+        from: "auctionweb03@gmail.com",
+        subject: subject,
+        text: `See detail here: ${magicLink}`,
+        html: html,
+      };
+
+      try {
+        await sgMail.send(msg);
+        console.log("Mail sent to:", email);
+      } catch (err) {
+        console.error("Send mail error:", err);
+      }
+    };
+
+    if (product.highestBidderID) {
+      if (product.seller?.supabaseId) {
+        const { data } = await supabase.auth.admin.getUserById(
+          product.seller.supabaseId
+        );
+
+        if (data?.user?.email) {
+          await sendMailTo(
+            data.user.email,
+            `Your product has been sold`,
+            `
+                <h3>Congratulations!</h3>
+                <p>Your product <strong>${product.productName}</strong> has been sold.</p>
+                <p>Final price: <strong>${product.currentPrice}</strong></p>
+              `
+          );
+        }
+      }
+      const winner = await prisma.user.findUnique({
+        where: { id: product.highestBidderID },
+      });
+
+      if (winner?.supabaseId) {
+        const { data } = await supabase.auth.admin.getUserById(
+          winner.supabaseId
+        );
+
+        if (data?.user?.email) {
+          await sendMailTo(
+            data.user.email,
+            `You won the auction`,
+            `
+                <h3>Congratulations!</h3>
+                <p>You won the auction for <strong>${product.productName}</strong>.</p>
+                <p>Winning price: <strong>${product.currentPrice}</strong></p>
+              `
+          );
+        }
+      }
+    } else {
+      if (product.seller?.supabaseId) {
+        const { data } = await supabase.auth.admin.getUserById(
+          product.seller.supabaseId
+        );
+
+        if (data?.user?.email) {
+          await sendMailTo(
+            data.user.email,
+            `The auction for your product has ended without a winning bidder.`,
+            `
+                <h3>We are sorry to inform you that:</h3>
+                <p>Your product <strong>${product.productName}</strong> was not sold.</p>
+              `
+          );
+        }
+      }
+    }
   }
 };
 
