@@ -12,11 +12,19 @@ export const AuthProvider = ({ children }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+<<<<<<< Updated upstream
       if (!session) {
+=======
+      // 1️⃣ Không có session → logout
+      if (!session) {
+        console.log("Logout");
+        clearAccessToken();
+>>>>>>> Stashed changes
         setUser(null);
         setLoading(false);
         return;
       }
+<<<<<<< Updated upstream
 
       console.log(event);
 
@@ -62,6 +70,43 @@ export const AuthProvider = ({ children }) => {
 
     fetchRole();
   }, [user?.id]);
+=======
+
+      // 2️⃣ Có session → set token
+      setAccessToken(session.access_token);
+
+      // 3️⃣ Chỉ fetch profile khi cần
+      if (event === "INITIAL_SESSION" || event === "SIGNED_IN") {
+        const authUser = session.user;
+        console.log(authUser);
+
+        const { data: profile, error } = await supabase
+          .from("User")
+          .select("role")
+          .eq("supabaseId", authUser.id)
+          .single();
+
+        console.log("Fetched profile:", profile);
+
+        setUser({
+          ...authUser,
+          role: profile?.role ?? "BIDDER",
+        });
+      }
+
+      // 4️⃣ Refresh token / user update → chỉ update token
+      if (event === "TOKEN_REFRESHED") {
+        // không cần setUser lại
+      }
+
+      setLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+>>>>>>> Stashed changes
 
   return (
     <AuthContext.Provider value={{ user, loading }}>

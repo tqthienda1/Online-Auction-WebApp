@@ -64,7 +64,11 @@ const Header = () => {
               >
                 Logout
               </Link>
+<<<<<<< Updated upstream
             </div>
+=======
+            </>
+>>>>>>> Stashed changes
           )}
         </div>
       </div>
