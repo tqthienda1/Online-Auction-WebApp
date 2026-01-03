@@ -81,7 +81,7 @@ const CategoriesBar = ({ categories }) => {
           ))}
         </ul>
       </div>
-      <div className="w-[18%] py-2 mt-4 text-center overflow-hidden">
+      <div className="w-[18%] py-2 mt-4 text-center ">
         {selected && (
           <span className="font-semibold text-2xl font-playfair text-brand">
             {selected}
