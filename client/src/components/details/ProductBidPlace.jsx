@@ -185,7 +185,6 @@ const ProductBidPlace = ({
 
             {product.buyNowPrice && (
               <>
-                {" "}
                 <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
                 <div className="flex flex-row w-[90%] justify-between items-center">
                   <p className="text-lg font-medium">Bid Step</p>
