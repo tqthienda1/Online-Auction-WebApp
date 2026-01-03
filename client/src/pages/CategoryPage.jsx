@@ -32,18 +32,22 @@ const CategoryPage = () => {
 
   useEffect(() => {
     setSearchParamS((prev) => {
-      console.log(prev);
-      return {
-        keyword: keyword,
+      const params = {
         page: page.toString(),
         limit: limit.toString(),
         minPrice: minPrice.toString(),
         maxPrice: maxPrice.toString(),
-        order: order,
+        order,
         sortBy: sort,
       };
+
+      if (keyword && keyword.trim() !== "") {
+        params.keyword = keyword;
+      }
+
+      return params;
     });
-  }, [page, limit, minPrice, maxPrice, order, sort]);
+  }, [page, limit, minPrice, maxPrice, order, sort, keyword]);
 
   useEffect(() => {
     setPage(1);
@@ -53,18 +57,6 @@ const CategoryPage = () => {
     setOrder("asc");
     setSort("startTime");
   }, [id]);
-
-  useEffect(() => {
-    setSearchParamS({
-      page: page.toString(),
-      limit: limit.toString(),
-      minPrice: minPrice.toString(),
-      maxPrice: maxPrice.toString(),
-      order: order,
-      sortBy: sort,
-      keyword: keyword,
-    });
-  }, [keyword]);
 
   useEffect(() => {
     const getProductsData = async () => {
