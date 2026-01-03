@@ -24,14 +24,17 @@ export const placeBid = async ({ userId, productId, maxPrice }) => {
       throw { status: 400, message: "Bid too low." };
 
     const now = new Date();
-    if (product.endTime <= now)
+    if (product.endTime <= now || product.sold)
       throw { status: 400, message: "Auction has ended." };
+    if (now < product.startTime) {
+      throw { status: 400, message: "Auction has not started yet" };
+    }
 
     const oldHighestBidderID = product.highestBidderID;
     const oldCurrentPrice = product.currentPrice;
 
     if (product.ratingRequired) {
-      const total = await prisma.rating.count({
+      const total = await tx.rating.count({
         where: { rateeID: userId },
       });
 
@@ -39,7 +42,7 @@ export const placeBid = async ({ userId, productId, maxPrice }) => {
         throw new Error("This product requires bidders to have a rating.");
       }
 
-      const positive = await prisma.rating.count({
+      const positive = await tx.rating.count({
         where: { rateeID: userId, isPos: true },
       });
 
