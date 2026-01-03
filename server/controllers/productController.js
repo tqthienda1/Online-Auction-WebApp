@@ -5,7 +5,6 @@ import { uploadFilesToSupabase } from "../services/supabase.service.js";
 import * as productService from "../services/product.service.js";
 
 export const addProduct = async (req, res) => {
-  console.log(req.body);
   try {
     const userId = req.user.id;
     const files = req.files;

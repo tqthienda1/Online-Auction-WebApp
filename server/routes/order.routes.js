@@ -6,26 +6,27 @@ import multer from "multer";
 const router = express.Router()
 const upload = multer({ storage: multer.memoryStorage() });
 // Create order
-router.post('/', orderController.createOrder)
+router.post('/', authMiddleware, orderController.createOrder)
 
 // Get order by productID
-router.get('/:productID', 
-  orderController.getOrder)
+// Get order by productID (only buyer or seller can access)
+router.get('/:productID', authMiddleware, orderController.getOrder)
 
 router.put(
   '/:productID/buyerInfo',
+  authMiddleware,
   upload.single("paymentInvoice"),   
   orderController.updateBuyerInfo
 );
 
-router.put('/:productID/shipping', upload.single("shippingInvoice"), orderController.uploadShipping)
+router.put('/:productID/shipping', authMiddleware, upload.single("shippingInvoice"), orderController.uploadShipping)
 
 // Confirm received by buyer/seller
-router.put('/:productID/receivePayment', orderController.confirmPaymentReceived)
-router.put('/:productID/receiveProduct', orderController.confirmProductReceived)
+router.put('/:productID/receivePayment', authMiddleware, orderController.confirmPaymentReceived)
+router.put('/:productID/receiveProduct', authMiddleware, orderController.confirmProductReceived)
 
 // Cancel order
-router.delete('/:productID', orderController.cancelOrder)
+router.delete('/:productID', authMiddleware, orderController.cancelOrder)
 
 //get won orders
 router.get('/won/orders', 

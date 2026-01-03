@@ -22,7 +22,7 @@ const CategoryPage = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(500000);
+  const [maxPrice, setMaxPrice] = useState(10000);
   const [order, setOrder] = useState("asc");
   const [sort, setSort] = useState("startTime");
 
@@ -39,7 +39,16 @@ const CategoryPage = () => {
       order: order,
       sortBy: sort,
     });
-  }, [id, page, limit, minPrice, maxPrice, order, sort]);
+  }, [page, limit, minPrice, maxPrice, order, sort]);
+
+  useEffect(() => {
+    setPage(1);
+    setLimit(12);
+    setMinPrice(0);
+    setMaxPrice(10000);
+    setOrder("asc");
+    setSort("startTime");
+  }, [id]);
 
   useEffect(() => {
     const getProductsData = async () => {

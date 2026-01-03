@@ -1,9 +1,7 @@
 import prisma from "../prismaClient.js";
 import { supabase } from "../libs/client.js";
 import { generateMagicLink } from "./supabase.service.js";
-import sgMail from "@sendgrid/mail";
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+import { sendMailTo } from "./sendMail.service.js";
 
 export const CommentService = {
   async getById(id) {
@@ -25,45 +23,45 @@ export const CommentService = {
       include: { seller: true },
     });
 
-    const sendMailTo = async (email) => {
-      const magicLink = await generateMagicLink(email, productID);
-      const msg = {
-        to: email,
-        from: "auctionweb03@gmail.com",
-        subject: `New comment on product "${product.productName}"`,
-        text: `${comment.user.username}: "${content}" on "${product.productName}". See detail here: ${magicLink}`,
-        html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-          <h2 style="color: #facc15;">You have new comment on the product.</h2>
-          <p><strong>${comment.user.username}</strong> has commented:</p>
-          <blockquote style="background: #f5f5f5; padding: 10px 15px; border-left: 4px solid #facc15;">
-            ${content}
-          </blockquote>
-          <p>On: <strong>${product.productName}</strong></p>
-          <a href="${magicLink}" 
-            style="
-              display: inline-block; 
-              padding: 10px 20px; 
-              background-color: #facc15; 
-              color: white; 
-              text-decoration: none; 
-              border-radius: 5px; 
-              margin-top: 10px;
-              font-weight: 600;
-            ">
-            See detail
-          </a>
-        </div>
-      `,
-      };
+    // const sendMailTo = async (email) => {
+    //   const magicLink = await generateMagicLink(email, productID);
+    //   const msg = {
+    //     to: email,
+    //     from: "auctionweb03@gmail.com",
+    //     subject: `New comment on product "${product.productName}"`,
+    //     text: `${comment.user.username}: "${content}" on "${product.productName}". See detail here: ${magicLink}`,
+    //     html: `
+    //     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    //       <h2 style="color: #facc15;">You have new comment on the product.</h2>
+    //       <p><strong>${comment.user.username}</strong> has commented:</p>
+    //       <blockquote style="background: #f5f5f5; padding: 10px 15px; border-left: 4px solid #facc15;">
+    //         ${content}
+    //       </blockquote>
+    //       <p>On: <strong>${product.productName}</strong></p>
+    //       <a href="${magicLink}"
+    //         style="
+    //           display: inline-block;
+    //           padding: 10px 20px;
+    //           background-color: #facc15;
+    //           color: white;
+    //           text-decoration: none;
+    //           border-radius: 5px;
+    //           margin-top: 10px;
+    //           font-weight: 600;
+    //         ">
+    //         See detail
+    //       </a>
+    //     </div>
+    //   `,
+    //   };
 
-      try {
-        await sgMail.send(msg);
-        console.log("Mail sent to:", email);
-      } catch (err) {
-        console.error("Send mail error:", err);
-      }
-    };
+    //   try {
+    //     await sgMail.send(msg);
+    //     console.log("Mail sent to:", email);
+    //   } catch (err) {
+    //     console.error("Send mail error:", err);
+    //   }
+    // };
 
     if (!parentID) {
       if (!product?.seller?.supabaseId)
@@ -75,7 +73,36 @@ export const CommentService = {
       if (error || !userData?.user?.email)
         throw new Error("Cannot find seller email");
 
-      await sendMailTo(userData.user.email, product.seller.username);
+      const magicLink = await generateMagicLink(userData.user.email, productID);
+
+      await sendMailTo(
+        userData.user.email,
+        `New comment on product "${product.productName}"`,
+        `${comment.user.username}: "${content}" on "${product.productName}". See detail here: ${magicLink}`,
+        `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <h2 style="color: #facc15;">You have new comment on the product.</h2>
+            <p><strong>${comment.user.username}</strong> has commented:</p>
+            <blockquote style="background: #f5f5f5; padding: 10px 15px; border-left: 4px solid #facc15;">
+              ${content}
+            </blockquote>
+            <p>On: <strong>${product.productName}</strong></p>
+            <a href="${magicLink}"
+              style="
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #facc15;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                margin-top: 10px;
+                font-weight: 600;
+              ">
+              See detail
+            </a>
+          </div>
+        `
+      );
     } else {
       const bidders = await prisma.bid.findMany({
         where: { productID },
@@ -101,8 +128,39 @@ export const CommentService = {
         const { data: userData, error } = await supabase.auth.admin.getUserById(
           supabaseId
         );
+        const magicLink = await generateMagicLink(
+          userData.user.email,
+          productID
+        );
         if (!error && userData?.user?.email) {
-          await sendMailTo(userData.user.email, userData.user.email);
+          await sendMailTo(
+            userData.user.email,
+            `Seller has new reply on product "${product.productName}"`,
+            `${comment.user.username}: "${content}" on "${product.productName}". See detail here: ${magicLink}`,
+            `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <h2 style="color: #facc15;">Seller has new reply on the product.</h2>
+            <p><strong>${comment.user.username}</strong> has reply:</p>
+            <blockquote style="background: #f5f5f5; padding: 10px 15px; border-left: 4px solid #facc15;">
+              ${content}
+            </blockquote>
+            <p>On: <strong>${product.productName}</strong></p>
+            <a href="${magicLink}"
+              style="
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #facc15;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                margin-top: 10px;
+                font-weight: 600;
+              ">
+              See detail
+            </a>
+          </div>
+        `
+          );
         }
       }
     }
