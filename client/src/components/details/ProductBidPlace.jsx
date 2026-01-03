@@ -171,24 +171,29 @@ const ProductBidPlace = ({
               </p>
             </div>
 
-            <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
             {product.buyNowPrice && (
-              <div className="flex flex-row w-[90%] justify-between items-center">
-                <p className="text-lg font-medium">Buy Now Price</p>
-                <p className="text-2xl font-bold text-yellow-400">
-                  {product.buyNowPrice} USD
-                </p>
-              </div>
+              <>
+                <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
+                <div className="flex flex-row w-[90%] justify-between items-center">
+                  <p className="text-lg font-medium">Buy Now Price</p>
+                  <p className="text-2xl font-bold text-yellow-400">
+                    {product.buyNowPrice} USD
+                  </p>
+                </div>
+              </>
             )}
 
-            <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
             {product.buyNowPrice && (
-              <div className="flex flex-row w-[90%] justify-between items-center">
-                <p className="text-lg font-medium">Bid Step</p>
-                <p className="text-2xl font-bold text-yellow-400">
-                  {product.bidStep} USD
-                </p>
-              </div>
+              <>
+                {" "}
+                <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
+                <div className="flex flex-row w-[90%] justify-between items-center">
+                  <p className="text-lg font-medium">Bid Step</p>
+                  <p className="text-2xl font-bold text-yellow-400">
+                    {product.bidStep} USD
+                  </p>
+                </div>
+              </>
             )}
 
             <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
