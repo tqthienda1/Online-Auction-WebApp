@@ -31,13 +31,17 @@ const CategoryPage = () => {
   const [searchParamS, setSearchParamS] = useSearchParams();
 
   useEffect(() => {
-    setSearchParamS({
-      page: page.toString(),
-      limit: limit.toString(),
-      minPrice: minPrice.toString(),
-      maxPrice: maxPrice.toString(),
-      order: order,
-      sortBy: sort,
+    setSearchParamS((prev) => {
+      console.log(prev);
+      return {
+        keyword: keyword,
+        page: page.toString(),
+        limit: limit.toString(),
+        minPrice: minPrice.toString(),
+        maxPrice: maxPrice.toString(),
+        order: order,
+        sortBy: sort,
+      };
     });
   }, [page, limit, minPrice, maxPrice, order, sort]);
 
