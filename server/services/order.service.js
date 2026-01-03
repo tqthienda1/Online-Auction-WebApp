@@ -1,3 +1,4 @@
+import { OrderStatus } from "@prisma/client";
 import prisma from "../prismaClient.js";
 
 // Status represents the NEXT action/state needed
@@ -207,4 +208,104 @@ export const getWonOrdersByUser = async (userId, page = 1, limit = 10) => {
       message: error.message || "Failed to fetch won orders",
     };
   }
+};
+
+export const createBuyNow = async ({ productId, buyerId }) => {
+  return await prisma.$transaction(async (tx) => {
+    const product = await tx.product.findUnique({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    if (product.sold) {
+      throw new Error("Product already sold.");
+    }
+
+    // if (product.isExpired) {
+    //   throw new Error("Product already ended.");
+    // }
+
+    if (!product.buyNowPrice) {
+      throw new Error("Product does not support buy now.");
+    }
+
+    if (new Date(product.endTime) < new Date()) {
+      throw new Error("Auction already ended");
+    }
+
+    if (product.sellerID === buyerId) {
+      throw new Error("Seller cannot buy their own product");
+    }
+
+    const banned = await tx.bannedBidder.findUnique({
+      where: {
+        productID_bidderID: {
+          productID: productId,
+          bidderID: buyerId,
+        },
+      },
+    });
+
+    if (banned) {
+      throw new Error("You are banned from this product");
+    }
+
+    if (product.ratingRequired) {
+      const total = await tx.rating.count({
+        where: { rateeID: buyerId },
+      });
+
+      if (total === 0) {
+        throw new Error("This product requires bidders to have a rating.");
+      }
+
+      const positive = await tx.rating.count({
+        where: { rateeID: buyerId, isPos: true },
+      });
+
+      if (positive / total < 0.8) {
+        throw new Error(
+          "Your rating is below 80%. You are not allowed to place a bid on this product."
+        );
+      }
+    }
+
+    const order = await tx.order.create({
+      data: {
+        productID: product.id,
+        buyerID: buyerId,
+        sellerID: product.sellerID,
+        status: "CREATED",
+      },
+    });
+
+    const priceChanged =
+      product.currentPrice === null ||
+      product.buyNowPrice !== product.currentPrice;
+
+    if (priceChanged) {
+      await tx.bidHistory.create({
+        data: {
+          productID: product.id,
+          bidderID: buyerId,
+          price: product.buyNowPrice,
+        },
+      });
+    }
+
+    await tx.product.update({
+      where: { id: product.id },
+      data: {
+        sold: true,
+        endTime: new Date(),
+        currentPrice: product.buyNowPrice,
+        highestBidderID: buyerId,
+      },
+    });
+
+    return order;
+  });
 };
