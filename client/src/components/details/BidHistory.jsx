@@ -17,10 +17,8 @@ const BidHistory = ({ data, loading, error }) => {
   if (!data || data.length === 0)
     return (
       <div className="my-auto flex flex-col items-center justify-center text-center text-neutral-600 gap-3">
-        {/* Icon */}
         <PiEmptyLight className="h-32 w-32 text-neutral-500" />
 
-        {/* Text */}
         <h3 className="text-3xl font-playfair font-semibold text-yellow-400">
           No bids yet
         </h3>
