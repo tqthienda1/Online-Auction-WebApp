@@ -189,7 +189,7 @@ const ProductCard = ({
                 className="max-h-40 max-w-full object-contain"
               />
             </Link>
-            <h3 className="text-center font-semibold text-gray-800 mb-1 truncate mt-5">
+            <h3 className="h-[50px] text-center font-semibold text-gray-800 mb-1 mt-5 wrap-break-word">
               {product.productName}
             </h3>
             <div className=" space-y-1 mb-4 w-full">
