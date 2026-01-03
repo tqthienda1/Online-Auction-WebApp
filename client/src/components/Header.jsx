@@ -48,7 +48,7 @@ const Header = () => {
             <div className="flex justify-center items-center gap-3">
               {user.data?.role === "SELLER" && <AddProductButton />}
               <Link
-                to="/user_profile"
+                to={user.data?.role === "ADMIN" ? "/admin" : "/user_profile"}
                 className="flex items-center h-full px-7 gap-3 rounded-2xl border mr-3 hover:bg-brand hover:text-white transition-bg duration-300"
               >
                 <CiUser size={36} className="cursor-pointer " />
