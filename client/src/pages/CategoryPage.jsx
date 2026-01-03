@@ -51,6 +51,18 @@ const CategoryPage = () => {
   }, [id]);
 
   useEffect(() => {
+    setSearchParamS({
+      page: page.toString(),
+      limit: limit.toString(),
+      minPrice: minPrice.toString(),
+      maxPrice: maxPrice.toString(),
+      order: order,
+      sortBy: sort,
+      keyword: keyword,
+    });
+  }, [keyword]);
+
+  useEffect(() => {
     const getProductsData = async () => {
       const controller = new AbortController();
       try {
@@ -71,7 +83,7 @@ const CategoryPage = () => {
           });
 
           console.log(data.data);
-          setTotalPages(data.data.total);
+          setTotalPages(Math.ceil(data.data.total / limit));
           setProducts(data.data.data);
         } else {
           const data = await http.get(

@@ -44,6 +44,7 @@ const guestRoutes = [
   },
 
   { path: "*", component: NotFoundPage, layout: MainLayout },
+<<<<<<< Updated upstream
 ];
 
 const userRoutes = [
@@ -83,3 +84,54 @@ const adminRoutes = [
 ];
 
 export { guestRoutes, userRoutes, bidderRoutes, sellerRoutes, adminRoutes };
+=======
+];
+
+const bidderRoutes = [
+  {
+    path: "/buyer/payment/:productID",
+    component: BuyerPaymentPage,
+    layout: MainLayout,
+  },
+  {
+    path: "/seller/payment/:productID",
+    component: SellerPaymentPage,
+    layout: MainLayout,
+  },
+
+  { path: "/user_profile", component: UserProfile, layout: UserProfileLayout },
+];
+
+const sellerRoutes = [
+  {
+    path: "/buyer/payment/:productID",
+    component: BuyerPaymentPage,
+    layout: MainLayout,
+  },
+  {
+    path: "/seller/payment/:productID",
+    component: SellerPaymentPage,
+    layout: MainLayout,
+  },
+
+  { path: "/user_profile", component: UserProfile, layout: UserProfileLayout },
+  { path: "/add-products", component: AddProductsPage, layout: MainLayout },
+];
+
+const adminRoutes = [
+  { path: "/admin", component: AdminControlPanel, layout: AdminLayout },
+  {
+    path: "/admin/categories",
+    component: AdminCategoriesPage,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/products",
+    component: AdminProductsPage,
+    layout: AdminLayout,
+  },
+  { path: "/admin/users", component: AdminUsersPage, layout: AdminLayout },
+];
+
+export { guestRoutes, bidderRoutes, sellerRoutes, adminRoutes };
+>>>>>>> Stashed changes
