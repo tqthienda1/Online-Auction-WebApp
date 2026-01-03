@@ -22,6 +22,9 @@ const CommentSection = ({
 
   const getReplyFor = (id) => replies.filter((r) => r.parentID === id);
 
+  console.log("user: ", user);
+  console.log("seller:", seller);
+
   return (
     <div className="flex flex-col justify-center items-center mt-20 gap-10">
       <p className="text-4xl font-bold font-playfair underline decoration-yellow-400 decoration-3 underline-offset-8">
@@ -44,7 +47,7 @@ const CommentSection = ({
                   </p>
                   <p className="text-md text-brand">{c.content}</p>
                   <div className="w-full flex justify-end items-center">
-                    {user === "SELLER" && seller === user && (
+                    {seller === user.id && (
                       <button
                         className="rounded-lg bg-yellow-400 text-white px-3 py-1 font-semibold cursor-pointer"
                         onClick={() => {

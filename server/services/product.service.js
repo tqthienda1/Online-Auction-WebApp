@@ -7,9 +7,7 @@ import { checkWatchlist } from "./watchlist.service.js";
 import { createOrder } from "./order.service.js";
 import { supabase } from "../libs/client.js";
 import { generateMagicLink } from "../services/supabase.service.js";
-import sgMail from "@sendgrid/mail";
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+import { sendMailTo } from "./sendMail.service.js";
 
 export const getProducts = async ({
   page,
@@ -400,28 +398,12 @@ export const closeExpiredAuctions = async () => {
 
       await tx.product.update({
         where: { id: product.id, sold: false }, // tránh race condition
-        data: { sold: product.highestBidderID ? true : false },
+        data: { sold: true },
       });
     });
+  }
 
-    const sendMailTo = async (email, subject, html) => {
-      const magicLink = await generateMagicLink(email, product.id);
-      const msg = {
-        to: email,
-        from: "auctionweb03@gmail.com",
-        subject: subject,
-        text: `See detail here: ${magicLink}`,
-        html: html,
-      };
-
-      try {
-        await sgMail.send(msg);
-        console.log("Mail sent to:", email);
-      } catch (err) {
-        console.error("Send mail error:", err);
-      }
-    };
-
+  for (const product of products) {
     if (product.highestBidderID) {
       if (product.seller?.supabaseId) {
         const { data } = await supabase.auth.admin.getUserById(
@@ -431,12 +413,13 @@ export const closeExpiredAuctions = async () => {
         if (data?.user?.email) {
           await sendMailTo(
             data.user.email,
-            `Your product has been sold`,
+            `Your product has been sold.`,
+            `Your product has been sold.`,
             `
-                <h3>Congratulations!</h3>
-                <p>Your product <strong>${product.productName}</strong> has been sold.</p>
-                <p>Final price: <strong>${product.currentPrice}</strong></p>
-              `
+              <h3>Congratulations!</h3>
+              <p>Your product <strong>${product.productName}</strong> has been sold.</p>
+              <p>Final price: <strong>${product.currentPrice}</strong></p>
+            `
           );
         }
       }
@@ -452,12 +435,13 @@ export const closeExpiredAuctions = async () => {
         if (data?.user?.email) {
           await sendMailTo(
             data.user.email,
-            `You won the auction`,
+            `You won the auction.`,
+            `You won the auction.`,
             `
-                <h3>Congratulations!</h3>
-                <p>You won the auction for <strong>${product.productName}</strong>.</p>
-                <p>Winning price: <strong>${product.currentPrice}</strong></p>
-              `
+              <h3>Congratulations!</h3>
+              <p>You won the auction for <strong>${product.productName}</strong>.</p>
+              <p>Winning price: <strong>${product.currentPrice}</strong></p>
+            `
           );
         }
       }
@@ -471,10 +455,11 @@ export const closeExpiredAuctions = async () => {
           await sendMailTo(
             data.user.email,
             `The auction for your product has ended without a winning bidder.`,
+            `The auction for your product has ended without a winning bidder.`,
             `
-                <h3>We are sorry to inform you that:</h3>
-                <p>Your product <strong>${product.productName}</strong> was not sold.</p>
-              `
+              <h3>We are sorry to inform you that:</h3>
+              <p>Your product <strong>${product.productName}</strong> was not sold.</p>
+            `
           );
         }
       }
@@ -483,6 +468,7 @@ export const closeExpiredAuctions = async () => {
 };
 
 export const rejectBidder = async (productId, bidderId, sellerId) => {
+  console.log(bidderId);
   return prisma.$transaction(async (tx) => {
     const product = await tx.product.findUnique({ where: { id: productId } });
 
@@ -572,6 +558,23 @@ export const rejectBidder = async (productId, bidderId, sellerId) => {
         currentPrice,
       },
     });
+
+    const bidder = await tx.user.findUnique({ where: { id: bidderId } });
+
+    const bidderEmail = await supabase.auth.admin.getUserById(
+      bidder.supabaseId
+    );
+    console.log(bidderEmail);
+
+    await sendMailTo(
+      bidderEmail.data.user.email,
+      `You have been banned from ${product.productName}.`,
+      `You have been banned from ${product.productName}.`,
+      `
+        <h3>We are sorry to inform you that:</h3>
+        <p>You have been banned from <strong>${product.productName}</strong>.</p>
+      `
+    );
   });
 };
 
