@@ -31,6 +31,26 @@ export const placeBid = async ({ userId, productId, maxPrice }) => {
       throw { status: 400, message: "Auction has ended." };
     }
 
+    if (product.ratingRequired) {
+      const total = await prisma.rating.count({
+        where: { rateeID: userId },
+      });
+
+      if (total === 0) {
+        throw new Error("This product requires bidders to have a rating.");
+      }
+
+      const positive = await prisma.rating.count({
+        where: { rateeID: userId, isPos: true },
+      });
+
+      if (positive / total < 0.8) {
+        throw new Error(
+          "Your rating is below 80%. You are not allowed to place a bid on this product."
+        );
+      }
+    }
+
     await tx.bid.create({
       data: {
         maxPrice,
