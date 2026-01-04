@@ -270,6 +270,10 @@ const ProductDetails = () => {
     return productId;
   };
 
+  const handleViewSellerRating = (sellerId) => {
+    navigate(`/rating/${sellerId}`);
+  };
+
   const requestConfirm = (type, payload) => {
     setConfirmModal({
       type,
@@ -445,6 +449,7 @@ const ProductDetails = () => {
               ? (bidderId) => requestConfirm("ban", { bidderId })
               : null
           }
+          onViewSellerRating={handleViewSellerRating}
         />
 
         {confirmModal && (

@@ -1,11 +1,6 @@
 import { maskUsername } from "@/helper/maskUser";
 
-const SellerInformation = ({
-  seller,
-  bidder,
-  onBanBidder,
-  onViewSellerRating,
-}) => {
+const SellerInformation = ({ seller, bidder, onViewSellerRating }) => {
   return (
     <div className="flex flex-col bg-neutral-100 border p-6 w-[90%] mt-5">
       <div className="flex border-b-2 border-neutral-300 pb-4 ">
@@ -63,6 +58,7 @@ const SellerInformation = ({
             </h2>
 
             <div
+              onClick={() => onViewSellerRating(bidder.id)}
               className="
                 mt-3 flex items-center gap-2
                 text-sm text-gray-700
