@@ -24,7 +24,7 @@ const ProfileReviews = ({ info }) => {
           ? ratingsRes.data.data
           : [];
 
-        console.log(ratingsData);
+        console.log("cvcvcvcvcvccv", ratingsData);
 
         setRatings(ratingsData);
       } catch (error) {
@@ -63,7 +63,7 @@ const ProfileReviews = ({ info }) => {
                   key={`rating-${rating.productID}`}
                   review={{
                     rater: { username: rating.rater?.username || "Unknown" },
-                    productName: {
+                    product: {
                       productName:
                         rating.product?.productName || "Unknown Product",
                     },
