@@ -7,6 +7,7 @@ const ProfileInfo = ({ info, setInfo }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("");
 
+  console.log(info);
   const handleClick = (type) => {
     setModalType(type);
     setShowModal(true);
@@ -33,12 +34,14 @@ const ProfileInfo = ({ info, setInfo }) => {
         >
           Change information
         </button>
-        <button
-          onClick={() => handleClick("changePass")}
-          className="font-semibold cursor-pointer border border-gray-200 py-2 px-5 rounded-lg items-center bg-white hover:bg-gray-100"
-        >
-          Change password
-        </button>
+        {info.provider !== "google" && (
+          <button
+            onClick={() => handleClick("changePass")}
+            className="font-semibold cursor-pointer border border-gray-200 py-2 px-5 rounded-lg items-center bg-white hover:bg-gray-100"
+          >
+            Change password
+          </button>
+        )}
         {info.role === "BIDDER" && info?.upgrade?.status !== "PENDING" && (
           <button
             onClick={() => handleClick("upgrade")}

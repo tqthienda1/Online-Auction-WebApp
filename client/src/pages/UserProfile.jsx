@@ -7,7 +7,6 @@ import { http } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
 
-
 const UserProfile = () => {
   const [tab, setTab] = useState("watchList");
   const [info, setInfo] = useState(null);
@@ -41,7 +40,11 @@ const UserProfile = () => {
 
   // determine if this account is a seller (case-insensitive checks against several possible fields)
   const _role =
-    info?.role || info?.data?.role || user?.role || user?.data?.role || info?.upgrade?.role;
+    info?.role ||
+    info?.data?.role ||
+    user?.role ||
+    user?.data?.role ||
+    info?.upgrade?.role;
 
   const isSeller = Boolean(
     (_role && String(_role).toUpperCase() === "SELLER") ||
@@ -153,90 +156,90 @@ const UserProfile = () => {
     // };
 
     const loadSellingItems = async () => {
-  try {
-    // Ưu tiên lấy info.id hoặc user.id (đây là Primary Key trong DB của bạn)
-    // Thay vì lấy user.id chung chung có thể bị nhầm với supabaseId từ AuthContext
-    const userId = info?.id || user?.id || user?.data?.id;
+      try {
+        // Ưu tiên lấy info.id hoặc user.id (đây là Primary Key trong DB của bạn)
+        // Thay vì lấy user.id chung chung có thể bị nhầm với supabaseId từ AuthContext
+        const userId = info?.id || user?.id || user?.data?.id;
 
-    if (!userId) {
-      console.warn("No UserID found to fetch selling items");
-      return;
-    }
+        if (!userId) {
+          console.warn("No UserID found to fetch selling items");
+          return;
+        }
 
-    console.debug("Fetching selling products for Seller ID:", userId);
+        console.debug("Fetching selling products for Seller ID:", userId);
 
-    const res = await http.get(`/products`, {
-      params: {
-        sellerId: userId,
-        sold: false, // Explicitly request unsold products
-        sortBy: "startTime",
-        order: "desc",
+        const res = await http.get(`/products`, {
+          params: {
+            sellerId: userId,
+            sold: false, // Explicitly request unsold products
+            sortBy: "startTime",
+            order: "desc",
+          },
+        });
+
+        const products = res.data?.data || [];
+        const now = Date.now();
+        const active = products.filter(
+          (p) => p && !p.sold && new Date(p.endTime).getTime() > now
+        );
+
+        console.debug("Active selling items count:", active.length);
+        if (mounted) setSellingItems(active);
+      } catch (err) {
+        console.error("Failed to load selling items:", err);
+        if (mounted) setSellingItems([]);
       }
-    });
+    };
 
-    const products = res.data?.data || [];
-    const now = Date.now();
-    const active = products.filter(
-      (p) => p && !p.sold && new Date(p.endTime).getTime() > now
-    );
+    const loadSoldItems = async () => {
+      try {
+        const userId = info?.id || user?.id || user?.data?.id;
 
-    console.debug("Active selling items count:", active.length);
-    if (mounted) setSellingItems(active);
-  } catch (err) {
-    console.error("Failed to load selling items:", err);
-    if (mounted) setSellingItems([]);
-  }
-};
+        if (!userId) {
+          console.warn("No UserID found to fetch sold items");
+          return;
+        }
 
-const loadSoldItems = async () => {
-  try {
-    const userId = info?.id || user?.id || user?.data?.id;
+        console.debug("Fetching sold products for Seller ID:", userId);
 
-    if (!userId) {
-      console.warn("No UserID found to fetch sold items");
-      return;
-    }
+        const res = await http.get(`/products`, {
+          params: {
+            sellerId: userId,
+            sold: true, // Explicitly request sold products only
+          },
+        });
 
-    console.debug("Fetching sold products for Seller ID:", userId);
-
-    const res = await http.get(`/products`, {
-      params: {
-        sellerId: userId,
-        sold: true, // Explicitly request sold products only
+        const products = res.data?.data || [];
+        console.debug("Sold items count:", products.length);
+        if (mounted) setSoldItems(products);
+      } catch (err) {
+        console.error("Failed to load sold items:", err);
+        if (mounted) setSoldItems([]);
       }
-    });
+    };
 
-    const products = res.data?.data || [];
-    console.debug("Sold items count:", products.length);
-    if (mounted) setSoldItems(products);
-  } catch (err) {
-    console.error("Failed to load sold items:", err);
-    if (mounted) setSoldItems([]);
-  }
-};
+    const loadBiddingItems = async () => {
+      try {
+        const userId = info?.id || user?.id || user?.data?.id;
 
-const loadBiddingItems = async () => {
-  try {
-    const userId = info?.id || user?.id || user?.data?.id;
+        if (!userId) {
+          console.warn("No UserID found to fetch bidding items");
+          return;
+        }
 
-    if (!userId) {
-      console.warn("No UserID found to fetch bidding items");
-      return;
-    }
+        console.debug("Fetching bidding products for User ID:", userId);
 
-    console.debug("Fetching bidding products for User ID:", userId);
+        // Fetch products where user has placed bids
+        const res = await http.get(`/bids/bidding`);
 
-    // Fetch products where user has placed bids
-    const res = await http.get(`/bids/bidding`);
-
-    const products = res.data?.data || [];
-    console.debug("Active bidding items count:", products.length);
-    if (mounted) setBiddingItems(products);
-  } catch (err) {
-    console.error("Failed to load bidding items:", err);
-    if (mounted) setBiddingItems([]);
-  }
-};
+        const products = res.data?.data || [];
+        console.debug("Active bidding items count:", products.length);
+        if (mounted) setBiddingItems(products);
+      } catch (err) {
+        console.error("Failed to load bidding items:", err);
+        if (mounted) setBiddingItems([]);
+      }
+    };
     loadWatchlist();
     loadWonAuctions();
     loadSellingItems();
@@ -268,22 +271,30 @@ const loadBiddingItems = async () => {
           <ProfileReviews />
           <ProfileTab tab={tab} setTab={setTab} isSeller={isSeller} />
           <div className="my-10 w-3/4 ">
-           
-<ProductList
-  showType={
-    tab === "watchList" ? 2 : 
-    tab === "bidding" ? 3 : 
-    tab === "won" ? 4 : 
-    tab === "selling" ? 5 : 6 // 6 là "sold"
-  }
-  products={
-    tab === "watchList" ? wishlistItems :
-    tab === "bidding" ? biddingItems :
-    tab === "selling" ? sellingItems :
-    tab === "sold" ? soldItems : wonAuctions
-  }
-/>
-
+            <ProductList
+              showType={
+                tab === "watchList"
+                  ? 2
+                  : tab === "bidding"
+                  ? 3
+                  : tab === "won"
+                  ? 4
+                  : tab === "selling"
+                  ? 5
+                  : 6 // 6 là "sold"
+              }
+              products={
+                tab === "watchList"
+                  ? wishlistItems
+                  : tab === "bidding"
+                  ? biddingItems
+                  : tab === "selling"
+                  ? sellingItems
+                  : tab === "sold"
+                  ? soldItems
+                  : wonAuctions
+              }
+            />
           </div>
         </div>
       )}
