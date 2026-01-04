@@ -20,7 +20,8 @@ const ProductBidPlace = ({
   onBuyNow,
   onBanBidder,
   banning,
-  banError,
+
+  onViewSellerRating,
 }) => {
   const [bidValue, setBidValue] = useState(
     `${auction.currentPrice + product.bidStep}`
@@ -134,9 +135,6 @@ const ProductBidPlace = ({
         <SellerInformation
           seller={product.seller}
           bidder={auction.highestBidder}
-          onBanBidder={onBanBidder}
-          banning={banning}
-          banError={banError}
         />
       </div>
     );
@@ -232,6 +230,7 @@ const ProductBidPlace = ({
           auction={auction}
           onBanBidder={onBanBidder}
           banning={banning}
+          onViewSellerRating={onViewSellerRating}
         />
       ) : (
         <>
@@ -387,9 +386,7 @@ const ProductBidPlace = ({
           <SellerInformation
             seller={product.seller}
             bidder={auction.highestBidder}
-            onBanBidder={onBanBidder}
-            banning={banning}
-            banError={banError}
+            onViewSellerRating={onViewSellerRating}
           />
         </>
       )}

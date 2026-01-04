@@ -17,7 +17,6 @@ import NotFoundPage from "./NotFoundPage.jsx";
 import { useProductPermission } from "@/hooks/useProductPermission.js";
 import { useAuth } from "@/context/AuthContext.jsx";
 import { getTimeRemaining } from "@/helper/getTimeRemaining.js";
-import ConfirmBid from "@/components/details/ConfirmActionModal.jsx";
 import ConfirmActionModal from "@/components/details/ConfirmActionModal.jsx";
 
 const ProductDetails = () => {
@@ -271,6 +270,10 @@ const ProductDetails = () => {
     return productId;
   };
 
+  const handleViewSellerRating = (sellerId) => {
+    navigate(`/rating/${sellerId}`);
+  };
+
   const requestConfirm = (type, payload) => {
     setConfirmModal({
       type,
@@ -446,6 +449,7 @@ const ProductDetails = () => {
               ? (bidderId) => requestConfirm("ban", { bidderId })
               : null
           }
+          onViewSellerRating={handleViewSellerRating}
         />
 
         {confirmModal && (
