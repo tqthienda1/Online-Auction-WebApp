@@ -293,7 +293,7 @@ const UserProfile = () => {
               <p className="text-gray-500">User information not available.</p>
             </div>
           )}
-          <ProfileReviews />
+          <ProfileReviews info={info} />
           <ProfileTab tab={tab} setTab={setTab} isSeller={isSeller} />
           <div className="my-10 w-3/4 ">
             {((tab === "watchList" && wishlistLoading) ||

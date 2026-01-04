@@ -229,3 +229,11 @@ export const resetPassword = async (id) => {
 
   return true;
 };
+
+export const getInfoById = async (id) => {
+  return await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+};
