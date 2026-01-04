@@ -4,6 +4,8 @@ import axios from "axios"
 import { useForm } from "react-hook-form"
 import {useState, useEffect} from "react"
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "@/context/AuthContext"
+import { http } from "@/lib/utils"
 
 const schema = z.object({
     paymentInvoice: z.instanceof(FileList).refine(files => files.length > 0, "Payment Invoice is required"),
@@ -11,10 +13,40 @@ const schema = z.object({
 })
 
 function PaymentAndShippingInfo({onUpdated, productID}) {
-    const {register, handleSubmit, formState: {errors}} = useForm({
+    const { user } = useAuth();
+    const { register, handleSubmit, formState: {errors}, setValue } = useForm({
         resolver: zodResolver(schema),
     })
     const [selected, setSelected] = useState([])
+    const [loadingAddress, setLoadingAddress] = useState(false)
+
+    // Prefill shipping address: prefer AuthContext `user.data.address`, fallback to API
+    useEffect(() => {
+        if (!user?.data?.id) return;
+
+        // If AuthContext already contains DB user data with address, use it immediately
+        if (user.data?.address) {
+            setValue("shippingAddress", user.data.address);
+            return;
+        }
+
+        const fetchUserAddress = async () => {
+            try {
+                setLoadingAddress(true);
+                // server route for current user info is /users/me
+                const res = await http.get("/users/me");
+                // controller returns the user object directly; address field is `address` in DB
+                const addr = res?.data?.address || res?.data?.shippingAddress;
+                if (addr) setValue("shippingAddress", addr);
+            } catch (error) {
+                console.error("Failed to fetch user address:", error);
+            } finally {
+                setLoadingAddress(false);
+            }
+        };
+
+        fetchUserAddress();
+    }, [user?.data?.id, user?.data?.address, setValue]);
 
     const onFiles = (e) => {
         const files = Array.from(e.target.files || [])
@@ -78,8 +110,9 @@ function PaymentAndShippingInfo({onUpdated, productID}) {
                         id="shippingAddress"
                         type="text"
                         placeholder="Enter your shipping address"
+                        disabled={loadingAddress}
                         {...register('shippingAddress')}
-                        className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#FBBC04] focus:border-transparent"
+                        className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#FBBC04] focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                     />
                     {errors.shippingAddress && <p className="text-red-500 text-sm mt-2">{errors.shippingAddress.message}</p>}
                 </div>
