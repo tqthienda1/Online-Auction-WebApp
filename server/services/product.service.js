@@ -82,14 +82,23 @@ export const getProducts = async ({
     prisma.product.count({ where }),
   ]);
 
+  let likedSet = new Set();
+
+  if (user) {
+    const watchlist = await prisma.watchList.findMany({
+      where: { userID: user.id },
+      select: { productID: true },
+    });
+
+    likedSet = new Set(watchlist.map((w) => w.productID));
+  }
+
   return {
-    products: await Promise.all(
-      products.map(async (p) => ({
-        ...p,
-        category: p.category?.name ?? null,
-        isLiked: await checkWatchlist(user, p.id),
-      }))
-    ),
+    products: products.map((p) => ({
+      ...p,
+      category: p.category?.name ?? null,
+      isLiked: likedSet.has(p.id),
+    })),
     total,
   };
 };
@@ -367,103 +376,112 @@ export const getProductDescriptions = async (productId) => {
   });
 };
 
+let isRunning = false;
+
 export const closeExpiredAuctions = async () => {
-  const now = new Date();
+  if (isRunning) return;
+  isRunning = true;
 
-  const products = await prisma.product.findMany({
-    where: {
-      endTime: { lte: now },
-      sold: false,
-    },
-    include: {
-      seller: true,
-    },
-  });
+  try {
+    const now = new Date();
 
-  for (const product of products) {
-    console.log(product.id);
-    await prisma.$transaction(async (tx) => {
-      const existingOrder = await tx.order.findUnique({
-        where: { productID: product.id },
-      });
-
-      if (!existingOrder && product.highestBidderID) {
-        await createOrder({
-          db: tx,
-          productID: product.id,
-          sellerID: product.sellerID,
-          buyerID: product.highestBidderID,
-        });
-      }
-
-      await tx.product.update({
-        where: { id: product.id, sold: false }, // tránh race condition
-        data: { sold: true },
-      });
+    const products = await prisma.product.findMany({
+      where: {
+        endTime: { lte: now },
+        sold: false,
+      },
+      include: {
+        seller: true,
+      },
     });
-  }
 
-  for (const product of products) {
-    if (product.highestBidderID) {
-      if (product.seller?.supabaseId) {
-        const { data } = await supabase.auth.admin.getUserById(
-          product.seller.supabaseId
-        );
+    for (const product of products) {
+      console.log(product.id);
+      await prisma.$transaction(async (tx) => {
+        const existingOrder = await tx.order.findUnique({
+          where: { productID: product.id },
+        });
 
-        if (data?.user?.email) {
-          await sendMailTo(
-            data.user.email,
-            `Your product has been sold.`,
-            `Your product has been sold.`,
-            `
+        if (!existingOrder && product.highestBidderID) {
+          await createOrder({
+            db: tx,
+            productID: product.id,
+            sellerID: product.sellerID,
+            buyerID: product.highestBidderID,
+          });
+        }
+
+        await tx.product.update({
+          where: { id: product.id, sold: false }, // tránh race condition
+          data: { sold: true },
+        });
+      });
+    }
+
+    for (const product of products) {
+      if (product.highestBidderID) {
+        if (product.seller?.supabaseId) {
+          const { data } = await supabase.auth.admin.getUserById(
+            product.seller.supabaseId
+          );
+
+          if (data?.user?.email) {
+            await sendMailTo(
+              data.user.email,
+              `Your product has been sold.`,
+              `Your product has been sold.`,
+              `
               <h3>Congratulations!</h3>
               <p>Your product <strong>${product.productName}</strong> has been sold.</p>
               <p>Final price: <strong>${product.currentPrice}</strong></p>
             `
-          );
+            );
+          }
         }
-      }
-      const winner = await prisma.user.findUnique({
-        where: { id: product.highestBidderID },
-      });
+        const winner = await prisma.user.findUnique({
+          where: { id: product.highestBidderID },
+        });
 
-      if (winner?.supabaseId) {
-        const { data } = await supabase.auth.admin.getUserById(
-          winner.supabaseId
-        );
+        if (winner?.supabaseId) {
+          const { data } = await supabase.auth.admin.getUserById(
+            winner.supabaseId
+          );
 
-        if (data?.user?.email) {
-          await sendMailTo(
-            data.user.email,
-            `You won the auction.`,
-            `You won the auction.`,
-            `
+          if (data?.user?.email) {
+            await sendMailTo(
+              data.user.email,
+              `You won the auction.`,
+              `You won the auction.`,
+              `
               <h3>Congratulations!</h3>
               <p>You won the auction for <strong>${product.productName}</strong>.</p>
               <p>Winning price: <strong>${product.currentPrice}</strong></p>
             `
-          );
+            );
+          }
         }
-      }
-    } else {
-      if (product.seller?.supabaseId) {
-        const { data } = await supabase.auth.admin.getUserById(
-          product.seller.supabaseId
-        );
+      } else {
+        if (product.seller?.supabaseId) {
+          const { data } = await supabase.auth.admin.getUserById(
+            product.seller.supabaseId
+          );
 
-        if (data?.user?.email) {
-          await sendMailTo(
-            data.user.email,
-            `The auction for your product has ended without a winning bidder.`,
-            `The auction for your product has ended without a winning bidder.`,
-            `
+          if (data?.user?.email) {
+            await sendMailTo(
+              data.user.email,
+              `The auction for your product has ended without a winning bidder.`,
+              `The auction for your product has ended without a winning bidder.`,
+              `
               <h3>We are sorry to inform you that:</h3>
               <p>Your product <strong>${product.productName}</strong> was not sold.</p>
             `
-          );
+            );
+          }
         }
       }
     }
+  } finally {
+    isRunning = false;
   }
 };
 
