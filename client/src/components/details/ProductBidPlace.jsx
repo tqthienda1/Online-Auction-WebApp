@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import InputPrice from "../InputPrice";
 import SellerInformation from "./SellerInformation";
-import { http } from "../../lib/utils.js";
-import { FaRegHeart } from "react-icons/fa";
-import { FaHeart } from "react-icons/fa";
-import { Navigate, useNavigate } from "react-router-dom";
+// import { http } from "../../lib/utils.js";
+// import { FaRegHeart } from "react-icons/fa";
+// import { FaHeart } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import SellerPanel from "./SellerPanel.jsx";
-import { toast } from "sonner";
-import renderAuctionStatus from "./RenderAuctionStatus";
 
 const ProductBidPlace = ({
   product,
