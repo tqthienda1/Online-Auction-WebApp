@@ -1,9 +1,13 @@
+import { supabase } from "../libs/client.js";
 import prisma from "../prismaClient.js";
 import { randomUUID } from "crypto";
+import { sendMailTo } from "./sendMail.service.js";
+import { v4 as uuidv4 } from "uuid";
 
 export const getUsers = async ({ page = 1, limit = 10 }) => {
   const skip = (page - 1) * limit;
-  const [data, total] = await Promise.all([
+
+  const [users, total] = await Promise.all([
     prisma.user.findMany({
       skip,
       take: limit,
@@ -12,8 +16,32 @@ export const getUsers = async ({ page = 1, limit = 10 }) => {
     prisma.user.count(),
   ]);
 
+  const usersWithProvider = await Promise.all(
+    users.map(async (u) => {
+      const { data: result, error } = await supabase.auth.admin.getUserById(
+        u.supabaseId
+      );
+
+      if (error || !result?.user?.identities) {
+        return {
+          ...u,
+          isGoogleUser: false,
+        };
+      }
+
+      const isGoogleUser = result.user.identities.some(
+        (i) => i.provider === "google"
+      );
+
+      return {
+        ...u,
+        isGoogleUser,
+      };
+    })
+  );
+
   return {
-    data,
+    data: usersWithProvider,
     page,
     limit,
     total,
@@ -119,7 +147,13 @@ export const updateExpiredSeller = async () => {
   });
 };
 
-export const createUser = async ({ supabaseId, username, role = "BIDDER", dob = null, address = null }) => {
+export const createUser = async ({
+  supabaseId,
+  username,
+  role = "BIDDER",
+  dob = null,
+  address = null,
+}) => {
   const sid = supabaseId || randomUUID();
   return await prisma.user.create({
     data: {
@@ -135,10 +169,63 @@ export const createUser = async ({ supabaseId, username, role = "BIDDER", dob = 
 };
 
 export const updateUserById = async (id, payload) => {
-  const allowed = (({ username, role, dob, address }) => ({ username, role, dob, address }))(payload);
+  const allowed = (({ username, role, dob, address }) => ({
+    username,
+    role,
+    dob,
+    address,
+  }))(payload);
   return await prisma.user.update({ where: { id }, data: allowed });
 };
 
 export const deleteUserById = async (id) => {
   return await prisma.user.delete({ where: { id } });
+};
+
+export const resetPassword = async (id) => {
+  const user = await prisma.user.findUnique({
+    where: { id },
+  });
+
+  if (!user) throw new Error("User not found");
+
+  const { data, error } = await supabase.auth.admin.getUserById(
+    user.supabaseId
+  );
+
+  if (error || !data?.user) {
+    throw new Error("Cannot get supabase user");
+  }
+
+  const supaUser = data.user;
+
+  const isGoogleUser = supaUser.identities?.some(
+    (i) => i.provider === "google"
+  );
+
+  if (isGoogleUser) {
+    throw new Error("Google account cannot reset password");
+  }
+
+  const newPassword = uuidv4().slice(0, 12);
+
+  const { error: updateError } = await supabase.auth.admin.updateUserById(
+    user.supabaseId,
+    {
+      password: newPassword,
+    }
+  );
+
+  if (updateError) {
+    throw new Error("Reset password failed");
+  }
+
+  await sendMailTo(
+    supaUser.email,
+    "Your password has been reset",
+    `Your new password: ${newPassword}`,
+    `<p>Your new password: <b>${newPassword}</b></p>`
+  );
+
+  return true;
 };
