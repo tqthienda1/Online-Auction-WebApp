@@ -44,7 +44,7 @@ const ProductBidPlace = ({
 
     if (value < auction.currentPrice + product.bidStep) {
       setValidationError(
-        `Bid must be at least ${auction.currentPrice + auction.bidStep} USD`
+        `Bid must be at least ${auction.currentPrice + product.bidStep} USD`
       );
       return;
     }
@@ -65,7 +65,7 @@ const ProductBidPlace = ({
     onRequestBid?.(Number(bidValue));
   };
 
-  const handleBuyNowClick = () => {
+  const handleBuyNowClick = (productId) => {
     if (auction.state !== "live") return;
 
     if (!user) {
@@ -73,16 +73,16 @@ const ProductBidPlace = ({
       return;
     }
 
-    onBuyNow?.();
+    onBuyNow?.(productId);
   };
 
-  {
-    validationError && (
-      <p className="w-[90%] text-center text-sm text-red-500">
-        {validationError}
-      </p>
-    );
-  }
+  // {
+  //   validationError && (
+  //     <p className="w-[90%] text-center text-sm text-red-500">
+  //       {validationError}
+  //     </p>
+  //   );
+  // }
 
   // {
   //   submitError && (
@@ -326,7 +326,7 @@ const ProductBidPlace = ({
               <button
                 type="button"
                 disabled={!isAuctionLive}
-                onClick={handleBuyNowClick}
+                onClick={() => handleBuyNowClick(product.id)}
                 className="
                   w-[90%] h-10 uppercase bg-red-600 text-white text-xl font-bold
                   hover:bg-red-700 transition

@@ -286,7 +286,7 @@ const ProductDetails = () => {
     }
   };
 
-  const handleBuyNow = async () => {
+  const handleBuyNow = async (productId) => {
     if (!user) {
       navigate("/login");
       return;
@@ -299,11 +299,11 @@ const ProductDetails = () => {
       setBuyNowError(null);
 
       await http.post("/orders/buy-now", {
-        productId: product.id,
+        productId,
       });
 
       // await Promise.all([fetchProduct(), fetchAuction(), fetchBidHistory()]);
-      navigate(`/buyer/payment/${id}`);
+      navigate(`/buyer/payment/${productId}`);
     } catch (err) {
       setBuyNowError(err.response?.data?.message || "Buy now failed");
     } finally {
@@ -315,6 +315,13 @@ const ProductDetails = () => {
     setConfirmModal({ type, ...payload });
   };
 
+  const requestBuyNowConfirm = (productId) => {
+    setConfirmModal({
+      type: "buy-now",
+      productId,
+    });
+  };
+
   const handleConfirmAction = async (modal) => {
     switch (modal.type) {
       case "bid":
@@ -322,7 +329,7 @@ const ProductDetails = () => {
         break;
 
       case "buy-now":
-        await handleBuyNow();
+        await handleBuyNow(modal.productId);
         break;
 
       case "ban":
@@ -434,7 +441,7 @@ const ProductDetails = () => {
           user={user}
           onToggleWatchlist={handleToggleWatchlist}
           onRequestBid={(value) => requestConfirm("bid", { value })}
-          onBuyNow={() => requestConfirm("buy-now")}
+          onBuyNow={(productId) => requestBuyNowConfirm(productId)}
           onBanBidder={
             canBanBidder
               ? (bidderId) => requestConfirm("ban", { bidderId })
@@ -520,7 +527,11 @@ const ProductDetails = () => {
         className="flex justify-center items-center mt-20"
         data-aos="zoom-in"
       >
-        <SimilarProducts products={product.relatedProducts} />
+        <SimilarProducts
+          products={product.relatedProducts}
+          onBuyNow={(productId) => requestBuyNowConfirm(productId)}
+          user={user}
+        />
       </div>
 
       <div className="h-42 w-12"></div>

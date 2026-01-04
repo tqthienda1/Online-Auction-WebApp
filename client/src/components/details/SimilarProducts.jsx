@@ -7,9 +7,22 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { formattedDate } from "@/helper/formatDate";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-const SimilarProducts = ({ products }) => {
+const SimilarProducts = ({ products, onBuyNow, user }) => {
+  const navigate = useNavigate();
+  const handleBuyNowClick = ({ productId, end, start }) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    const now = new Date();
+
+    if (end <= now || start > now) return;
+
+    onBuyNow?.(productId);
+  };
   return (
     <>
       <div className="flex flex-col w-full justify-center items-center gap-10">
@@ -79,7 +92,14 @@ const SimilarProducts = ({ products }) => {
                           <div className="relative z-20 flex mt-5 justify-between items-center w-full gap-5">
                             <button
                               type="button"
-                              className="text-lg font-bold w-1/2 h-12 border border-black transition duration-200 ease-out hover:scale-105 rounded-sm uppercase"
+                              onClick={(e) => {
+                                handleBuyNowClick({
+                                  productId: p.id,
+                                  end: p.endTime,
+                                  start: p.startTime,
+                                });
+                              }}
+                              className="text-lg font-bold w-1/2 h-12 border border-black transition duration-200 ease-out hover:scale-105 rounded-sm uppercase cursor-pointer"
                             >
                               Buy Now
                             </button>
