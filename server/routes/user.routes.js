@@ -59,4 +59,11 @@ router.patch(
   UserController.updateUsername
 );
 
+router.patch(
+  "/reset-password/:id",
+  authMiddleware,
+  requireRole(["ADMIN"]),
+  UserController.resetPassword
+);
+
 export default router;
