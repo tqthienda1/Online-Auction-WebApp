@@ -20,6 +20,8 @@ import AdminSystemPage from "@/pages/AdminSystemPage.jsx";
 import AdminUsersPage from "@/pages/AdminUsersPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import ForgotPasswordPage from "@/pages/ForgotPassword";
+import RatingPage from "@/pages/RatingPage";
+import Rating from "@/components/order/Rating";
 
 const guestRoutes = [
   { path: "/", component: Home, layout: MainLayout },
@@ -58,6 +60,7 @@ const userRoutes = [
     component: SellerPaymentPage,
     layout: MainLayout,
   },
+  { path: "/rating/:userId", component: RatingPage, layout: MainLayout },
 ];
 
 const bidderRoutes = [];
