@@ -28,6 +28,7 @@ const BuyerPaymentPage = () => {
       case "UPDATESHIPPINGINVOICE": return 4;
       case "RECEIVEPRODUCT": return 5;
       case "RATING": return 6;
+      case "CANCELORDER": return 6;
       default: return 1;
     }
   };
@@ -136,11 +137,19 @@ const BuyerPaymentPage = () => {
 
               {currentStep === 6 && (
               <div className="space-y-6">
-                  <div className="bg-green-50 p-4 rounded border border-green-200">
-                      <p className="text-sm text-green-800 font-medium">
-                          Order completed! You can update your rating for the seller anytime.
-                      </p>
-                  </div>
+                  {order?.status === "CANCELORDER" ? (
+                    <div className="bg-yellow-50 p-4 rounded border border-yellow-200">
+                        <p className="text-sm text-yellow-800 font-medium">
+                            This order was cancelled by the seller. You can still rate the seller below.
+                        </p>
+                    </div>
+                  ) : (
+                    <div className="bg-green-50 p-4 rounded border border-green-200">
+                        <p className="text-sm text-green-800 font-medium">
+                            Order completed! You can update your rating for the seller anytime.
+                        </p>
+                    </div>
+                  )}
                   <Rating type="seller" productID={productID} onRated={fetchOrder} />
               </div>
               )}

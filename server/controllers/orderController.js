@@ -188,13 +188,11 @@ export const cancelOrder = async (req, res) => {
     }
 
     const deleted = await orderService.cancelOrder(productID);
-    return res.status(200).json(deleted);
-  } catch (err) {
-    // If seller cancelled, automatically submit a -1 rating for the buyer
+    // After successful cancel by seller, automatically submit a -1 rating for the buyer
     try {
-      const raterID = userID;
+      const raterID = req.user?.id;
       const rateeID = order.buyer?.id;
-      if (rateeID) {
+      if (rateeID && raterID) {
         await ratingService.submitRating({
           raterID,
           rateeID,
@@ -207,10 +205,12 @@ export const cancelOrder = async (req, res) => {
       console.error("Failed to auto-submit rating on cancel:", ratingErr);
       // don't block cancel response on rating failure
     }
+
+    return res.status(200).json(deleted);
+  } catch (err) {
     return res
       .status(err.status || 500)
       .json({ message: err.message || "Internal server error" });
-    return res.status(200).json(deleted);
   }
 };
 

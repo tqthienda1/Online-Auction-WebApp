@@ -11,8 +11,9 @@ const router = express.Router();
 // POST /rating/:productID/rate
 router.post("/:productID/rate", authMiddleware, createOrToggleRating);
 
-// GET /rating/:userId  -> get all user's ratings
-router.get("/:userId", getRatingByUserId);
+
+// GET /rating/user/:userId  -> get all ratings for a given user
+router.get("/user/:userId", getRatingByUserId);
 
 // GET /rating/:productID  -> get current user's rating for that product
 router.get("/:productID", authMiddleware, getRatingForCurrentUser);
