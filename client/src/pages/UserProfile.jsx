@@ -66,6 +66,11 @@ const UserProfile = () => {
   const [sellingItems, setSellingItems] = useState([]);
   const [soldItems, setSoldItems] = useState([]);
   const [biddingItems, setBiddingItems] = useState([]);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [wonLoading, setWonLoading] = useState(false);
+  const [sellingLoading, setSellingLoading] = useState(false);
+  const [soldLoading, setSoldLoading] = useState(false);
+  const [biddingLoading, setBiddingLoading] = useState(false);
 
   useEffect(() => {
     if (loading || !user?.id) return; // wait for auth
@@ -73,6 +78,7 @@ const UserProfile = () => {
     let mounted = true;
 
     const loadWatchlist = async () => {
+      setWishlistLoading(true);
       try {
         const res = await http.get("/watchlist");
 
@@ -97,9 +103,13 @@ const UserProfile = () => {
         // If unauthorized or forbidden, ensure empty list and optionally show UI later
         if (mounted) setWishlistItems([]);
       }
+      finally {
+        if (mounted) setWishlistLoading(false);
+      }
     };
 
     const loadWonAuctions = async () => {
+      setWonLoading(true);
       try {
         const res = await http.get("/orders/won/orders");
 
@@ -123,6 +133,9 @@ const UserProfile = () => {
 
         // If unauthorized or forbidden, ensure empty list and optionally show UI later
         if (mounted) setWonAuctions([]);
+      }
+      finally {
+        if (mounted) setWonLoading(false);
       }
     };
 
@@ -156,6 +169,7 @@ const UserProfile = () => {
     // };
 
     const loadSellingItems = async () => {
+      setSellingLoading(true);
       try {
         // Ưu tiên lấy info.id hoặc user.id (đây là Primary Key trong DB của bạn)
         // Thay vì lấy user.id chung chung có thể bị nhầm với supabaseId từ AuthContext
@@ -189,9 +203,13 @@ const UserProfile = () => {
         console.error("Failed to load selling items:", err);
         if (mounted) setSellingItems([]);
       }
+      finally {
+        if (mounted) setSellingLoading(false);
+      }
     };
 
     const loadSoldItems = async () => {
+      setSoldLoading(true);
       try {
         const userId = info?.id || user?.id || user?.data?.id;
 
@@ -216,9 +234,13 @@ const UserProfile = () => {
         console.error("Failed to load sold items:", err);
         if (mounted) setSoldItems([]);
       }
+      finally {
+        if (mounted) setSoldLoading(false);
+      }
     };
 
     const loadBiddingItems = async () => {
+      setBiddingLoading(true);
       try {
         const userId = info?.id || user?.id || user?.data?.id;
 
@@ -238,6 +260,9 @@ const UserProfile = () => {
       } catch (err) {
         console.error("Failed to load bidding items:", err);
         if (mounted) setBiddingItems([]);
+      }
+      finally {
+        if (mounted) setBiddingLoading(false);
       }
     };
     loadWatchlist();
@@ -271,30 +296,41 @@ const UserProfile = () => {
           <ProfileReviews />
           <ProfileTab tab={tab} setTab={setTab} isSeller={isSeller} />
           <div className="my-10 w-3/4 ">
-            <ProductList
-              showType={
-                tab === "watchList"
-                  ? 2
-                  : tab === "bidding"
-                  ? 3
-                  : tab === "won"
-                  ? 4
-                  : tab === "selling"
-                  ? 5
-                  : 6 // 6 là "sold"
-              }
-              products={
-                tab === "watchList"
-                  ? wishlistItems
-                  : tab === "bidding"
-                  ? biddingItems
-                  : tab === "selling"
-                  ? sellingItems
-                  : tab === "sold"
-                  ? soldItems
-                  : wonAuctions
-              }
-            />
+            {((tab === "watchList" && wishlistLoading) ||
+              (tab === "bidding" && biddingLoading) ||
+              (tab === "won" && wonLoading) ||
+              (tab === "selling" && sellingLoading) ||
+              (tab === "sold" && soldLoading)) ? (
+              <div className="flex flex-col justify-center p-4 md:p-5 text-center">
+                <Spinner className="size-8 w-full text-yellow-500" />
+                <h3 className="font-semibold my-6 text-body">Loading</h3>
+              </div>
+            ) : (
+              <ProductList
+                showType={
+                  tab === "watchList"
+                    ? 2
+                    : tab === "bidding"
+                    ? 3
+                    : tab === "won"
+                    ? 4
+                    : tab === "selling"
+                    ? 5
+                    : 6
+                }
+                products={
+                  tab === "watchList"
+                    ? wishlistItems
+                    : tab === "bidding"
+                    ? biddingItems
+                    : tab === "selling"
+                    ? sellingItems
+                    : tab === "sold"
+                    ? soldItems
+                    : wonAuctions
+                }
+              />
+            )}
           </div>
         </div>
       )}
