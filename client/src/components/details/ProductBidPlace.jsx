@@ -20,7 +20,6 @@ const ProductBidPlace = ({
   onBuyNow,
   onBanBidder,
   banning,
-
   onViewSellerRating,
 }) => {
   const [bidValue, setBidValue] = useState(
@@ -90,6 +89,20 @@ const ProductBidPlace = ({
   //     <p className="w-[90%] text-center text-sm text-red-500">{submitError}</p>
   //   );
   // }
+
+  if (canEdit) {
+    return (
+      <div className="flex flex-col w-1/3 items-center">
+        <SellerPanel
+          product={product}
+          auction={auction}
+          onBanBidder={onBanBidder}
+          banning={banning}
+          onViewSellerRating={onViewSellerRating}
+        />
+      </div>
+    );
+  }
 
   if (auction.state == "ended" || product.sold) {
     return (
@@ -224,95 +237,82 @@ const ProductBidPlace = ({
 
   return (
     <div className="flex flex-col w-1/3 items-center ">
-      {canEdit ? (
-        <SellerPanel
-          product={product}
-          auction={auction}
-          onBanBidder={onBanBidder}
-          banning={banning}
-          onViewSellerRating={onViewSellerRating}
-        />
-      ) : (
-        <>
-          <div className=" h-12 mt-10 flex justify-center items-center">
-            <p className="text-2xl font-medium font-playfair">Place your bid</p>
+      <div className=" h-12 mt-10 flex justify-center items-center">
+        <p className="text-2xl font-medium font-playfair">Place your bid</p>
+      </div>
+      {product.ratingRequired && (
+        <div className="w-[90%] mt-2  px-4 py-2 border border-yellow-300 bg-yellow-50 text-sm text-gray-700 rounded">
+          <p className="font-medium text-gray-900 mb-1">Bidder Requirement</p>
+          <ul className="list-disc list-inside">
+            <li>Rating required</li>
+            <li>
+              Positive feedback ≥ <span className="font-semibold">80%</span>
+            </li>
+          </ul>
+        </div>
+      )}
+      <div
+        className={`flex flex-col items-center w-[90%] h-auto border mt-10 py-5 gap-5`}
+      >
+        <div className="flex flex-row w-[90%] justify-between items-center">
+          <p className="text-lg font-medium">{auction.time.label}</p>
+          <div className="flex flex-col items-end">
+            <p className="text-yellow-400 text-xl font-bold">
+              {auction.time.remainingText}
+            </p>
+
+            <p className="text-md font-light">{auction.time.endAtText}</p>
           </div>
-          {product.ratingRequired && (
-            <div className="w-[90%] mt-2  px-4 py-2 border border-yellow-300 bg-yellow-50 text-sm text-gray-700 rounded">
-              <p className="font-medium text-gray-900 mb-1">
-                Bidder Requirement
-              </p>
-              <ul className="list-disc list-inside">
-                <li>Rating required</li>
-                <li>
-                  Positive feedback ≥ <span className="font-semibold">80%</span>
-                </li>
-              </ul>
-            </div>
-          )}
+        </div>
 
-          <div
-            className={`flex flex-col items-center w-[90%] h-auto border mt-10 py-5 gap-5`}
-          >
-            <div className="flex flex-row w-[90%] justify-between items-center">
-              <p className="text-lg font-medium">{auction.time.label}</p>
-              <div className="flex flex-col items-end">
-                <p className="text-yellow-400 text-xl font-bold">
-                  {auction.time.remainingText}
-                </p>
+        <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
 
-                <p className="text-md font-light">{auction.time.endAtText}</p>
-              </div>
-            </div>
+        <div className="flex flex-row w-[90%] justify-between items-center ">
+          <p className="text-lg font-medium">Current Price</p>
+          <p className="text-2xl font-bold text-yellow-400">
+            {auction.currentPrice
+              ? auction.currentPrice
+              : product.startingPrice}{" "}
+            USD
+          </p>
+        </div>
 
+        {product.buyNowPrice && (
+          <>
             <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
-
-            <div className="flex flex-row w-[90%] justify-between items-center ">
-              <p className="text-lg font-medium">Current Price</p>
+            <div className="flex flex-row w-[90%] justify-between items-center">
+              <p className="text-lg font-medium">Buy Now Price</p>
               <p className="text-2xl font-bold text-yellow-400">
-                {auction.currentPrice
-                  ? auction.currentPrice
-                  : product.startingPrice}{" "}
-                USD
+                {product.buyNowPrice} USD
               </p>
             </div>
+          </>
+        )}
 
-            {product.buyNowPrice && (
-              <>
-                <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
-                <div className="flex flex-row w-[90%] justify-between items-center">
-                  <p className="text-lg font-medium">Buy Now Price</p>
-                  <p className="text-2xl font-bold text-yellow-400">
-                    {product.buyNowPrice} USD
-                  </p>
-                </div>
-              </>
-            )}
-
-            {product.buyNowPrice && (
-              <>
-                <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
-                <div className="flex flex-row w-[90%] justify-between items-center">
-                  <p className="text-lg font-medium">Bid Step</p>
-                  <p className="text-2xl font-bold text-yellow-400">
-                    {product.bidStep} USD
-                  </p>
-                </div>
-              </>
-            )}
-
+        {product.buyNowPrice && (
+          <>
             <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
-
             <div className="flex flex-row w-[90%] justify-between items-center">
-              <p className="text-lg font-medium">Choose your maximum bid</p>
-              {/* <a className="text-sm font-extralight italic underline">
+              <p className="text-lg font-medium">Bid Step</p>
+              <p className="text-2xl font-bold text-yellow-400">
+                {product.bidStep} USD
+              </p>
+            </div>
+          </>
+        )}
+
+        <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
+
+        <div className="flex flex-row w-[90%] justify-between items-center">
+          <p className="text-lg font-medium">Choose your maximum bid</p>
+          {/* <a className="text-sm font-extralight italic underline">
                 How bidding works
               </a> */}
-            </div>
+        </div>
 
-            <InputPrice value={bidValue} onChange={setBidValue} />
+        <InputPrice value={bidValue} onChange={setBidValue} />
 
-            {/* <div className="flex w-[90%] text-end">
+        {/* <div className="flex w-[90%] text-end">
               <p className="text-xs font-extralight">
                 This amount excludes shipping fees, applicable taxes, and will
                 have a Buyer's Premium based on the hammer price of the lot:{" "}
@@ -320,76 +320,74 @@ const ProductBidPlace = ({
               </p>
             </div> */}
 
-            <div className="flex flex-col w-full justify-center items-center gap-2">
-              <button
-                type="button"
-                disabled={!!validationError || !bidValue || !isAuctionLive}
-                onClick={handlePlaceBid}
-                className="w-[90%] h-10 bg-brand uppercase text-yellow-400 text-xl font-bold
+        <div className="flex flex-col w-full justify-center items-center gap-2">
+          <button
+            type="button"
+            disabled={!!validationError || !bidValue || !isAuctionLive}
+            onClick={handlePlaceBid}
+            className="w-[90%] h-10 bg-brand uppercase text-yellow-400 text-xl font-bold
                       hover:bg-yellow-400 hover:text-brand transition
                       disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {/* {isSubmitting && (
+          >
+            {/* {isSubmitting && (
                   <span className="inset-x-0 bottom-0 h-1 bg-yellow-400 animate-pulse" />
                 )} */}
-                {/* {isSubmitting ? "Placing bid..." : "Place Bid"} */}
-                Place Bid
-              </button>
+            {/* {isSubmitting ? "Placing bid..." : "Place Bid"} */}
+            Place Bid
+          </button>
 
-              {product.buyNowPrice && (
-                <button
-                  type="button"
-                  disabled={!isAuctionLive}
-                  onClick={() => handleBuyNowClick(product.id)}
-                  className="
+          {product.buyNowPrice && (
+            <button
+              type="button"
+              disabled={!isAuctionLive}
+              onClick={() => handleBuyNowClick(product.id)}
+              className="
                   w-[90%] h-10 uppercase bg-red-600 text-white text-xl font-bold
                   hover:bg-red-700 transition
                   disabled:opacity-50 disabled:cursor-not-allowed
                 "
-                >
-                  Buy Now
-                </button>
-              )}
+            >
+              Buy Now
+            </button>
+          )}
 
-              {/* {buyNow.error && (
+          {/* {buyNow.error && (
                 <p className="text-sm text-red-500 mt-2">{buyNow.error}</p>
               )} */}
 
-              <button
-                type="button"
-                disabled={watchlist.loading}
-                onClick={onToggleWatchlist}
-                className={`w-[90%] h-10 bg-neutral-300 uppercase text-brand text-xl font-bold hover:bg-neutral-400 transition cursor-pointer 
+          <button
+            type="button"
+            disabled={watchlist.loading}
+            onClick={onToggleWatchlist}
+            className={`w-[90%] h-10 bg-neutral-300 uppercase text-brand text-xl font-bold hover:bg-neutral-400 transition cursor-pointer 
            ${
              watchlist.isWatched
                ? "bg-white text-red-600 border border-red-600 hover:border-2 hover:bg-white hover:text-red-700"
                : "bg-neutral-300 text-brand border-brand hover:bg-brand hover:text-black"
            }
             disabled:opacity-50 disabled:cursor-not-allowed`}
-              >
-                {watchlist.loading ? (
-                  "Processing..."
-                ) : watchlist.isWatched ? (
-                  <div className="flex justify-center items-center gap-2">
-                    {/* <FaHeart /> */}
-                    Remove from watch list
-                  </div>
-                ) : (
-                  <div className="flex justify-center items-center gap-2">
-                    {/* <FaRegHeart /> */}
-                    Add to watch list
-                  </div>
-                )}
-              </button>
-            </div>
-          </div>
-          <SellerInformation
-            seller={product.seller}
-            bidder={auction.highestBidder}
-            onViewSellerRating={onViewSellerRating}
-          />
-        </>
-      )}
+          >
+            {watchlist.loading ? (
+              "Processing..."
+            ) : watchlist.isWatched ? (
+              <div className="flex justify-center items-center gap-2">
+                {/* <FaHeart /> */}
+                Remove from watch list
+              </div>
+            ) : (
+              <div className="flex justify-center items-center gap-2">
+                {/* <FaRegHeart /> */}
+                Add to watch list
+              </div>
+            )}
+          </button>
+        </div>
+      </div>
+      <SellerInformation
+        seller={product.seller}
+        bidder={auction.highestBidder}
+        onViewSellerRating={onViewSellerRating}
+      />
     </div>
   );
 };

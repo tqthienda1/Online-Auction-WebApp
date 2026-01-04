@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 const SellerPanel = ({
   product,
   auction,
@@ -5,6 +7,7 @@ const SellerPanel = ({
   banning,
   onViewSellerRating,
 }) => {
+  const navigate = useNavigate();
   return (
     <>
       <div className="h-12 mt-10 flex justify-center items-center">
@@ -30,18 +33,22 @@ const SellerPanel = ({
         </div>
 
         <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
-
-        <div className="flex flex-row w-[90%] justify-between items-center">
-          <p className="text-lg font-medium">{auction.time.label}</p>
-          <div className="flex flex-col items-end">
-            <p className="text-yellow-400 text-xl font-bold">
-              {auction.time.remainingText ?? "--"}
-            </p>
-            <p className="text-md font-light">{auction.time.endAtText ?? ""}</p>
-          </div>
-        </div>
-
-        <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
+        {auction.state !== "ended" && !product.sold && (
+          <>
+            <div className="flex flex-row w-[90%] justify-between items-center">
+              <p className="text-lg font-medium">{auction.time.label}</p>
+              <div className="flex flex-col items-end">
+                <p className="text-yellow-400 text-xl font-bold">
+                  {auction.time.remainingText ?? "--"}
+                </p>
+                <p className="text-md font-light">
+                  {auction.time.endAtText ?? ""}
+                </p>
+              </div>
+            </div>
+            <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
+          </>
+        )}
 
         <div className="flex flex-row w-[90%] justify-between items-center">
           <p className="text-lg font-medium">Current Price</p>
@@ -63,12 +70,12 @@ const SellerPanel = ({
               <div
                 onClick={() => onViewSellerRating(auction.highestBidder.id)}
                 className="
-              mt-3 flex items-center gap-2
-              text-sm text-gray-700
-              hover:scale-105
-              transition
-              mx-auto
-              cursor-pointer"
+                  mt-3 flex items-center gap-2
+                  text-sm text-gray-700
+                  hover:scale-105
+                  transition
+                  mx-auto
+                  cursor-pointer"
               >
                 <div className="flex items-center gap-1">
                   <p>Rating: </p>
@@ -91,10 +98,9 @@ const SellerPanel = ({
           )}
         </div>
 
-        {auction.highestBidder && (
-          <>
-            <div className="w-[90%] h-0.5 bg-brand opacity-20"></div>
-
+        {auction.highestBidder &&
+          auction.state !== "ended" &&
+          !product.sold && (
             <button
               disabled={banning}
               onClick={() => onBanBidder(auction.highestBidder.id)}
@@ -104,7 +110,21 @@ const SellerPanel = ({
             >
               {banning ? "Banning bidder..." : "Ban highest bidder"}
             </button>
-          </>
+          )}
+
+        {product.sold && (
+          <button
+            onClick={() =>
+              navigate(`/seller/payment/${product.id}`, { replace: true })
+            }
+            className="
+                    w-[90%] h-10 bg-brand uppercase text-yellow-400 text-xl font-bold
+                  hover:bg-yellow-400 hover:text-brand transition
+                    disabled:opacity-50 disabled:cursor-not-allowed
+                  "
+          >
+            Proceed to Payment
+          </button>
         )}
       </div>
     </>
