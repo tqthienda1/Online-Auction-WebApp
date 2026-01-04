@@ -1,3 +1,5 @@
+import { maskUsername } from "@/helper/maskUser";
+
 const SellerInformation = ({
   seller,
   bidder,
@@ -62,7 +64,7 @@ const SellerInformation = ({
               className="text-3xl font-playfair font-bold mt-1 truncate"
               title={bidder.username}
             >
-              {bidder.username}
+              {maskUsername(bidder.username)}
             </h2>
 
             <p className="text-gray-700 mt-2">
