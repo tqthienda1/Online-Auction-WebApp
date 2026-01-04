@@ -1,7 +1,8 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { http as axios } from '../lib/utils'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import PaymentAndShippingInfo from '../components/order/PaymentAndShippingInfo'
 import DeliveryConfirmation from '../components/order/DeliveryComfirmation'
 import Rating from '../components/order/Rating'
@@ -11,6 +12,8 @@ import ChatModal from '../components/order/ChatModal'
 
 const BuyerPaymentPage = () => {
   const { productID } = useParams();
+  const { user: authUser, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -44,6 +47,21 @@ const BuyerPaymentPage = () => {
   useEffect(() => {
     fetchOrder();
   }, [productID]);
+
+  // Redirect if the logged-in user is not the buyer for this order
+  useEffect(() => {
+    if (loading || authLoading || !order) return;
+
+    if (!authUser) {
+      navigate('/login', { replace: true });
+      return;
+    }
+
+    const currentUserId = authUser.data?.id || authUser.id;
+    if (currentUserId !== order?.buyer?.id) {
+      navigate('/', { replace: true });
+    }
+  }, [loading, authLoading, order, authUser, navigate]);
 
   return (
     <div className="mx-auto px-4 sm:px-6">
