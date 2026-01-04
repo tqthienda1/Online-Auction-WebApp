@@ -302,7 +302,8 @@ const ProductDetails = () => {
         productId: product.id,
       });
 
-      await Promise.all([fetchProduct(), fetchAuction(), fetchBidHistory()]);
+      // await Promise.all([fetchProduct(), fetchAuction(), fetchBidHistory()]);
+      navigate(`/buyer/payment/${id}`);
     } catch (err) {
       setBuyNowError(err.response?.data?.message || "Buy now failed");
     } finally {
