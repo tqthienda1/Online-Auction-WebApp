@@ -7,6 +7,7 @@ import { FaRegHeart } from "react-icons/fa6";
 import { FaHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { Spinner } from "./ui/spinner";
+import { useAuth } from "@/context/AuthContext";
 
 const RECENTLY_ADDED_DAYS = 1;
 
@@ -18,6 +19,8 @@ const ProductCard = ({
   isLoading,
   loadingItem,
 }) => {
+  const { user } = useAuth();
+  
   const checkIsRecent = (timestamp) => {
     if (!timestamp) return false;
     const time = new Date(product.startTime);
@@ -231,6 +234,11 @@ const ProductCard = ({
               {product.productName}
             </h3>
             <div className=" space-y-1 mb-4 w-full">
+              {product.highestBidder?.id === user?.data?.id && (
+                <p className="text-center text-green-600 font-semibold text-sm">
+                  You're leading
+                </p>
+              )}
               <p className="flex justify-between">
                 <span className="text-sm text-gray-600">Current price:</span>
                 <span className="text-lg font-bold text-yellow-400 flex items-center justify-center">
