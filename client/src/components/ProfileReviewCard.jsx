@@ -3,13 +3,12 @@ import { BiMessageRounded } from "react-icons/bi";
 import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
 
 const ProfileReviewCard = ({ review }) => {
+  console.log(review.product);
   return (
-    <div className="flex flex-col gap-5 border border-gray-100 rounded-lg p-5 shadow-sm">
+    <div className="flex flex-col gap-5 border border-gray-100 rounded-lg p-5 shadow-sm w-full">
       <div className="flex items-center gap-2">
-        <h1>{review.rater}</h1>
-        {review.isComment ? (
-          <BiMessageRounded className="text-blue-500" />
-        ) : review.like ? (
+        <h1>{review.rater?.username}</h1>
+        {review.isPos ? (
           <AiOutlineLike className="text-green-500" />
         ) : (
           <AiOutlineDislike className="text-red-500" />
@@ -17,14 +16,14 @@ const ProfileReviewCard = ({ review }) => {
       </div>
       <div className="flex text-sm gap-2 text-gray-400 items-center">
         <h3>Product: </h3>
-        <h3 className="font-semibold text-gray-500">{review.productName}</h3>
+        <h3 className="font-semibold text-gray-500">
+          {review.product?.productName}
+        </h3>
       </div>
       <div className="flex items-center mt-3 gap-2">
         <BiMessageRounded />
-        <p className="text-sm">{review.content}</p>
+        <p className="text-sm">{review.comment}</p>
       </div>
-
-      <h3 className="text-sm text-gray-400">{review.date}</h3>
     </div>
   );
 };

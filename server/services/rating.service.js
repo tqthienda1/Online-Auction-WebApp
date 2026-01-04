@@ -1,65 +1,109 @@
-import prisma from '../prismaClient.js'
+import prisma from "../prismaClient.js";
 
-export const submitRating = async ({ raterID, rateeID, productID, value, comment }) => {
-	if (value !== 1 && value !== -1) {
-		throw { status: 400, message: 'Rating value must be either +1 or -1' };
-	}
+export const submitRating = async ({
+  raterID,
+  rateeID,
+  productID,
+  value,
+  comment,
+}) => {
+  if (value !== 1 && value !== -1) {
+    throw { status: 400, message: "Rating value must be either +1 or -1" };
+  }
 
-	const isPos = value === 1;
+  const isPos = value === 1;
 
-	const existing = await prisma.rating.findUnique({ where: { productID_raterID: { productID, raterID } } });
+  const existing = await prisma.rating.findUnique({
+    where: { productID_raterID: { productID, raterID } },
+  });
 
-	const adjustRatee = async (deltaPos = 0, deltaNeg = 0) => {
-		await prisma.user.update({
-			where: { id: rateeID },
-			data: { ratingPos: { increment: deltaPos }, ratingNeg: { increment: deltaNeg } },
-		});
-	};
+  const adjustRatee = async (deltaPos = 0, deltaNeg = 0) => {
+    await prisma.user.update({
+      where: { id: rateeID },
+      data: {
+        ratingPos: { increment: deltaPos },
+        ratingNeg: { increment: deltaNeg },
+      },
+    });
+  };
 
-	if (!existing) {
-		const created = await prisma.rating.create({
-			data: {
-				productID,
-				raterID,
-				rateeID,
-				isPos,
-				comment,
-			},
-		});
+  if (!existing) {
+    const created = await prisma.rating.create({
+      data: {
+        productID,
+        raterID,
+        rateeID,
+        isPos,
+        comment,
+      },
+    });
 
-		await adjustRatee(isPos ? 1 : 0, isPos ? 0 : 1);
+    await adjustRatee(isPos ? 1 : 0, isPos ? 0 : 1);
 
-		return { message: 'Rating created', isPos, rating: created };
-	}
+    return { message: "Rating created", isPos, rating: created };
+  }
 
-	// If the same polarity is submitted again, update the comment instead of deleting the rating.
-	if (existing.isPos === isPos) {
-		// Update comment (no counter changes)
-		const updated = await prisma.rating.update({ where: { productID_raterID: { productID, raterID } }, data: { comment } });
-		return { message: 'Rating updated', isPos, rating: updated };
-	}
+  // If the same polarity is submitted again, update the comment instead of deleting the rating.
+  if (existing.isPos === isPos) {
+    // Update comment (no counter changes)
+    const updated = await prisma.rating.update({
+      where: { productID_raterID: { productID, raterID } },
+      data: { comment },
+    });
+    return { message: "Rating updated", isPos, rating: updated };
+  }
 
-	// Polarity changed: update rating and adjust counters
-	const updated = await prisma.rating.update({ where: { productID_raterID: { productID, raterID } }, data: { isPos, comment } });
+  // Polarity changed: update rating and adjust counters
+  const updated = await prisma.rating.update({
+    where: { productID_raterID: { productID, raterID } },
+    data: { isPos, comment },
+  });
 
-	if (isPos) {
-		await adjustRatee(1, -1);
-	} else {
-		await adjustRatee(-1, 1);
-	}
+  if (isPos) {
+    await adjustRatee(1, -1);
+  } else {
+    await adjustRatee(-1, 1);
+  }
 
-	return { message: 'Rating updated', isPos, rating: updated };
+  return { message: "Rating updated", isPos, rating: updated };
 };
 
 export const getRatingForProduct = async ({ productID, raterID }) => {
-	return prisma.rating.findUnique({
-		where: { productID_raterID: { productID, raterID } },
-		select: { productID: true, raterID: true, rateeID: true, isPos: true, comment: true },
-	});
+  return prisma.rating.findUnique({
+    where: { productID_raterID: { productID, raterID } },
+    select: {
+      productID: true,
+      raterID: true,
+      rateeID: true,
+      isPos: true,
+      comment: true,
+    },
+  });
 };
 
-export default {
-	submitRating,
-	getRatingForProduct,
+export const getRatingByUserId = async (userId) => {
+  return await prisma.rating.findMany({
+    where: {
+      rateeID: userId,
+    },
+    select: {
+      comment: true,
+      isPos: true,
+      product: {
+        select: {
+          productName: true,
+        },
+      },
+      rater: {
+        select: {
+          username: true,
+        },
+      },
+      ratee: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
 };
-

@@ -1,6 +1,9 @@
 import prisma from "../prismaClient.js";
-import { submitRating } from "../services/rating.service.js";
-import { getRatingForProduct } from "../services/rating.service.js";
+import {
+  getRatingForProduct,
+  submitRating,
+} from "../services/rating.service.js";
+import * as RatingService from "../services/rating.service.js";
 
 export const createOrToggleRating = async (req, res) => {
   try {
@@ -27,7 +30,9 @@ export const createOrToggleRating = async (req, res) => {
     } else if (raterID === order.sellerID) {
       rateeID = order.buyerID; // seller → rate buyer
     } else {
-      return res.status(403).json({ message: "Not allowed to rate this order" });
+      return res
+        .status(403)
+        .json({ message: "Not allowed to rate this order" });
     }
 
     const result = await submitRating({
@@ -43,10 +48,10 @@ export const createOrToggleRating = async (req, res) => {
       try {
         await prisma.order.update({
           where: { productID },
-          data: { status: 'RATING' },
+          data: { status: "RATING" },
         });
       } catch (updateErr) {
-        console.error('Failed to update order status to RATING:', updateErr);
+        console.error("Failed to update order status to RATING:", updateErr);
         // continue — rating succeeded but status update failed
       }
     }
@@ -71,8 +76,24 @@ export const getRatingForCurrentUser = async (req, res) => {
     if (!rating) return res.status(200).json({ found: false });
     return res.json({ found: true, rating });
   } catch (err) {
-    console.error('Get rating failed:', err);
-    return res.status(500).json({ message: err.message || 'Server error' });
+    console.error("Get rating failed:", err);
+    return res.status(500).json({ message: err.message || "Server error" });
   }
 };
 
+export const getRatingByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is null" });
+    }
+
+    const ratings = await RatingService.getRatingByUserId(userId);
+
+    return res.status(200).json(ratings);
+  } catch (error) {
+    console.error("Get rating by user id is failed: ", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
