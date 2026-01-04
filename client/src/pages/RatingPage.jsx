@@ -18,7 +18,7 @@ const RatingPage = () => {
     const loadRatings = async () => {
       try {
         const res = await Promise.all([
-          http.get(`/rating/${userId}`, {
+          http.get(`/rating/user/${userId}`, {
             signal: controller.signal,
           }),
           http.get(`/user/${userId}`, {

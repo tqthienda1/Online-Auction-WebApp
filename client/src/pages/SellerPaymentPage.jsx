@@ -72,9 +72,8 @@ function SellerPaymentPage() {
                     <div className="mt-6 space-y-6">
                         <div className="mx-auto bg-yellow-50 p-6 rounded-lg shadow-sm border border-yellow-200">
                             <h2 className="text-xl font-playfair font-semibold mb-2 text-yellow-900">Order Cancelled</h2>
-                            <p className="text-sm text-yellow-700 mb-4">This order has been cancelled. Please leave a rating for the buyer below.</p>
+                            <p className="text-sm text-yellow-700 mb-4">This order has been cancelled.</p>
                         </div>
-                        <Rating type="buyer" productID={productID} />
                     </div>
                 </div>
             </div>
@@ -135,14 +134,14 @@ function SellerPaymentPage() {
 
                             {currentStep === 1 && (
                                 <>
-                                    <CancelOrder onCancelled={() => setIsCancelled(true)} />
+                                    <CancelOrder productID={productID} onCancelled={() => setIsCancelled(true)} />
                                     <PaymentReceivedConfirm productID={productID} onConfirmed={fetchOrder} />
                                 </>
                             )}
 
                             {currentStep === 2 && (
                                 <>
-                                    <CancelOrder onCancelled={() => setIsCancelled(true)} />
+                                    <CancelOrder productID={productID} onCancelled={() => setIsCancelled(true)} />
                                     <ShippingInvoice productID={productID} onUploaded={fetchOrder} />
                                 </>
                             )}
