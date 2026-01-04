@@ -138,7 +138,7 @@ export const placeBid = async ({ userId, productId, maxPrice }) => {
     newHighestBidderID,
   } = result;
 
-  if (priceChanged) {
+  if (priceChanged || highestChanged) {
     const seller = await supabase.auth.admin.getUserById(
       updatedProduct.seller.supabaseId
     );

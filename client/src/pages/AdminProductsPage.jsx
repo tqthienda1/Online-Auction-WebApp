@@ -73,12 +73,6 @@ const AdminProductsPage = () => {
     return () => controller.abort();
   }, [page]);
 
-  const [query, setQuery] = useState("");
-  const filteredProducts =
-    products?.filter((p) =>
-      p.productName.toLowerCase().includes(query.toLowerCase())
-    ) || [];
-
   const handleDeleteProduct = async (id) => {
     const controller = new AbortController();
 
@@ -113,10 +107,9 @@ const AdminProductsPage = () => {
       {!isLoading && !error && (
         <div className="space-y-6 p-6">
           <AdminHeader title="Products" description="Manage All Products" />
-          <AdminSearch query={query} setQuery={setQuery} />
           <AdminBody
             columns={productColumns}
-            data={filteredProducts}
+            data={products}
             onDelete={handleDeleteProduct}
             showType="products"
           />

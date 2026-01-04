@@ -7,7 +7,7 @@ const AdminForm = ({
   onClose,
   onSubmit,
   editingCategory,
-  initialValues = {},
+  initialValues,
 }) => {
   const {
     register,

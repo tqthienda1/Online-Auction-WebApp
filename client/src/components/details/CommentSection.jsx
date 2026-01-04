@@ -5,6 +5,15 @@ import { FaRegFlag } from "react-icons/fa6";
 import { HiArrowTurnDownRight } from "react-icons/hi2";
 import { useState } from "react";
 import { Spinner } from "../ui/spinner";
+import { z } from "zod";
+
+const replySchema = z.object({
+  reply: z
+    .string()
+    .trim()
+    .min(1, "Reply is required")
+    .min(5, "Reply must be at least 5 characters"),
+});
 
 const CommentSection = ({
   comments,
@@ -19,6 +28,7 @@ const CommentSection = ({
   const mainComments = comments.filter((c) => !c.parentID);
   const replies = comments.filter((c) => c.parentID);
   const [showBox, setShowBox] = useState({ id: null, name: "" });
+  const [replyError, setReplyError] = useState("");
 
   const getReplyFor = (id) => replies.filter((r) => r.parentID === id);
 
@@ -76,12 +86,16 @@ const CommentSection = ({
                         id="reply"
                         name="reply"
                         placeholder={`Reply to ${showBox.name}...`}
-                        required
                         rows={4}
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                         className="w-full px-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground resize-none"
                       ></textarea>
+                      {replyError && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {replyError}
+                        </p>
+                      )}
                       <div className="flex w-full justify-center gap-7 items-center mt-3">
                         {isLoading ? (
                           <Spinner className="size-8 w-full text-yellow-500" />
@@ -95,7 +109,19 @@ const CommentSection = ({
                             </button>
                             <button
                               className="bg-yellow-400 hover:bg-yellow-500 py-2 px-5 rounded-lg font-semibold cursor-pointer text-white"
-                              onClick={() => onReply(showBox.id)}
+                              onClick={() => {
+                                const result = replySchema.safeParse({
+                                  reply: replyText,
+                                });
+
+                                if (!result.success) {
+                                  setReplyError(result.error.issues[0].message);
+                                  return;
+                                }
+
+                                setReplyError("");
+                                onReply(showBox.id);
+                              }}
                             >
                               Submit
                             </button>

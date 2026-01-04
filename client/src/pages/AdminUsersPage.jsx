@@ -23,7 +23,6 @@ const AdminUsersPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
-  const [query, setQuery] = useState("");
 
   const calculateRating = (user) => {
     if (!user) return "-";
@@ -38,7 +37,9 @@ const AdminUsersPage = () => {
   const fetchUpgradeRequests = async () => {
     try {
       const res = await http.get("/upgrade?status=PENDING");
-      let rawData = Array.isArray(res.data) ? res.data : (res.data?.data || res.data?.requests || []);
+      let rawData = Array.isArray(res.data)
+        ? res.data
+        : res.data?.data || res.data?.requests || [];
       const transformedRequests = rawData.map((r) => ({
         id: r.id || r._id,
         userId: r.userID || r.user?._id,
@@ -52,9 +53,7 @@ const AdminUsersPage = () => {
     }
   };
 
-  const forms = [
-    { id: "Edit User", fields: ["Username", "Role", "DOB", "Address"] },
-  ];
+  const forms = [{ id: "Edit User", fields: ["Username", "Role"] }];
 
   // Add user removed: admin can only update or delete users here.
 
@@ -104,7 +103,9 @@ const AdminUsersPage = () => {
 
       try {
         const [usersRes] = await Promise.all([
-          http.get(`/user?page=${page}&limit=${limit}`, { signal: controller.signal }),
+          http.get(`/user?page=${page}&limit=${limit}`, {
+            signal: controller.signal,
+          }),
           fetchUpgradeRequests(),
         ]);
 
@@ -126,8 +127,9 @@ const AdminUsersPage = () => {
     return () => controller.abort();
   }, [page, limit]);
 
+  console.log(users);
+
   // Logic filter giữ nguyên
-  const filteredUsers = users?.filter((u) => u.username?.toLowerCase().includes(query.toLowerCase())) || [];
 
   const handleConfirmApprove = async (requestId) => {
     try {
@@ -135,7 +137,7 @@ const AdminUsersPage = () => {
       console.log("Approving request ID:", requestId);
       const res = await http.post(`/upgrade/${requestId}/approve`);
       console.log("Approve response:", res);
-      
+
       // Cập nhật danh sách upgrade requests
       setUpgradeRequests((prev) => prev.filter((r) => r.id !== requestId));
       setDialog({ type: null, userId: null });
@@ -151,7 +153,7 @@ const AdminUsersPage = () => {
     try {
       setIsProcessing(true);
       await http.post(`/upgrade/${requestId}/reject`);
-      
+
       // Cập nhật danh sách upgrade requests
       setUpgradeRequests((prev) => prev.filter((r) => r.id !== requestId));
       setDialog({ type: null, userId: null });
@@ -163,9 +165,21 @@ const AdminUsersPage = () => {
     }
   };
 
+  const handleResetPassword = async (userId) => {
+    console.log(userId);
+    try {
+      setIsProcessing(true);
+      await http.patch(`/user/reset-password/${userId}`);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <div className="space-y-6 p-6">
-          <AdminHeader title="Users" description="Manage All Users" />
+      <AdminHeader title="Users" description="Manage All Users" />
 
       <AdminRequests
         upgradeRequests={upgradeRequests}
@@ -176,14 +190,14 @@ const AdminUsersPage = () => {
         isProcessing={isProcessing}
       />
 
-      <AdminSearch query={query} setQuery={setQuery} />
-
       <div className="relative border rounded-xl overflow-hidden bg-white shadow-sm min-h-[400px]">
         {/* LỚP PHỦ LOADING: Hiện khi isLoading = true */}
         {isLoading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 z-30 transition-all">
             <Spinner className="size-10 text-yellow-500" />
-            <p className="mt-4 font-bold text-gray-500 animate-pulse">Loading users...</p>
+            <p className="mt-4 font-bold text-gray-500 animate-pulse">
+              Loading users...
+            </p>
           </div>
         )}
 
@@ -191,10 +205,17 @@ const AdminUsersPage = () => {
         {error ? (
           <div className="flex flex-col items-center justify-center h-80 text-red-500">
             <p className="font-semibold">Error loading users.</p>
-            <button onClick={() => window.location.reload()} className="underline mt-2">Retry</button>
+            <button
+              onClick={() => window.location.reload()}
+              className="underline mt-2"
+            >
+              Retry
+            </button>
           </div>
         ) : (
-          <div className={`${isLoading ? "invisible" : "visible"} transition-all`}>
+          <div
+            className={`${isLoading ? "invisible" : "visible"} transition-all`}
+          >
             <AdminBody
               showType="users"
               columns={[
@@ -206,19 +227,18 @@ const AdminUsersPage = () => {
                 { header: "Address", accessor: "address" },
                 { header: "Action", accessor: "actions" },
               ]}
-              data={filteredUsers}
+              data={users}
               onEdit={(id) => {
                 const user = users.find((u) => u.id === id) || {};
                 setEditingUser(id);
                 setEditingData({
                   Username: user.username || "",
                   Role: user.role || "",
-                  DOB: user.dob || "",
-                  Address: user.address || "",
                 });
                 setOpenForm("Edit User");
               }}
               onDelete={handleDeleteUser}
+              onReset={handleResetPassword}
             />
             <div className="p-4 border-t">
               <AdminPagination
