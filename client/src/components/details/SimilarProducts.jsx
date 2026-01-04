@@ -11,7 +11,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 const SimilarProducts = ({ products, onBuyNow, user }) => {
   const navigate = useNavigate();
-  const handleBuyNowClick = ({ productId, end, start }) => {
+  const handleBuyNowClick = ({ productId, buyNowPrice, end, start }) => {
+    console.log(buyNowPrice);
     if (!user) {
       navigate("/login");
       return;
@@ -21,7 +22,7 @@ const SimilarProducts = ({ products, onBuyNow, user }) => {
 
     if (end <= now || start > now) return;
 
-    onBuyNow?.(productId);
+    onBuyNow?.(productId, buyNowPrice);
   };
   return (
     <>
@@ -95,6 +96,7 @@ const SimilarProducts = ({ products, onBuyNow, user }) => {
                               onClick={(e) => {
                                 handleBuyNowClick({
                                   productId: p.id,
+                                  buyNowPrice: p.buyNowPrice,
                                   end: p.endTime,
                                   start: p.startTime,
                                 });

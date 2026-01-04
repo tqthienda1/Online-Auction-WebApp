@@ -65,7 +65,7 @@ const ProductBidPlace = ({
     onRequestBid?.(Number(bidValue));
   };
 
-  const handleBuyNowClick = (productId) => {
+  const handleBuyNowClick = () => {
     if (auction.state !== "live") return;
 
     if (!user) {
@@ -73,7 +73,7 @@ const ProductBidPlace = ({
       return;
     }
 
-    onBuyNow?.(productId);
+    onBuyNow?.();
   };
 
   // {
@@ -336,18 +336,21 @@ const ProductBidPlace = ({
                 {/* {isSubmitting ? "Placing bid..." : "Place Bid"} */}
                 Place Bid
               </button>
-              <button
-                type="button"
-                disabled={!isAuctionLive}
-                onClick={() => handleBuyNowClick(product.id)}
-                className="
+
+              {product.buyNowPrice && (
+                <button
+                  type="button"
+                  disabled={!isAuctionLive}
+                  onClick={() => handleBuyNowClick(product.id)}
+                  className="
                   w-[90%] h-10 uppercase bg-red-600 text-white text-xl font-bold
                   hover:bg-red-700 transition
                   disabled:opacity-50 disabled:cursor-not-allowed
                 "
-              >
-                Buy Now
-              </button>
+                >
+                  Buy Now
+                </button>
+              )}
 
               {/* {buyNow.error && (
                 <p className="text-sm text-red-500 mt-2">{buyNow.error}</p>

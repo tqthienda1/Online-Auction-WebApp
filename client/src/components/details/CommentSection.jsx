@@ -22,9 +22,6 @@ const CommentSection = ({
 
   const getReplyFor = (id) => replies.filter((r) => r.parentID === id);
 
-  console.log("user: ", user);
-  console.log("seller:", seller);
-
   return (
     <div className="flex flex-col justify-center items-center mt-20 gap-10">
       <p className="text-4xl font-bold font-playfair underline decoration-yellow-400 decoration-3 underline-offset-8">

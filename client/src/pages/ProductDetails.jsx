@@ -40,14 +40,9 @@ const ProductDetails = () => {
   const [isWatched, setIsWatched] = useState(false);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
   const [now, setNow] = useState(Date.now());
-  const [pendingBid, setPendingBid] = useState(null);
-  const [placingBid, setPlacingBid] = useState(false);
-  const [bidError, setBidError] = useState(null);
   const [banning, setBanning] = useState(false);
-  const [banError, setBanError] = useState(null);
   const navigate = useNavigate();
-  const [buyNowLoading, setBuyNowLoading] = useState(false);
-  const [buyNowError, setBuyNowError] = useState(null);
+
   const [confirmModal, setConfirmModal] = useState(null);
 
   const [loading, setLoading] = useState({
@@ -248,42 +243,22 @@ const ProductDetails = () => {
   };
 
   const placeBid = async (bidValue) => {
-    try {
-      setPlacingBid(true);
-      setBidError(null);
+    await http.post("/bids", {
+      productId: product.id,
+      maxPrice: bidValue,
+    });
 
-      await http.post("/bids", {
-        productId: product.id,
-        maxPrice: bidValue,
-      });
-
-      await handleBidSuccess();
-      setPendingBid(null);
-    } catch (err) {
-      setBidError(err.response?.data?.message || "Failed to place bid");
-    } finally {
-      setPlacingBid(false);
-    }
+    await handleBidSuccess();
   };
 
   const handleBanBidder = async (bidderId) => {
     if (banning) return;
 
-    try {
-      setBanning(true);
-      setBanError(null);
+    await http.post(`/products/${product.id}/reject-bidder`, {
+      bidderId,
+    });
 
-      await http.post(`/products/${product.id}/reject-bidder`, {
-        bidderId,
-      });
-
-      await handleBidSuccess();
-    } catch (err) {
-      console.error(err);
-      setBanError(err.response?.data?.message || "Failed to ban bidder");
-    } finally {
-      setBanning(false);
-    }
+    await handleBidSuccess();
   };
 
   const handleBuyNow = async (productId) => {
@@ -292,52 +267,70 @@ const ProductDetails = () => {
       return;
     }
 
-    if (buyNowLoading) return;
-
-    try {
-      setBuyNowLoading(true);
-      setBuyNowError(null);
-
-      await http.post("/orders/buy-now", {
-        productId,
-      });
-
-      // await Promise.all([fetchProduct(), fetchAuction(), fetchBidHistory()]);
-      navigate(`/buyer/payment/${productId}`);
-    } catch (err) {
-      setBuyNowError(err.response?.data?.message || "Buy now failed");
-    } finally {
-      setBuyNowLoading(false);
-    }
+    await http.post("/orders/buy-now", { productId });
+    return productId;
   };
 
-  const requestConfirm = (type, payload = {}) => {
-    setConfirmModal({ type, ...payload });
+  const requestConfirm = (type, payload) => {
+    setConfirmModal({
+      type,
+      payload,
+      status: "idle",
+      error: null,
+      result: null,
+    });
   };
 
   const requestBuyNowConfirm = (productId) => {
     setConfirmModal({
       type: "buy-now",
       productId,
+      status: "idle",
+      error: null,
     });
   };
 
   const handleConfirmAction = async (modal) => {
-    switch (modal.type) {
-      case "bid":
-        await placeBid(modal.value);
-        break;
+    setConfirmModal((prev) => ({
+      ...prev,
+      status: "loading",
+      error: null,
+    }));
 
-      case "buy-now":
-        await handleBuyNow(modal.productId);
-        break;
+    try {
+      let result;
 
-      case "ban":
-        await handleBanBidder(modal.bidderId);
-        break;
+      switch (modal.type) {
+        case "bid":
+          await placeBid(modal.payload.value);
+          break;
 
-      default:
-        break;
+        case "buy-now":
+          result = await handleBuyNow(modal.payload.productId);
+          break;
+
+        case "ban":
+          await handleBanBidder(modal.payload.bidderId);
+          break;
+      }
+
+      setConfirmModal((prev) => ({
+        ...prev,
+        status: "success",
+        result,
+      }));
+    } catch (err) {
+      setConfirmModal((prev) => ({
+        ...prev,
+        status: "error",
+        error: err.response?.data?.message || err.message,
+      }));
+    }
+  };
+
+  const closeModal = () => {
+    if (confirmModal.type === "buy-now" && confirmModal.status === "success") {
+      navigate(`/buyer/payment/${confirmModal.result}`);
     }
 
     setConfirmModal(null);
@@ -442,62 +435,27 @@ const ProductDetails = () => {
           user={user}
           onToggleWatchlist={handleToggleWatchlist}
           onRequestBid={(value) => requestConfirm("bid", { value })}
-          onBuyNow={(productId) => requestBuyNowConfirm(productId)}
+          onBuyNow={() =>
+            requestConfirm("buy-now", {
+              productId: product.id,
+              buyNowPrice: product.buyNowPrice,
+            })
+          }
           onBanBidder={
             canBanBidder
               ? (bidderId) => requestConfirm("ban", { bidderId })
               : null
           }
-          // banning={canBanBidder ? banning : false}
-          // banError={canBanBidder ? banError : null}
         />
 
         {confirmModal && (
           <ConfirmActionModal
-            title={
-              confirmModal.type === "bid"
-                ? "Confirm Your Bid"
-                : confirmModal.type === "buy-now"
-                ? "Confirm Buy Now"
-                : "Confirm Action"
-            }
-            amountText={
-              confirmModal.type === "bid"
-                ? `${confirmModal.value} USD`
-                : confirmModal.type === "buy-now"
-                ? `${product.buyNowPrice} USD`
-                : null
-            }
-            warningText={
-              confirmModal.type === "bid"
-                ? "This action cannot be undone. Once confirmed, your bid will immediately become active."
-                : confirmModal.type === "buy-now"
-                ? "This will immediately end the auction and purchase the product."
-                : "This action cannot be undone."
-            }
-            confirmText={
-              confirmModal.type === "bid"
-                ? "Confirm Bid"
-                : confirmModal.type === "buy-now"
-                ? "Buy Now"
-                : "Confirm"
-            }
-            loading={
-              confirmModal.type === "bid"
-                ? placingBid
-                : confirmModal.type === "buy-now"
-                ? buyNowLoading
-                : false
-            }
-            error={
-              confirmModal.type === "bid"
-                ? bidError
-                : confirmModal.type === "buy-now"
-                ? buyNowError
-                : null
-            }
-            onCancel={() => setConfirmModal(null)}
+            type={confirmModal.type}
+            payload={confirmModal.payload}
+            status={confirmModal.status}
+            error={confirmModal.error}
             onConfirm={() => handleConfirmAction(confirmModal)}
+            onCancel={closeModal}
           />
         )}
       </div>
@@ -530,7 +488,12 @@ const ProductDetails = () => {
       >
         <SimilarProducts
           products={product.relatedProducts}
-          onBuyNow={(productId) => requestBuyNowConfirm(productId)}
+          onBuyNow={(productId, buyNowPrice) =>
+            requestConfirm("buy-now", {
+              productId,
+              buyNowPrice,
+            })
+          }
           user={user}
         />
       </div>
