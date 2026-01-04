@@ -47,6 +47,7 @@ model Product {
   currentPrice        Int?
   startTime           DateTime
   endTime             DateTime
+  isExpired           Boolean                  @default(false)
   autoExtend          Boolean                  @default(false)
   sold                Boolean                  @default(false)
   ratingRequired      Boolean                  @default(false)
