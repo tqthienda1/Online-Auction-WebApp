@@ -4,6 +4,7 @@ import { Edit2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { GoTriangleDown, GoTriangleRight } from "react-icons/go";
 import { TiPlus } from "react-icons/ti";
+import { LuRefreshCcw, LuCircleSlash2 } from "react-icons/lu";
 
 const AdminBody = ({
   columns,
@@ -13,6 +14,7 @@ const AdminBody = ({
   showType,
   onAddChild,
   setParent,
+  onReset,
 }) => {
   const [expandedRows, setExpandedRows] = useState({});
 
@@ -26,7 +28,8 @@ const AdminBody = ({
   const countTotal = (parent = []) =>
     parent.reduce((sum, item) => sum + (item.total ?? 0), 0);
 
-  const [confirm, setConfirm] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [confirmReset, setConfirmReset] = useState(null);
 
   return (
     <div className="overflow-x-auto">
@@ -96,7 +99,7 @@ const AdminBody = ({
                             onClick={(e) => {
                               e.stopPropagation();
                               setParent(parent.id);
-                              setConfirm(parent.id);
+                              setConfirmDelete(parent.id);
                             }}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -143,7 +146,7 @@ const AdminBody = ({
                                   size="icon"
                                   className="text-destructive cursor-pointer"
                                   onClick={(e) => {
-                                    setConfirm(child.id);
+                                    setConfirmDelete(child.id);
                                   }}
                                 >
                                   <Trash2 className="h-4 w-4" />
@@ -195,7 +198,7 @@ const AdminBody = ({
                             size="icon"
                             className="text-destructive"
                             onClick={() => {
-                              setConfirm(product.id);
+                              setConfirmDelete(product.id);
                             }}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -223,7 +226,7 @@ const AdminBody = ({
                       className="p-3 max-w-[250px] wrap-break-word"
                     >
                       {col.accessor === "actions" ? (
-                        <div className="flex gap-2 justify-center">
+                        <div className="flex items-center">
                           <Button
                             variant="ghost"
                             size="icon"
@@ -233,20 +236,46 @@ const AdminBody = ({
                             }}
                             className="cursor-pointer hover:text-yellow-400"
                           >
-                            <Edit2 className="h-4 w-4" />
+                            <Edit2 />
                           </Button>
 
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-destructive cursor-pointer"
+                            className="cursor-pointer text-red-500 hover:text-black"
                             onClick={(e) => {
                               e.stopPropagation();
-                              if (onDelete) onDelete(user.id);
+                              setConfirmDelete(user.id);
                             }}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 />
                           </Button>
+
+                          {user.isGoogleUser === false &&
+                            user.emailVerified === true && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="cursor-pointer text-yellow-400 hover:text-red-500"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setConfirmReset(user.id);
+                                }}
+                              >
+                                <LuRefreshCcw />
+                              </Button>
+                            )}
+
+                          {user.isGoogleUser === false &&
+                            user.emailVerified === false && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-red-500 hover:text-red-500"
+                              >
+                                <LuCircleSlash2 />
+                              </Button>
+                            )}
                         </div>
                       ) : (
                         user[col.accessor]
@@ -259,22 +288,56 @@ const AdminBody = ({
           </tbody>
         )}
       </table>
-      {confirm && (
+      {confirmDelete && (
         <div className="p-3 fixed inset-0 flex items-center justify-center bg-black/50">
           <form className="bg-gray-100 p-5 border rounded-lg">
             <div className="flex flex-col justify-center items-center gap-5">
               <span className="font-bold text-lg">
-                Are you sure you want to remove this?
+                Are you sure you want to do this? This action cannot be undone.
               </span>
               <div className="flex gap-3 justify-between items-center">
                 <button
-                  onClick={() => onDelete(confirm)}
+                  onClick={async (e) => {
+                    e.preventDefault;
+                    await onDelete(confirmDelete);
+                    setConfirmDelete(null);
+                  }}
                   className="text-while font-bold bg-yellow-400 hover:bg-yellow-500 cursor-pointer px-3 py-1 border rounded-lg w-25"
                 >
                   Remove
                 </button>
                 <button
-                  onClick={() => setConfirm(null)}
+                  onClick={() => setConfirmDelete(null)}
+                  className="text-while font-bold bg-gray-300 hover:bg-gray-400 cursor-pointer px-3 py-1 border rounded-lg w-25"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
+      {confirmReset && (
+        <div className="p-3 fixed inset-0 flex items-center justify-center bg-black/50">
+          <form className="bg-gray-100 p-5 border rounded-lg">
+            <div className="flex flex-col justify-center items-center gap-5">
+              <span className="font-bold text-lg">
+                Are you sure you want to do this? This action cannot be undone.
+              </span>
+              <div className="flex gap-3 justify-between items-center">
+                <button
+                  type="submit"
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    await onReset(confirmReset);
+                    setConfirmReset(null);
+                  }}
+                  className="text-while font-bold bg-yellow-400 hover:bg-yellow-500 cursor-pointer px-3 py-1 border rounded-lg w-25"
+                >
+                  Reset
+                </button>
+                <button
+                  onClick={() => setConfirmReset(null)}
                   className="text-while font-bold bg-gray-300 hover:bg-gray-400 cursor-pointer px-3 py-1 border rounded-lg w-25"
                 >
                   Cancel

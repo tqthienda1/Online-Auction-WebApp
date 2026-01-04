@@ -18,6 +18,7 @@ model User {
   ratingPos          Int
   ratingNeg          Int
   emailVerified      Boolean          @default(false)
+  bannedProducts     BannedBidder[]
   bids               Bid[]            @relation("Bidder")
   BidHistory         BidHistory[]
   comments           Comment[]        @relation("UserComment")
@@ -31,7 +32,6 @@ model User {
   givenRatings       Rating[]         @relation("GivenRatings")
   upgradeRequest     UpgradeRequest[] @relation("UserUpgradeRequest")
   watchList          WatchList[]      @relation("UserWatchList")
-  bannedProducts     BannedBidder[]
 }
 
 model Product {
@@ -47,11 +47,12 @@ model Product {
   currentPrice        Int?
   startTime           DateTime
   endTime             DateTime
-  isExpired           Boolean                  @default(false)
   autoExtend          Boolean                  @default(false)
   sold                Boolean                  @default(false)
   ratingRequired      Boolean                  @default(false)
   search_vector       Unsupported("tsvector")?
+  isExpired           Boolean                  @default(false)
+  bannedBidders       BannedBidder[]
   bids                Bid[]                    @relation("BidProduct")
   BidHistory          BidHistory[]
   comments            Comment[]                @relation("ProductComment")
@@ -64,7 +65,6 @@ model Product {
   productImages       ProductImage[]           @relation("ProductImages")
   rating              Rating[]
   inWatchList         WatchList[]              @relation("ProductWatchList")
-  bannedBidders       BannedBidder[]
 }
 
 model ProductDescription {
@@ -141,8 +141,8 @@ model Order {
   shippingAddress String?
   paymentInvoice  String?
   shippingInvoice String?
-  createdAt       DateTime    @default(now())
   status          OrderStatus
+  createdAt       DateTime    @default(now())
   buyer           User        @relation("Buyer", fields: [buyerID], references: [id])
   product         Product     @relation("OrderProduct", fields: [productID], references: [id])
   seller          User        @relation("Seller", fields: [sellerID], references: [id])
@@ -195,13 +195,11 @@ model BannedBidder {
   productID String
   bidderID  String   @db.Uuid
   createdAt DateTime @default(now())
-
-  product Product @relation(fields: [productID], references: [id], onDelete: Cascade)
-  bidder  User    @relation(fields: [bidderID], references: [id], onDelete: Cascade)
+  bidder    User     @relation(fields: [bidderID], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productID], references: [id], onDelete: Cascade)
 
   @@unique([productID, bidderID])
 }
-
 
 enum Role {
   BIDDER

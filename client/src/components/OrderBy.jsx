@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaArrowUp, FaArrowDown } from "react-icons/fa";
+import { FaArrowUp, FaArrowDown, FaHourglassEnd } from "react-icons/fa";
 import { TbChartBarPopular } from "react-icons/tb";
 
 const OrderBy = ({ onSortChange, onOrderChange }) => {
@@ -12,6 +12,12 @@ const OrderBy = ({ onSortChange, onOrderChange }) => {
       value: "totalBid",
       order: "desc",
       icon: <TbChartBarPopular />,
+    },
+    {
+      label: "Ending Soon",
+      value: "endTime",
+      order: "asc",
+      icon: <FaHourglassEnd />,
     },
     {
       label: "Price Low to High",
