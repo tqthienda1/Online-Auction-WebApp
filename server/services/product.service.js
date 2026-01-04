@@ -63,6 +63,8 @@ export const getProducts = async ({
   const orderBy =
     sortBy === "totalBid"
       ? { bids: { _count: order === "asc" ? "asc" : "desc" } }
+      : sortBy === "endTime"
+      ? { endTime: order === "asc" ? "asc" : "desc" }
       : { [sortBy]: order === "asc" ? "asc" : "desc" };
 
   const skip = (page - 1) * limit;
@@ -389,6 +391,7 @@ export const closeExpiredAuctions = async () => {
       where: {
         endTime: { lte: now },
         sold: false,
+        isExpired: false,
       },
       include: {
         seller: true,
@@ -413,7 +416,10 @@ export const closeExpiredAuctions = async () => {
 
         await tx.product.update({
           where: { id: product.id, sold: false }, // tránh race condition
-          data: { sold: true },
+          data: {
+            sold: product.highestBidderID ? true : false,
+            isExpired: true,
+          },
         });
       });
     }
