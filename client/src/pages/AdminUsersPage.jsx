@@ -129,6 +129,40 @@ const AdminUsersPage = () => {
   // Logic filter giữ nguyên
   const filteredUsers = users?.filter((u) => u.username?.toLowerCase().includes(query.toLowerCase())) || [];
 
+  const handleConfirmApprove = async (requestId) => {
+    try {
+      setIsProcessing(true);
+      console.log("Approving request ID:", requestId);
+      const res = await http.post(`/upgrade/${requestId}/approve`);
+      console.log("Approve response:", res);
+      
+      // Cập nhật danh sách upgrade requests
+      setUpgradeRequests((prev) => prev.filter((r) => r.id !== requestId));
+      setDialog({ type: null, userId: null });
+    } catch (err) {
+      console.error("Approve upgrade request failed", err);
+      alert("Failed to approve upgrade request: " + err.message);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleConfirmReject = async (requestId) => {
+    try {
+      setIsProcessing(true);
+      await http.post(`/upgrade/${requestId}/reject`);
+      
+      // Cập nhật danh sách upgrade requests
+      setUpgradeRequests((prev) => prev.filter((r) => r.id !== requestId));
+      setDialog({ type: null, userId: null });
+    } catch (err) {
+      console.error("Reject upgrade request failed", err);
+      alert("Failed to reject upgrade request");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <div className="space-y-6 p-6">
           <AdminHeader title="Users" description="Manage All Users" />
@@ -137,8 +171,8 @@ const AdminUsersPage = () => {
         upgradeRequests={upgradeRequests}
         dialog={dialog}
         setDialog={setDialog}
-        onConfirmApprove={async (id) => { /* giữ nguyên logic của bạn */ }}
-        onConfirmReject={async (id) => { /* giữ nguyên logic của bạn */ }}
+        onConfirmApprove={handleConfirmApprove}
+        onConfirmReject={handleConfirmReject}
         isProcessing={isProcessing}
       />
 
