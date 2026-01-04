@@ -51,6 +51,7 @@ export const AuthProvider = ({ children }) => {
         .maybeSingle();
 
       data.email = user.email;
+      data.provider = user.app_metadata.provider;
 
       setUser((prev) => ({
         ...prev,
