@@ -39,6 +39,8 @@ const SimilarProducts = ({ products, onBuyNow, user }) => {
         >
           <CarouselContent>
             {products.map((p, index) => {
+              const canBuyNow =
+                !!p.buyNowPrice && new Date(p.endTime).getTime() > Date.now();
               return (
                 <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                   <div className="p-1">
@@ -91,24 +93,29 @@ const SimilarProducts = ({ products, onBuyNow, user }) => {
                           </div>
 
                           <div className="relative z-20 flex mt-5 justify-between items-center w-full gap-5">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                handleBuyNowClick({
-                                  productId: p.id,
-                                  buyNowPrice: p.buyNowPrice,
-                                  end: p.endTime,
-                                  start: p.startTime,
-                                });
-                              }}
-                              className="text-lg font-bold w-1/2 h-12 border border-black transition duration-200 ease-out hover:scale-105 rounded-sm uppercase cursor-pointer"
-                            >
-                              Buy Now
-                            </button>
+                            {canBuyNow && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  handleBuyNowClick({
+                                    productId: p.id,
+                                    buyNowPrice: p.buyNowPrice,
+                                    end: p.endTime,
+                                    start: p.startTime,
+                                  });
+                                }}
+                                className="text-lg font-bold w-1/2 h-12 border border-black transition duration-200 ease-out hover:scale-105 rounded-sm uppercase cursor-pointer"
+                              >
+                                Buy Now
+                              </button>
+                            )}
 
                             <Link
                               to={`/products/${p.id}`}
-                              className="flex items-center justify-center text-lg font-bold w-1/2 h-12 bg-yellow-400 transition duration-200 ease-out hover:scale-105 rounded-sm uppercase"
+                              className={`flex items-center justify-center text-lg font-bold
+                                ${
+                                  canBuyNow ? "w-1/2" : "w-full"
+                                } h-12 bg-yellow-400 transition duration-200 ease-out hover:scale-105 rounded-sm uppercase`}
                             >
                               Bid Now
                             </Link>
