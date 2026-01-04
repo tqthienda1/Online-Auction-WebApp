@@ -433,6 +433,7 @@ const ProductDetails = () => {
             startingPrice: product.startingPrice,
             bidStep: product.bidStep,
             seller: product.seller,
+            ratingRequired: product.ratingRequired,
           }}
           auction={auctionView}
           watchlist={{ isWatched, loading: watchlistLoading }}
