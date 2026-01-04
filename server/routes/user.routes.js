@@ -52,6 +52,13 @@ router.get(
   UserController.getInfo
 );
 
+router.get(
+  "/:id",
+  authMiddleware,
+  requireRole(["BIDDER", "ADMIN", "SELLER"]),
+  UserController.getInfoById
+);
+
 router.patch(
   "/",
   authMiddleware,

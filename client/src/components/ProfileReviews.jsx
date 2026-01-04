@@ -3,8 +3,10 @@ import ProfileRating from "./ProfileRating";
 import ProfileReviewCard from "./ProfileReviewCard";
 import { http } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
+import { FaAngleDoubleDown } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
-const ProfileReviews = () => {
+const ProfileReviews = ({ info }) => {
   const [ratings, setRatings] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -21,6 +23,8 @@ const ProfileReviews = () => {
           : Array.isArray(ratingsRes.data?.data)
           ? ratingsRes.data.data
           : [];
+
+        console.log(ratingsData);
 
         setRatings(ratingsData);
       } catch (error) {
@@ -48,7 +52,6 @@ const ProfileReviews = () => {
       <h1 className="font-bold text-2xl font-playfair">Ratings</h1>
       <ProfileRating ratings={ratings} />
       <h3 className="font-semibold text-lg font-playfair">Recent ratings</h3>
-
       {/* Combine ratings and comments for display */}
       {Array.isArray(ratings) && ratings.length > 0 ? (
         <div className="max-h-96 overflow-y-auto">
@@ -59,14 +62,13 @@ const ProfileReviews = () => {
                 <ProfileReviewCard
                   key={`rating-${rating.productID}`}
                   review={{
-                    rater: rating.rater?.username || "Unknown",
-                    productName:
-                      rating.product?.productName || "Unknown Product",
-                    content: rating.comment || "",
-                    date: new Date(
-                      rating.createdAt || Date.now()
-                    ).toLocaleDateString("vi-VN"),
-                    like: rating.isPos,
+                    rater: { username: rating.rater?.username || "Unknown" },
+                    productName: {
+                      productName:
+                        rating.product?.productName || "Unknown Product",
+                    },
+                    comment: rating.comment || "",
+                    isPos: rating.isPos,
                   }}
                 />
               ))}
@@ -75,6 +77,13 @@ const ProfileReviews = () => {
       ) : (
         <p className="text-gray-400">No ratings yet</p>
       )}
+      <Link
+        to={`/rating/${info.id}`}
+        className="flex justify-center items-center gap-1 font-semibold text-gray-400 cursor-pointer"
+      >
+        View more
+        <FaAngleDoubleDown className="-mb-1" />
+      </Link>
     </div>
   );
 };

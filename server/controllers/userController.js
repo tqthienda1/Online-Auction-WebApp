@@ -121,3 +121,20 @@ export const resetPassword = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const getInfoById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const info = await UserService.getInfoById(id);
+
+    if (!info) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    return res.status(200).json(info);
+  } catch (error) {
+    console.error("Get info by id failed: ", error.message);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
