@@ -230,6 +230,7 @@ const ProductBidPlace = ({
           auction={auction}
           onBanBidder={onBanBidder}
           banning={banning}
+          onViewSellerRating={onViewSellerRating}
         />
       ) : (
         <>

@@ -1,4 +1,10 @@
-const SellerPanel = ({ product, auction, onBanBidder, banning }) => {
+const SellerPanel = ({
+  product,
+  auction,
+  onBanBidder,
+  banning,
+  onViewSellerRating,
+}) => {
   return (
     <>
       <div className="h-12 mt-10 flex justify-center items-center">
@@ -49,9 +55,37 @@ const SellerPanel = ({ product, auction, onBanBidder, banning }) => {
         <div className="flex flex-col w-[90%] gap-1">
           <p className="text-lg font-medium">Highest Bidder</p>
           {auction.highestBidder ? (
-            <p className="font-semibold truncate">
-              {auction.highestBidder.username}
-            </p>
+            <>
+              <p className="font-semibold truncate">
+                {auction.highestBidder.username}
+              </p>
+
+              <div
+                onClick={() => onViewSellerRating(auction.highestBidder.id)}
+                className="
+              mt-3 flex items-center gap-2
+              text-sm text-gray-700
+              hover:scale-105
+              transition
+              mx-auto
+              cursor-pointer"
+              >
+                <div className="flex items-center gap-1">
+                  <p>Rating: </p>
+                  <span className="font-medium text-gray-800">
+                    {auction.highestBidder.ratingPos}
+                  </span>
+                  <span className="text-gray-500">positive</span>
+                  <span className="text-gray-400">•</span>
+                  <span className="font-medium text-gray-800">
+                    {auction.highestBidder.ratingNeg}
+                  </span>
+                  <span className="text-gray-500">negative</span>
+                </div>
+
+                <span className="text-gray-400">→</span>
+              </div>
+            </>
           ) : (
             <p className="italic text-gray-500">No bids yet</p>
           )}
