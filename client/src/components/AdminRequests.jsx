@@ -30,7 +30,7 @@ const AdminRequests = ({
               <div>
                 <p className="font-medium text-gray-900">{user.name}</p>
                 <div className="flex gap-2 text-xs text-gray-500">
-                  <span>Rating: {user.rating}</span>
+                  <span>Rating: {user.ratingPos} positive · {user.ratingNeg} negative</span>
                 </div>
               </div>
 
