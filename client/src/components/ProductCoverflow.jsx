@@ -35,7 +35,7 @@ const ProductCoverflow = ({ products }) => {
 
     //hide info bar
     setIsUp(true);
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 200));
     setIsHide(true);
 
     //changing slide animation
@@ -60,7 +60,7 @@ const ProductCoverflow = ({ products }) => {
     ]);
 
     //wait changing slide animation
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     //show info bar again
     setIsHide(false);
@@ -80,7 +80,7 @@ const ProductCoverflow = ({ products }) => {
         effect="coverflow"
         centeredSlides={true}
         initialSlide={2}
-        speed={300}
+        speed={150}
         slidesPerView={3}
         coverflowEffect={{
           rotate: 0,

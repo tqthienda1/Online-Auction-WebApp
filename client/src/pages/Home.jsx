@@ -26,6 +26,7 @@ const Home = () => {
               order: "asc",
               limit: 5,
               sold: false,
+              isExpired: false,
             },
             // signal: controller.signal,
           }),
