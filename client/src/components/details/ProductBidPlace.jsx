@@ -65,7 +65,7 @@ const ProductBidPlace = ({
     onRequestBid?.(Number(bidValue));
   };
 
-  const handleBuyNowClick = (productId) => {
+  const handleBuyNowClick = () => {
     if (auction.state !== "live") return;
 
     if (!user) {
@@ -73,7 +73,7 @@ const ProductBidPlace = ({
       return;
     }
 
-    onBuyNow?.(productId);
+    onBuyNow?.();
   };
 
   // {
@@ -238,6 +238,19 @@ const ProductBidPlace = ({
           <div className=" h-12 mt-10 flex justify-center items-center">
             <p className="text-2xl font-medium font-playfair">Place your bid</p>
           </div>
+          {product.ratingRequired && (
+            <div className="w-[90%] mt-2  px-4 py-2 border border-yellow-300 bg-yellow-50 text-sm text-gray-700 rounded">
+              <p className="font-medium text-gray-900 mb-1">
+                Bidder Requirement
+              </p>
+              <ul className="list-disc list-inside">
+                <li>Rating required</li>
+                <li>
+                  Positive feedback ≥ <span className="font-semibold">80%</span>
+                </li>
+              </ul>
+            </div>
+          )}
 
           <div
             className={`flex flex-col items-center w-[90%] h-auto border mt-10 py-5 gap-5`}
@@ -323,18 +336,21 @@ const ProductBidPlace = ({
                 {/* {isSubmitting ? "Placing bid..." : "Place Bid"} */}
                 Place Bid
               </button>
-              <button
-                type="button"
-                disabled={!isAuctionLive}
-                onClick={() => handleBuyNowClick(product.id)}
-                className="
+
+              {product.buyNowPrice && (
+                <button
+                  type="button"
+                  disabled={!isAuctionLive}
+                  onClick={() => handleBuyNowClick(product.id)}
+                  className="
                   w-[90%] h-10 uppercase bg-red-600 text-white text-xl font-bold
                   hover:bg-red-700 transition
                   disabled:opacity-50 disabled:cursor-not-allowed
                 "
-              >
-                Buy Now
-              </button>
+                >
+                  Buy Now
+                </button>
+              )}
 
               {/* {buyNow.error && (
                 <p className="text-sm text-red-500 mt-2">{buyNow.error}</p>
