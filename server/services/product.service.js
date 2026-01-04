@@ -21,6 +21,7 @@ export const getProducts = async ({
   sellerId,
   sold,
   user,
+  isExpired,
 }) => {
   let categoryCondition = undefined;
 
@@ -58,6 +59,7 @@ export const getProducts = async ({
           }
         : undefined,
     sold: sold !== undefined ? sold : false,
+    isExpired: isExpired !== undefined ? isExpired : false,
   };
 
   const orderBy =
