@@ -1,8 +1,6 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import z from "zod"
-import axios from "axios"
 import { useForm } from "react-hook-form"
-import {useState, useEffect} from "react"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/context/AuthContext"
 import { http } from "@/lib/utils"
@@ -33,9 +31,7 @@ function PaymentAndShippingInfo({onUpdated, productID}) {
         const fetchUserAddress = async () => {
             try {
                 setLoadingAddress(true);
-                // server route for current user info is /users/me
                 const res = await http.get("/users/me");
-                // controller returns the user object directly; address field is `address` in DB
                 const addr = res?.data?.address || res?.data?.shippingAddress;
                 if (addr) setValue("shippingAddress", addr);
             } catch (error) {
@@ -58,15 +54,13 @@ function PaymentAndShippingInfo({onUpdated, productID}) {
   form.append("paymentInvoice", data.paymentInvoice[0]);
   form.append("shippingAddress", data.shippingAddress);
 
-  console.log("Submitting to backend:", `/order/${productID}/buyerInfo`);
-
-  axios.put(`http://localhost:3000/orders/${productID}/buyerInfo`, form, {
-  headers: { 'Content-Type': 'multipart/form-data' }
-})
-  .then(() => {
-    if (typeof onUpdated === 'function') onUpdated();
-  })
-  .catch(console.error);
+    http.put(`/orders/${productID}/buyerInfo`, form, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    })
+        .then(() => {
+            if (typeof onUpdated === 'function') onUpdated();
+        })
+        .catch(console.error);
 }
 
 

@@ -6,10 +6,13 @@ import SellerProgress from '../components/order/SellerProgress';
 import ChatModal from '../components/order/ChatModal';
 import React, { useState, useEffect } from 'react'
 import { http as axios } from '../lib/utils'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 function SellerPaymentPage() {
     const { productID } = useParams();
+    const { user: authUser, loading: authLoading } = useAuth();
+    const navigate = useNavigate();
     const [order, setOrder] = useState(null);
     const [currentStep, setCurrentStep] = useState(0);
     const [isCancelled, setIsCancelled] = useState(false);
@@ -46,6 +49,21 @@ function SellerPaymentPage() {
     useEffect(() => {
         fetchOrder();
     }, [productID]);
+
+    // Redirect if the logged-in user is not the seller for this order
+    useEffect(() => {
+        if (loading || authLoading || !order) return;
+
+        if (!authUser) {
+            navigate('/login', { replace: true });
+            return;
+        }
+
+        const currentUserId = authUser.data?.id || authUser.id;
+        if (currentUserId !== order?.seller?.id) {
+            navigate('/', { replace: true });
+        }
+    }, [loading, authLoading, order, authUser, navigate]);
 
     if (isCancelled) {
         return (
