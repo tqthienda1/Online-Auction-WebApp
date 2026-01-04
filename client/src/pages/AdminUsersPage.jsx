@@ -43,6 +43,10 @@ const AdminUsersPage = () => {
         id: r.id || r._id,
         userId: r.userID || r.user?._id,
         name: r.user?.username || r.user?.name || "Unknown",
+        // expose raw counts for UI
+        ratingPos: r.user?.ratingPos ?? 0,
+        ratingNeg: r.user?.ratingNeg ?? 0,
+        // keep aggregated value for backward compatibility
         rating: calculateRating(r.user),
         status: r.status,
       }));

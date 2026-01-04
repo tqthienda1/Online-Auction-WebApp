@@ -1,18 +1,49 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 
 const CategoriesBar = ({ categories }) => {
   const [selected, setSelected] = useState("");
   const [child, setChild] = useState("");
   const location = useLocation();
+  const params = useParams(); // lấy id từ URL
 
   useEffect(() => {
     if (!location.pathname.startsWith("/categories")) {
       setSelected("");
       setChild("");
+      return;
     }
-  }, [location.pathname]);
+
+    if (params.id) {
+      let found = false;
+      for (let item of categories) {
+        if (item.id.toString() === params.id) {
+          setSelected(item.name);
+          setChild("");
+          found = true;
+          break;
+        }
+        if (item.categoryChild) {
+          const childItem = item.categoryChild.find(
+            (c) => c.id.toString() === params.id
+          );
+          if (childItem) {
+            setSelected(item.name);
+            setChild(childItem.name);
+            found = true;
+            break;
+          }
+        }
+      }
+      if (!found) {
+        setSelected("");
+        setChild("");
+      }
+    } else {
+      setSelected("Categories");
+      setChild("");
+    }
+  }, [location.pathname, params.id, categories]);
 
   return (
     <>
@@ -21,12 +52,13 @@ const CategoriesBar = ({ categories }) => {
           <Link to={`/categories`}>
             <h1
               className={
-                selected == "Categories"
+                selected === "Categories"
                   ? "text-4xl text-yellow-400"
                   : "text-4xl hover:text-yellow-400 cursor-pointer"
               }
               onClick={() => {
-                setSelected("Categories"), setChild("");
+                setSelected("Categories");
+                setChild("");
               }}
             >
               Categories
@@ -37,15 +69,13 @@ const CategoriesBar = ({ categories }) => {
             <li
               key={item.name}
               className={
-                selected == item.name
+                selected === item.name
                   ? "text-xl relative group h-full flex items-center cursor-pointer text-yellow-400"
                   : "text-xl relative group h-full flex items-center"
               }
               onClick={() => {
+                if (child) setChild("");
                 setSelected(item.name);
-                {
-                  child ? setChild("") : {};
-                }
               }}
             >
               <Link
@@ -81,14 +111,14 @@ const CategoriesBar = ({ categories }) => {
           ))}
         </ul>
       </div>
-      <div className="w-[18%] py-2 mt-4 text-center overflow-hidden">
+      <div className="w-[18%] py-2 mt-4 text-center ">
         {selected && (
-          <span className="font-semibold text-2xl font-playfair text-brand">
+          <span className="font-semibold text-xl font-playfair text-brand">
             {selected}
           </span>
         )}
         {child && (
-          <span className="font-semibold text-2xl font-playfair text-brand">
+          <span className="font-semibold text-xl font-playfair text-brand">
             / {child}
           </span>
         )}

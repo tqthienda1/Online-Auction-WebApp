@@ -7,6 +7,7 @@ import { FaHeart } from "react-icons/fa";
 import { Navigate, useNavigate } from "react-router-dom";
 import SellerPanel from "./SellerPanel.jsx";
 import { toast } from "sonner";
+import renderAuctionStatus from "./RenderAuctionStatus";
 
 const ProductBidPlace = ({
   product,
@@ -18,6 +19,7 @@ const ProductBidPlace = ({
   // onBidSuccess,
   onToggleWatchlist,
   onRequestBid,
+  onBuyNow,
   onBanBidder,
   banning,
   banError,
@@ -26,8 +28,7 @@ const ProductBidPlace = ({
     `${auction.currentPrice + product.bidStep}`
   );
   const [validationError, setValidationError] = useState(null);
-  const [submitError, setSubmitError] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isAuctionLive = auction.state === "live";
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,6 +55,8 @@ const ProductBidPlace = ({
   }, [bidValue, auction.currentPrice, product.bidStep]);
 
   const handlePlaceBid = async () => {
+    if (auction.state !== "live") return;
+
     if (validationError || !bidValue) return;
 
     if (!user) {
@@ -64,6 +67,17 @@ const ProductBidPlace = ({
     onRequestBid?.(Number(bidValue));
   };
 
+  const handleBuyNowClick = () => {
+    if (auction.state !== "live") return;
+
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    onBuyNow?.();
+  };
+
   {
     validationError && (
       <p className="w-[90%] text-center text-sm text-red-500">
@@ -72,13 +86,13 @@ const ProductBidPlace = ({
     );
   }
 
-  {
-    submitError && (
-      <p className="w-[90%] text-center text-sm text-red-500">{submitError}</p>
-    );
-  }
+  // {
+  //   submitError && (
+  //     <p className="w-[90%] text-center text-sm text-red-500">{submitError}</p>
+  //   );
+  // }
 
-  if (product.sold) {
+  if (auction.state == "ended" || product.sold) {
     return (
       <div className="flex flex-col w-1/3 items-center mt-10 gap-6">
         <div className="w-[90%] rounded-sm border p-6 bg-neutral-50 text-center">
@@ -105,7 +119,7 @@ const ProductBidPlace = ({
                   className="
                     w-[90%] h-10 bg-brand uppercase text-yellow-400 text-xl font-bold
                   hover:bg-yellow-400 hover:text-brand transition
-                    disabled:opacity-50 disabled:cursor-not-allowed mt-5 
+                    disabled:opacity-50 disabled:cursor-not-allowed mt-5
                   "
                 >
                   Proceed to Payment
@@ -129,6 +143,88 @@ const ProductBidPlace = ({
       </div>
     );
   }
+  // const renderAuctionStatus = () => {
+  //   switch (auction.state) {
+  //     case "upcoming":
+  //       return (
+  //         <div className="flex flex-col w-1/3 items-center mt-10 gap-6">
+  //           <div className="w-[90%] rounded-sm border p-6 bg-neutral-50 text-center">
+  //             <p className="text-xl font-semibold mb-2">
+  //               Auction Not Started Yet
+  //             </p>
+
+  //             <p className="text-gray-600">This auction will start soon.</p>
+
+  //             <p className="mt-3 text-yellow-500 font-bold">
+  //               Starts at: {auction.time.endAtText}
+  //             </p>
+  //           </div>
+
+  //           <SellerInformation seller={product.seller} bidder={null} />
+  //         </div>
+  //       );
+
+  //     case "ended":
+  //       return (
+  //         <div className="flex flex-col w-1/3 items-center mt-10 gap-6">
+  //           <div className="w-[90%] rounded-sm border p-6 bg-neutral-50 text-center">
+  //             <p className="text-xl font-semibold mb-2">Auction Ended</p>
+
+  //             {auction.highestBidder ? (
+  //               <>
+  //                 <p className="text-lg">
+  //                   Winner:{" "}
+  //                   <span className="font-bold text-yellow-500">
+  //                     {auction.highestBidder.username}
+  //                   </span>
+  //                 </p>
+
+  //                 <p className="mt-2 text-md font-medium">
+  //                   Winning bid: {auction.currentPrice} USD
+  //                 </p>
+
+  //                 {auction.isWinner && (
+  //                   <button
+  //                     onClick={() =>
+  //                       navigate(`/buyer/payment/${product.id}`, {
+  //                         replace: true,
+  //                       })
+  //                     }
+  //                     className="
+  //                     w-[90%] h-10 bg-brand uppercase text-yellow-400 text-xl font-bold
+  //                     hover:bg-yellow-400 hover:text-brand transition
+  //                     mt-5
+  //                   "
+  //                   >
+  //                     Proceed to Payment
+  //                   </button>
+  //                 )}
+  //               </>
+  //             ) : (
+  //               <p className="italic text-gray-500 mt-2">
+  //                 No bids were placed for this auction
+  //               </p>
+  //             )}
+  //           </div>
+
+  //           <SellerInformation
+  //             seller={product.seller}
+  //             bidder={auction.highestBidder}
+  //             onBanBidder={onBanBidder}
+  //             banning={banning}
+  //             banError={banError}
+  //           />
+  //         </div>
+  //       );
+
+  //     default:
+  //       return null;
+  //   }
+  // };
+
+  // if (auction.state !== "live") {
+  //   return renderAuctionStatus();
+  // }
 
   return (
     <div className="flex flex-col w-1/3 items-center ">
@@ -217,18 +313,34 @@ const ProductBidPlace = ({
             <div className="flex flex-col w-full justify-center items-center gap-2">
               <button
                 type="button"
-                disabled={!!validationError || !bidValue || isSubmitting}
+                disabled={!!validationError || !bidValue || !isAuctionLive}
                 onClick={handlePlaceBid}
                 className="w-[90%] h-10 bg-brand uppercase text-yellow-400 text-xl font-bold
                       hover:bg-yellow-400 hover:text-brand transition
                       disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting && (
+                {/* {isSubmitting && (
                   <span className="inset-x-0 bottom-0 h-1 bg-yellow-400 animate-pulse" />
-                )}
-
-                {isSubmitting ? "Placing bid..." : "Place Bid"}
+                )} */}
+                {/* {isSubmitting ? "Placing bid..." : "Place Bid"} */}
+                Place Bid
               </button>
+              <button
+                type="button"
+                disabled={!isAuctionLive}
+                onClick={handleBuyNowClick}
+                className="
+                  w-[90%] h-10 uppercase bg-red-600 text-white text-xl font-bold
+                  hover:bg-red-700 transition
+                  disabled:opacity-50 disabled:cursor-not-allowed
+                "
+              >
+                Buy Now
+              </button>
+
+              {/* {buyNow.error && (
+                <p className="text-sm text-red-500 mt-2">{buyNow.error}</p>
+              )} */}
 
               <button
                 type="button"
@@ -237,7 +349,7 @@ const ProductBidPlace = ({
                 className={`w-[90%] h-10 bg-neutral-300 uppercase text-brand text-xl font-bold hover:bg-neutral-400 transition cursor-pointer 
            ${
              watchlist.isWatched
-               ? "bg-red-400 text-white hover:bg-red-500"
+               ? "bg-white text-red-600 border border-red-600 hover:border-2 hover:bg-white hover:text-red-700"
                : "bg-neutral-300 text-brand border-brand hover:bg-brand hover:text-black"
            }
             disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -246,12 +358,12 @@ const ProductBidPlace = ({
                   "Processing..."
                 ) : watchlist.isWatched ? (
                   <div className="flex justify-center items-center gap-2">
-                    <FaHeart />
+                    {/* <FaHeart /> */}
                     Remove from watch list
                   </div>
                 ) : (
                   <div className="flex justify-center items-center gap-2">
-                    <FaRegHeart />
+                    {/* <FaRegHeart /> */}
                     Add to watch list
                   </div>
                 )}

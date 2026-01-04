@@ -22,7 +22,7 @@ const CategoryPage = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(500000);
+  const [maxPrice, setMaxPrice] = useState(10000);
   const [order, setOrder] = useState("asc");
   const [sort, setSort] = useState("startTime");
 
@@ -31,15 +31,32 @@ const CategoryPage = () => {
   const [searchParamS, setSearchParamS] = useSearchParams();
 
   useEffect(() => {
-    setSearchParamS({
-      page: page.toString(),
-      limit: limit.toString(),
-      minPrice: minPrice.toString(),
-      maxPrice: maxPrice.toString(),
-      order: order,
-      sortBy: sort,
+    setSearchParamS((prev) => {
+      const params = {
+        page: page.toString(),
+        limit: limit.toString(),
+        minPrice: minPrice.toString(),
+        maxPrice: maxPrice.toString(),
+        order,
+        sortBy: sort,
+      };
+
+      if (keyword && keyword.trim() !== "") {
+        params.keyword = keyword;
+      }
+
+      return params;
     });
-  }, [id, page, limit, minPrice, maxPrice, order, sort]);
+  }, [page, limit, minPrice, maxPrice, order, sort, keyword]);
+
+  useEffect(() => {
+    setPage(1);
+    setLimit(12);
+    setMinPrice(0);
+    setMaxPrice(10000);
+    setOrder("asc");
+    setSort("startTime");
+  }, [id]);
 
   useEffect(() => {
     const getProductsData = async () => {
@@ -62,7 +79,7 @@ const CategoryPage = () => {
           });
 
           console.log(data.data);
-          setTotalPages(data.data.total);
+          setTotalPages(Math.ceil(data.data.total / limit));
           setProducts(data.data.data);
         } else {
           const data = await http.get(

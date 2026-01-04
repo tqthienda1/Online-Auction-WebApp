@@ -2,9 +2,19 @@ import { createPortal } from "react-dom";
 import { useEffect } from "react";
 import { FiAlertTriangle } from "react-icons/fi";
 
-const ConfirmBid = ({ bidValue, loading, error, onConfirm, onCancel }) => {
+const ConfirmActionModal = ({
+  open = true,
+  title,
+  amountText,
+  warningText,
+  confirmText,
+  loading,
+  error,
+  onConfirm,
+  onCancel,
+}) => {
   const modalRoot = document.getElementById("modal-root");
-  if (!modalRoot) return null;
+  if (!modalRoot || !open) return null;
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -23,25 +33,24 @@ const ConfirmBid = ({ bidValue, loading, error, onConfirm, onCancel }) => {
       <div className="relative w-[420px] bg-neutral-50 rounded-md shadow-2xl border border-brand/20 animate-scaleIn">
         <div className="px-6 py-4 border-b border-brand/20 flex items-center gap-3">
           <FiAlertTriangle className="text-yellow-400 text-2xl" />
-          <h2 className="text-xl font-bold text-brand uppercase">
-            Confirm Your Bid
-          </h2>
+          <h2 className="text-xl font-bold text-brand uppercase">{title}</h2>
         </div>
 
         <div className="px-6 py-5 space-y-4">
           <p className="text-sm text-neutral-600">
-            You are about to place the following bid:
+            Please confirm the following action:
           </p>
 
-          <div className="flex justify-center">
-            <span className="text-3xl font-extrabold text-yellow-400">
-              {bidValue} USD
-            </span>
-          </div>
+          {amountText && (
+            <div className="flex justify-center">
+              <span className="text-3xl font-extrabold text-yellow-400">
+                {amountText}
+              </span>
+            </div>
+          )}
 
           <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-3 rounded">
-            This action cannot be undone. Once confirmed, your bid will
-            immediately become active.
+            {warningText}
           </div>
 
           {error && (
@@ -79,7 +88,7 @@ const ConfirmBid = ({ bidValue, loading, error, onConfirm, onCancel }) => {
               disabled:opacity-50
             "
           >
-            {loading ? "Placing..." : "Confirm Bid"}
+            {loading ? "Processing..." : confirmText}
           </button>
         </div>
       </div>
@@ -88,4 +97,4 @@ const ConfirmBid = ({ bidValue, loading, error, onConfirm, onCancel }) => {
   );
 };
 
-export default ConfirmBid;
+export default ConfirmActionModal;

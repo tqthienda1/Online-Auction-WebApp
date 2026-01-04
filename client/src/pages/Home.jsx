@@ -23,6 +23,7 @@ const Home = () => {
           http.get("/products", {
             params: {
               sortBy: "endTime",
+              order: "asc",
               limit: 5,
               sold: false,
             },
