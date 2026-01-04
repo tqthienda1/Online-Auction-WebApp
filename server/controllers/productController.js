@@ -43,6 +43,7 @@ export const getProducts = async (req, res) => {
       order = "desc",
       sellerId,
       sold,
+      isExpire,
     } = req.query;
 
     const user = req.user?.id;
