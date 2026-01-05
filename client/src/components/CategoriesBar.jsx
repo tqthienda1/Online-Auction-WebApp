@@ -113,7 +113,7 @@ const CategoriesBar = ({ categories }) => {
       </div>
       <div className="py-2 mt-4 text-left w-full ml-8">
         {selected && (
-          <span className="font-semibold text-xl font-playfair text-brand">
+          <span className="font-semibold text-xl font-playfair text-brand mr-2">
             {selected}
           </span>
         )}

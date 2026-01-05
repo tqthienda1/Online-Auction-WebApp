@@ -63,7 +63,6 @@ const CategoryPage = () => {
       const controller = new AbortController();
       try {
         setIsLoading(true);
-        console.log(keyword);
 
         if (keyword) {
           const data = await http.get(`products/search/${keyword}`, {
