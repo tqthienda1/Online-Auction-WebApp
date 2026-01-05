@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { addDescription } from "./productDescription.service.js";
 import { addProductImages } from "./productImages.service.js";
 import { uploadFilesToSupabase } from "../services/supabase.service.js";
-import { checkWatchlist } from "./watchlist.service.js";
+import { checkWatchlist, getWatchlist } from "./watchlist.service.js";
 import { createOrder } from "./order.service.js";
 import { supabase } from "../libs/client.js";
 import { generateMagicLink } from "../services/supabase.service.js";
@@ -86,22 +86,24 @@ export const getProducts = async ({
     prisma.product.count({ where }),
   ]);
 
-  let likedSet = new Set();
+  // let likedSet = new Set();
 
-  if (user) {
-    const watchlist = await prisma.watchList.findMany({
-      where: { userID: user.id },
-      select: { productID: true },
-    });
+  // if (user) {
+  //   const watchlist = await prisma.watchList.findMany({
+  //     where: { userID: user.id },
+  //     select: { productID: true },
+  //   });
 
-    likedSet = new Set(watchlist.map((w) => w.productID));
-  }
+  //   likedSet = new Set(watchlist.map((w) => w.productID));
+  // }
+
+  const likedSet = await getWatchlist(user);
 
   return {
     products: products.map((p) => ({
       ...p,
       category: p.category?.name ?? null,
-      isLiked: likedSet.has(p.id),
+      isLiked: likedSet.products.some((w) => w.id === p.id),
     })),
     total,
   };
@@ -401,7 +403,6 @@ export const closeExpiredAuctions = async () => {
     });
 
     for (const product of products) {
-      console.log(product.id);
       await prisma.$transaction(async (tx) => {
         const existingOrder = await tx.order.findUnique({
           where: { productID: product.id },

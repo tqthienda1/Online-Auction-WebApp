@@ -20,7 +20,7 @@ const ProductCard = ({
   loadingItem,
 }) => {
   const { user } = useAuth();
-  
+
   const checkIsRecent = (timestamp) => {
     if (!timestamp) return false;
     const time = new Date(product.startTime);
@@ -199,7 +199,7 @@ const ProductCard = ({
               <p className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Current price:</span>
                 <span className="text-lg font-bold text-yellow-400">
-                  {product.currentPrice.toLocaleString()}₫
+                  ${product.currentPrice.toLocaleString()}
                 </span>
               </p>
               <p className="flex text-sm justify-between text-gray-500">
@@ -242,13 +242,13 @@ const ProductCard = ({
               <p className="flex justify-between">
                 <span className="text-sm text-gray-600">Current price:</span>
                 <span className="text-lg font-bold text-yellow-400 flex items-center justify-center">
-                  {product.currentPrice.toLocaleString()}₫
+                  ${product.currentPrice.toLocaleString()}
                 </span>
               </p>
               <p className="flex justify-between">
                 <span className="text-sm text-gray-600">Highest price:</span>
                 <span className="text-lg font-bold text-yellow-400 flex items-center justify-center">
-                  {product.currentPrice.toLocaleString()}₫
+                  ${product.currentPrice.toLocaleString()}
                 </span>
               </p>
               <p className="flex text-sm justify-between text-gray-500">
@@ -269,13 +269,7 @@ const ProductCard = ({
       {(showType === 4 || showType === 6) && (
         <div className="w-[250px] cursor-pointer">
           <div className="flex flex-col aspect-video w-full items-center justify-center">
-            <Link
-              to={
-                showType === 4
-                  ? `/buyer/payment/${product.id}`
-                  : `/seller/payment/${product.id}`
-              }
-            >
+            <Link to={`/products/${product.id}`}>
               <img
                 src={product.productAvt}
                 alt={product.productName}
@@ -291,17 +285,10 @@ const ProductCard = ({
                   {showType === 4 ? "Won price:" : "Sold price:"}
                 </span>
                 <span className="text-lg font-bold text-yellow-400 flex items-center justify-center">
-                  {product.currentPrice.toLocaleString()}₫
+                  ${product.currentPrice.toLocaleString()}
                 </span>
               </p>
-              <p className="flex gap-1 text-gray-600 justify-between items-center">
-                <span className="text-sm ">
-                  {showType === 4 ? "Seller:" : "Buyer:"}
-                </span>
-                <span className="text-sm font-semibold">
-                  {product.sellerName || product.buyerName || "N/A"}
-                </span>
-              </p>
+
               <p className="flex text-sm justify-between text-gray-500">
                 <span>End:</span>
                 <span>{new Date(product.endTime).toLocaleString()}</span>

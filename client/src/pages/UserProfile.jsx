@@ -102,8 +102,7 @@ const UserProfile = () => {
 
         // If unauthorized or forbidden, ensure empty list and optionally show UI later
         if (mounted) setWishlistItems([]);
-      }
-      finally {
+      } finally {
         if (mounted) setWishlistLoading(false);
       }
     };
@@ -133,8 +132,7 @@ const UserProfile = () => {
 
         // If unauthorized or forbidden, ensure empty list and optionally show UI later
         if (mounted) setWonAuctions([]);
-      }
-      finally {
+      } finally {
         if (mounted) setWonLoading(false);
       }
     };
@@ -202,8 +200,7 @@ const UserProfile = () => {
       } catch (err) {
         console.error("Failed to load selling items:", err);
         if (mounted) setSellingItems([]);
-      }
-      finally {
+      } finally {
         if (mounted) setSellingLoading(false);
       }
     };
@@ -224,6 +221,7 @@ const UserProfile = () => {
           params: {
             sellerId: userId,
             sold: true, // Explicitly request sold products only
+            isExpired: true,
           },
         });
 
@@ -233,8 +231,7 @@ const UserProfile = () => {
       } catch (err) {
         console.error("Failed to load sold items:", err);
         if (mounted) setSoldItems([]);
-      }
-      finally {
+      } finally {
         if (mounted) setSoldLoading(false);
       }
     };
@@ -260,8 +257,7 @@ const UserProfile = () => {
       } catch (err) {
         console.error("Failed to load bidding items:", err);
         if (mounted) setBiddingItems([]);
-      }
-      finally {
+      } finally {
         if (mounted) setBiddingLoading(false);
       }
     };
@@ -296,11 +292,11 @@ const UserProfile = () => {
           <ProfileReviews info={info} />
           <ProfileTab tab={tab} setTab={setTab} isSeller={isSeller} />
           <div className="my-10 w-3/4 ">
-            {((tab === "watchList" && wishlistLoading) ||
-              (tab === "bidding" && biddingLoading) ||
-              (tab === "won" && wonLoading) ||
-              (tab === "selling" && sellingLoading) ||
-              (tab === "sold" && soldLoading)) ? (
+            {(tab === "watchList" && wishlistLoading) ||
+            (tab === "bidding" && biddingLoading) ||
+            (tab === "won" && wonLoading) ||
+            (tab === "selling" && sellingLoading) ||
+            (tab === "sold" && soldLoading) ? (
               <div className="flex flex-col justify-center p-4 md:p-5 text-center">
                 <Spinner className="size-8 w-full text-yellow-500" />
                 <h3 className="font-semibold my-6 text-body">Loading</h3>

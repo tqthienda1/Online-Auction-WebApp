@@ -54,10 +54,7 @@ const AdminProductsPage = () => {
       try {
         setIsLoading(true);
 
-        const data = await http.get(
-          `/products?page=${page}&limit=${limit}`,
-          {}
-        );
+        const data = await http.get(`/products?page=${page}&limit=${limit}`);
 
         setProducts(data.data.data);
         setTotalPages(data.data.totalPages);
