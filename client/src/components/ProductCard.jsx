@@ -269,13 +269,7 @@ const ProductCard = ({
       {(showType === 4 || showType === 6) && (
         <div className="w-[250px] cursor-pointer">
           <div className="flex flex-col aspect-video w-full items-center justify-center">
-            <Link
-              to={
-                showType === 4
-                  ? `/buyer/payment/${product.id}`
-                  : `/seller/payment/${product.id}`
-              }
-            >
+            <Link to={`/products/${product.id}`}>
               <img
                 src={product.productAvt}
                 alt={product.productName}
