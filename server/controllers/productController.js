@@ -43,7 +43,7 @@ export const getProducts = async (req, res) => {
       order = "desc",
       sellerId,
       sold,
-      isExpire,
+      isExpired,
     } = req.query;
 
     const user = req.user?.id;
@@ -52,6 +52,8 @@ export const getProducts = async (req, res) => {
     const limitNum = parseInt(limit);
     const soldValue =
       sold === "true" ? true : sold === "false" ? false : undefined;
+    const expiredValue =
+      isExpired === "true" ? true : isExpired === "false" ? false : undefined;
 
     const { products, total } = await productService.getProducts({
       page: pageNum,
@@ -65,6 +67,7 @@ export const getProducts = async (req, res) => {
       sellerId,
       sold: soldValue,
       user,
+      isExpired: expiredValue,
     });
 
     const result = products.map((p) => ({

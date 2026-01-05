@@ -303,6 +303,7 @@ export const createBuyNow = async ({ productId, buyerId }) => {
         endTime: new Date(),
         currentPrice: product.buyNowPrice,
         highestBidderID: buyerId,
+        isExpired: true,
       },
     });
 
