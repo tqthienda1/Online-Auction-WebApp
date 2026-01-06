@@ -9,7 +9,7 @@ The application follows a **separated frontend–backend architecture** to ensur
 
 ## 🚀 Demo
 
-_(Coming soon)_
+https://bidsmartonline.vercel.app
 
 ## 🛠 Tech Stack
 
