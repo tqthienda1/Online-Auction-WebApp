@@ -11,6 +11,7 @@ const ProductList = ({
 }) => {
   const isHorizontal = products && products.length > 4;
   const [loadingItem, setLoadingItem] = useState(null);
+  console.log(products);
 
   if (!products || products.length === 0) {
     return (

@@ -302,6 +302,8 @@ export const updateProduct = async (userId, productId, descriptions) => {
     },
   });
 
+  const p = await prisma.product.findUnique({ where: { id: productId } });
+
   for (const bidder of bidders) {
     const email = await supabase.auth.admin.getUserById(
       bidder.bidder.supabaseId
@@ -309,9 +311,9 @@ export const updateProduct = async (userId, productId, descriptions) => {
 
     await sendMailTo(
       email.data.user.email,
-      `Seller has new description on product "${product.productName}"`,
-      `Seller has new description on product "${product.productName}"`,
-      `<p>Seller has new description on product "${product.productName}"</p>`
+      `Seller has new description on product "${p.productName}"`,
+      `Seller has new description on product "${p.productName}"`,
+      `<p>Seller has new description on product "${p.productName}"</p>`
     );
   }
 

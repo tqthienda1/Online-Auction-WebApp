@@ -2,6 +2,7 @@ import prisma from "../prismaClient.js";
 import { supabase } from "../libs/client.js";
 import sgMail from "@sendgrid/mail";
 import { sendMailTo } from "./sendMail.service.js";
+import { generateMagicLink } from "./supabase.service.js";
 
 export const placeBid = async ({ userId, productId, maxPrice }) => {
   const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -143,6 +144,8 @@ export const placeBid = async ({ userId, productId, maxPrice }) => {
     newHighestBidderID,
   } = result;
 
+  console.log(updatedProduct);
+
   if (priceChanged || highestChanged) {
     const seller = await supabase.auth.admin.getUserById(
       updatedProduct.seller.supabaseId
@@ -164,18 +167,51 @@ export const placeBid = async ({ userId, productId, maxPrice }) => {
   }
 
   if (highestChanged && oldHighestBidderID) {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+    });
+
+    console.log(product);
+
     const oldHighestBidder = await prisma.user.findUnique({
       where: { id: oldHighestBidderID },
     });
+
     if (oldHighestBidder?.supabaseId) {
       const oldHighest = await supabase.auth.admin.getUserById(
         oldHighestBidder.supabaseId
       );
+      const magicLink = await generateMagicLink(
+        oldHighest.data.user.email,
+        productId
+      );
+
+      console.log(productId);
+      console.log(magicLink);
+
       await sendMailTo(
         oldHighest.data.user.email,
-        `You have been outbid for "${updatedProduct.productName}"`,
-        `You have been outbid.`,
-        `<p>You have been outbid.</p><p><b>Current price: ${updatedProduct.currentPrice}</b></p><p>Place a new bid if you want to stay on top.</p>`
+        `You have been outbid on "${product.productName}"`,
+        `You have been outbid on "${product.productName}". See detail here: ${magicLink}`,
+        `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <h2 style="color: #facc15;">You have been outbid on the product.</h2>
+            <p>On: <strong>${product.productName}</strong></p>
+            <a href="${magicLink}"
+              style="
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #facc15;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                margin-top: 10px;
+                font-weight: 600;
+              ">
+              See detail
+            </a>
+          </div>
+        `
       );
     }
   }
