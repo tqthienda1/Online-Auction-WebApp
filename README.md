@@ -79,7 +79,7 @@ cd online-auction-webapp
 ```
 
 ### Config .env
-
+Create .env file in root directory
 ```xml
 # Server port
 PORT=3000
@@ -117,7 +117,7 @@ FRONTEND_URL= <frontend_url>
 npm run setup
 
 # Generate Prisma schema and push to Supabase
-cd search_vector
+cd server
 npx prisma generate
 npx prisma db push
 cd ..
