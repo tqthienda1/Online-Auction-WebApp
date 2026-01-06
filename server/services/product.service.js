@@ -97,7 +97,7 @@ export const getProducts = async ({
   //   likedSet = new Set(watchlist.map((w) => w.productID));
   // }
 
-  const likedSet = await getWatchlist(user);
+  const likedSet = user ? await getWatchlist(user) : { products: [] };
 
   return {
     products: products.map((p) => ({
