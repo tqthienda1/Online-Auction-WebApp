@@ -294,6 +294,27 @@ export const updateProduct = async (userId, productId, descriptions) => {
     },
   });
 
+  const bidders = await prisma.bid.findMany({
+    where: { productID: productId },
+    distinct: ["bidderID"],
+    include: {
+      bidder: true,
+    },
+  });
+
+  for (const bidder of bidders) {
+    const email = await supabase.auth.admin.getUserById(
+      bidder.bidder.supabaseId
+    );
+
+    await sendMailTo(
+      email.data.user.email,
+      `Seller has new description on product "${product.productName}"`,
+      `Seller has new description on product "${product.productName}"`,
+      `<p>Seller has new description on product "${product.productName}"</p>`
+    );
+  }
+
   return await prisma.productDescription.findMany({
     where: { productID: productId },
     orderBy: { createdAt: "asc" },
