@@ -81,10 +81,15 @@ export const placeBid = async ({ userId, productId, maxPrice }) => {
     let currentPrice = product.currentPrice;
     const highestChanged = highest.bidderID !== oldHighestBidderID;
 
-    if (highestChanged) {
-      currentPrice = second
-        ? Math.min(highest.maxPrice, second.maxPrice + product.bidStep)
-        : product.startingPrice;
+    if (!highest) {
+      currentPrice = product.startingPrice;
+    } else if (!second) {
+      currentPrice = product.startingPrice;
+    } else {
+      currentPrice = Math.min(
+        highest.maxPrice,
+        second.maxPrice + product.bidStep
+      );
     }
 
     const priceChanged = currentPrice !== oldCurrentPrice;
