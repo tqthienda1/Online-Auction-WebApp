@@ -153,10 +153,11 @@ const ProductDetails = () => {
     await Promise.all([fetchAuction(), fetchBidHistory()]);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (text) => {
     const controller = new AbortController();
     try {
       setIsLoadingComment(true);
+      console.log(text);
       const newComment = await http.post(
         `/comments/products/${id}`,
         {
