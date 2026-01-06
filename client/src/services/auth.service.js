@@ -7,7 +7,7 @@ export const signUp = async (user) => {
     email: user.email,
     password: user.password,
     options: {
-      emailRedirectTo: "http://localhost:5173",
+      emailRedirectTo: import.meta.env.VITE_SITE_URL,
     },
   });
 
@@ -90,7 +90,7 @@ export const signInWithGoogle = async () => {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `http://localhost:5173`,
+      redirectTo: import.meta.env.VITE_SITE_URL,
     },
   });
 
@@ -114,7 +114,7 @@ export const logOut = async () => {
 
 export const requestOtp = async (email) => {
   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: "http://localhost:3000",
+    redirectTo: import.meta.env.VITE_SITE_URL,
   });
 
   if (error) {
