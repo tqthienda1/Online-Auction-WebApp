@@ -637,10 +637,10 @@ export const fullTextSearch = async (
 ) => {
   const offset = (page - 1) * limit;
   const orderByField =
-    sortBy === "price"
+    sortBy === "currentPrice"
       ? Prisma.sql`rp."currentPrice"`
-      : sortBy === "startTime"
-      ? Prisma.sql`rp."startTime"`
+      : sortBy === "endTime"
+      ? Prisma.sql`rp."endTime"`
       : Prisma.sql`rp.rank`;
 
   const orderDirection = order === "asc" ? Prisma.sql`ASC` : Prisma.sql`DESC`;
