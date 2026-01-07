@@ -8,6 +8,7 @@ import { FaHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { Spinner } from "./ui/spinner";
 import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const RECENTLY_ADDED_DAYS = 1;
 
@@ -20,6 +21,7 @@ const ProductCard = ({
   loadingItem,
 }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const checkIsRecent = (timestamp) => {
     if (!timestamp) return false;
@@ -79,14 +81,20 @@ const ProductCard = ({
                 {product.isLiked === true ? (
                   <button
                     className="h-full cursor-pointer"
-                    onClick={() => onRemoveFromWatchList(product.id)}
+                    onClick={() =>
+                      user
+                        ? onRemoveFromWatchList(product.id)
+                        : navigate("/login")
+                    }
                   >
                     <FaHeart className="text-2xl text-red-500 hover:text-red-600" />
                   </button>
                 ) : (
                   <button
                     className="h-full cursor-pointer"
-                    onClick={() => onAddToWatchList(product.id)}
+                    onClick={() =>
+                      user ? onAddToWatchList(product.id) : navigate("/login")
+                    }
                   >
                     <FaRegHeart className="text-2xl text-red-500 hover:text-red-600" />
                   </button>
