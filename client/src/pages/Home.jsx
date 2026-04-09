@@ -76,7 +76,12 @@ const Home = () => {
         setMostBiddenProducts(mostBiddenData);
         setHighestPriceProducts(highestPriceData);
 
-        if (!endingSoonData || !mostBiddenData || !highestPriceData) {
+        console.log(endingSoonData);
+        if (
+          endingSoonData.length < 1 ||
+          mostBiddenData.length < 1 ||
+          highestPriceData.length < 1
+        ) {
           setHasProduct(false);
         }
       } catch (error) {
