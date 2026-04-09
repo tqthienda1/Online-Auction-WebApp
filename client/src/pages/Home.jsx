@@ -9,6 +9,7 @@ import { formattedDate } from "@/helper/formatDate";
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
+  const [hasProduct, setHasProduct] = useState(true);
 
   const [endingSoonProducts, setEndingSoonProducts] = useState([]);
 
@@ -78,6 +79,13 @@ const Home = () => {
         console.error("Load ending soon products failed: ", error);
       } finally {
         setLoading(false);
+        if (
+          !endingSoonProducts &&
+          !mostBiddenProducts &&
+          !highestPriceProducts
+        ) {
+          setHasProduct(false);
+        }
       }
     };
 
@@ -88,7 +96,7 @@ const Home = () => {
 
   return (
     <>
-      {!loading && (
+      {!loading && setHasProduct && (
         <>
           <ProductCoverflow products={endingSoonProducts} />
 
@@ -102,10 +110,17 @@ const Home = () => {
           />
         </>
       )}
-      {loading && (
+      {loading && !setHasProduct && (
         <div className="flex flex-col justify-center p-4 md:p-5 text-center h-full overflow-hidden">
           <Spinner className="size-8 w-full text-yellow-500" />
           <h3 className="font-semibold my-6 text-body">Loading</h3>
+        </div>
+      )}
+      {!loading && !setHasProduct && (
+        <div className="w-full h-full flex flex-col justify-center items-center">
+          <div className="font-playfair text-5xl">
+            No products are currently being bid on.
+          </div>
         </div>
       )}
     </>
