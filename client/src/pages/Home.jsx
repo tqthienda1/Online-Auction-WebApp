@@ -75,17 +75,14 @@ const Home = () => {
         setEndingSoonProducts(endingSoonData);
         setMostBiddenProducts(mostBiddenData);
         setHighestPriceProducts(highestPriceData);
+
+        if (!endingSoonData || !mostBiddenData || !highestPriceData) {
+          setHasProduct(false);
+        }
       } catch (error) {
         console.error("Load ending soon products failed: ", error);
       } finally {
         setLoading(false);
-        if (
-          !endingSoonProducts &&
-          !mostBiddenProducts &&
-          !highestPriceProducts
-        ) {
-          setHasProduct(false);
-        }
       }
     };
 
