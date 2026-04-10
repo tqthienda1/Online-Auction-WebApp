@@ -112,7 +112,7 @@ const Home = () => {
           />
         </>
       )}
-      {loading && !hasProduct && (
+      {loading && hasProduct && (
         <div className="flex flex-col justify-center p-4 md:p-5 text-center h-full overflow-hidden">
           <Spinner className="size-8 w-full text-yellow-500" />
           <h3 className="font-semibold my-6 text-body">Loading</h3>
